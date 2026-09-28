@@ -1,4 +1,5 @@
-import { researchReviewPacket, researchReviewView } from './research-review.js?v=0.6.1';
+import { researchReviewPacket, researchReviewView } from './research-review.js?v=0.7.0';
+import { renderSourceInspection } from './source-inspection-view.js?v=0.7.0';
 
 const e = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const words = {
@@ -13,7 +14,7 @@ const unknowns = {
   'full role fit': ['Відповідність усім вимогам ролі', 'Full role fit']
 };
 
-export function renderResearchReview(session, lang = 'uk', imported = true) {
+export function renderResearchReview(session, lang = 'uk', imported = true, inspections = {}) {
   const view = researchReviewView(session);
   const t = (uk, en) => lang === 'en' ? en : uk;
   const packet = researchReviewPacket(session, imported);
@@ -31,7 +32,8 @@ export function renderResearchReview(session, lang = 'uk', imported = true) {
       return `<article class="research-review-card" data-review-lead="${e(lead.id)}"><h4><a href="${e(lead.profileUrl)}" target="_blank" rel="noreferrer">@${e(lead.handle)} ↗</a> <span>${leadDecision?.decision === 'follow-up' ? t('Наступне дослідження', 'Follow-up research') : leadDecision?.decision === 'hold' ? t('Зупинено', 'Held') : t('Без рішення', 'No decision')}</span></h4>
         ${lead.evidence.map(item => {
           const review = view.evidenceDecisions.get(item.id);
-          return `<div class="research-review-source" data-review-evidence="${e(item.id)}"><a href="${e(item.url)}" target="_blank" rel="noreferrer">${e(item.repository)} · ${e(item.title)} ↗</a><small>${review ? `${e(words[review.decision][lang === 'en' ? 1 : 0])}: ${e(review.reason)}` : t('Ще не оцінено', 'Not reviewed yet')}</small><label>${t('Причина оцінки', 'Reason for assessment')}<input name="research-reason" maxlength="400" autocomplete="off" placeholder="${t('Що видно у самій зміні коду?', 'What is visible in the code change?')}"></label><div class="review-actions">${['relevant', 'irrelevant', 'uncertain'].map(decision => `<button class="button quiet" data-evidence-decision="${decision}" ${view.exhausted ? 'disabled' : ''}>${e(words[decision][lang === 'en' ? 1 : 0])}</button>`).join('')}</div></div>`;
+          const conflicted = view.conflictedEvidence.has(item.id);
+          return `<div class="research-review-source" data-review-evidence="${e(item.id)}"><a href="${e(item.url)}" target="_blank" rel="noreferrer">${e(item.repository)} · ${e(item.title)} ↗</a><small>${review ? `${e(words[review.decision][lang === 'en' ? 1 : 0])}: ${e(review.reason)}` : t('Ще не оцінено', 'Not reviewed yet')}</small>${conflicted ? `<p class="blocked-note">${t('Зафіксовано конфлікт GitHub ID. Цей слід не можна позначити корисним; попередню передачу відкликано. Файл перевірки є локальним твердженням, не автентифікованим доказом.', 'GitHub ID conflict recorded. This signal cannot be marked useful; its previous handoff was withdrawn. The local review file is an assertion, not authenticated evidence.')}</p>` : ''}${renderSourceInspection(item.id, lang, { detail: inspections.details?.get(item.id), loading: inspections.loading?.has(item.id), error: inspections.errors?.get(item.id), attempts: inspections.attempts?.get(item.id) ?? 0 })}<label>${t('Причина оцінки', 'Reason for assessment')}<input name="research-reason" maxlength="400" autocomplete="off" placeholder="${t('Що видно у самій зміні коду?', 'What is visible in the code change?')}"></label><div class="review-actions">${['relevant', 'irrelevant', 'uncertain'].map(decision => `<button class="button quiet" data-evidence-decision="${decision}" ${view.exhausted || (conflicted && decision === 'relevant') ? 'disabled' : ''}>${e(words[decision][lang === 'en' ? 1 : 0])}</button>`).join('')}</div></div>`;
         }).join('')}
         <div class="research-review-lead-action"><label>${t('Що наступний дослідник має з’ясувати?', 'What should the next researcher establish?')}<input name="lead-reason" maxlength="400" autocomplete="off" placeholder="${t('Яка прогалина лишилась?', 'Which question remains?')}"></label><div class="review-actions"><button class="button primary" data-lead-decision="follow-up" ${!relevant || view.exhausted ? 'disabled' : ''}>${t('Передати на дослідження', 'Send for further research')}</button><button class="button quiet" data-lead-decision="hold" ${view.exhausted ? 'disabled' : ''}>${t('Зупинити', 'Hold')}</button></div>${leadDecision ? `<small>${e(leadDecision.reason)}</small>` : ''}</div></article>`;
     }).join('')}</div>

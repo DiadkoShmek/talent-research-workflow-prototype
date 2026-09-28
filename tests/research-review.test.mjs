@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { collectResearch } from '../src/research.js?v=0.6.1';
-import { createResearchReview, researchReviewAction, researchReviewPacket, researchReviewView, restoreResearchReview } from '../src/research-review.js?v=0.6.1';
-import { researchFollowUpDocument } from '../src/research-review-view.js?v=0.6.1';
+import { collectResearch } from '../src/research.js?v=0.7.0';
+import { createResearchReview, researchReviewAction, researchReviewPacket, researchReviewView, restoreResearchReview } from '../src/research-review.js?v=0.7.0';
+import { researchFollowUpDocument } from '../src/research-review-view.js?v=0.7.0';
 
 async function report() {
   const rows = {
@@ -69,6 +69,23 @@ test('restore replays only valid source-bound actions and a different run starts
   swapped.report = await collectResearch(async () => new Response('[]'));
   assert.throws(() => restoreResearchReview(swapped), /invalid research review/);
   assert.equal(createResearchReview(swapped.report).actions.length, 0);
+});
+
+test('a recorded GitHub ID conflict withdraws prior handoff and cannot be overridden', async () => {
+  const start = createResearchReview(await report());
+  const sent = researchReviewAction(researchReviewAction(start, review(second, 'relevant')),
+    lead('github:101', 'follow-up'));
+  assert.deepEqual(researchReviewPacket(sent).leads[0].evidence.map(item => item.id), [second]);
+  const conflicted = researchReviewAction(sent, { type: 'source-conflict', evidenceId: second });
+  assert.equal(researchReviewPacket(conflicted), null);
+  assert.equal(researchReviewView(conflicted).leadDecisions.has('github:101'), false);
+  assert.equal(researchReviewView(restoreResearchReview(conflicted)).conflictedEvidence.has(second), true);
+  assert.throws(() => researchReviewAction(conflicted, review(second, 'relevant')), /invalid research review/);
+  assert.throws(() => researchReviewAction(conflicted, { type: 'source-conflict', evidenceId: second }), /invalid research review/);
+  assert.throws(() => researchReviewAction(conflicted, lead('github:101', 'follow-up')), /invalid research review/);
+  const other = researchReviewAction(researchReviewAction(conflicted, review(evidence, 'relevant')),
+    lead('github:101', 'follow-up'));
+  assert.deepEqual(researchReviewPacket(other).leads[0].evidence.map(item => item.id), [evidence]);
 });
 
 test('malformed reasons, forged authority, action cap and script injection fail closed', async () => {

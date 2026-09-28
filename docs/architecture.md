@@ -19,8 +19,11 @@ The browser interface makes those decisions inspectable. It does not rank candid
 ```mermaid
 flowchart LR
     R[Three fixed GitHub commit feeds] --> RB[Validated public research report]
+    RB --> CI[Explicit exact-commit inspection]
+    CI --> RR
     RB --> RR[Research-only review replay]
     RR --> RH[Selected-source follow-up card]
+    RH --> PF[Local pilot feedback snapshot]
     B[Human search plan and criteria] --> E[Pure policy engine]
     F[Fictional proposed findings] --> E
     U[Reviewer actions in browser] --> E
@@ -48,7 +51,15 @@ The public report remains `signal-desk-research.v1`. `src/research-review.js` ad
 
 `researchReviewPacket` derives `signal-desk-research-follow-up.v1` only from current follow-up decisions and their relevant sources. It omits held accounts, rejected/uncertain sources and the complete journal. The result is strictly **further research**, without candidate approval, contact or ATS authority. The HTML renderer is script-free, escapes source and reviewer text, and includes source links, reasons, unknowns and provenance limits. Imported report or session files are structurally validated but unauthenticated. A coherent forged journal is possible; the file is a self-attested demonstration, not an audit. At 100 actions the review is read-only and recipient export is blocked.
 
-The browser uses explicit local file download/restore for the real-source review. It does not autosave public account data. The existing fictional engine and its local autosave remain separate because its `synthetic://` source contract would otherwise misrepresent GitHub associations as verified criterion evidence. Current public-source review does **not** inspect diffs automatically, identify a person beyond GitHub ID, establish role fit, or measure a recruiter outcome.
+The browser uses explicit local file download/restore for the real-source review. It does not autosave public account data. The existing fictional engine and its local autosave remain separate because its `synthetic://` source contract would otherwise misrepresent GitHub associations as verified criterion evidence. Current public-source review does **not** inspect diffs automatically, identify a person beyond GitHub ID, establish role fit, or verify a recruiter outcome.
+
+## Exact source inspection and outcome loop (v0.7)
+
+`src/github-public-read.js` is the shared outbound policy: HTTPS GitHub commit endpoints only, `GET` without credentials, no redirects, ten-second timeout and a bounded streamed JSON body. `src/source-inspection.js` derives a commit API URL from a validated report and requires the returned SHA and canonical HTML URL to match the saved source. It exposes GitHub's file and line counts, at most eight filenames, and short escaped diff excerpts. The preview is deliberately incomplete; a test-file path does not prove the tests ran. It does not store patch text in any export.
+
+The numeric GitHub author ID in the detail is checked against the report's account ID. A mismatch adds a `source-conflict` action to the research review. Replay makes this conflict sticky for that review, removes that source's prior positive assessment and withdraws the account's prior follow-up choice. A later positive action for that source is refused by the policy engine, not merely by the button. A new report starts a new review. Matching IDs are still an association, not proof of authorship depth. Imported histories and API responses are not authenticated; an edited local file can omit a conflict, so this is an integrity rule for the current session rather than a trusted audit.
+
+`src/pilot-feedback.js` creates a separate `signal-desk-pilot-feedback.v1` snapshot from a selected follow-up packet. It accepts local, reasoned outcomes (`useful-next-step`, `not-useful`, `unclear`) and manually entered review minutes for each selected GitHub ID; latest actions determine the displayed counts. It has a 60-action, 1 MiB bound and explicit JSON save/restore. Assessor context, including “recruiter-reported,” is self-attested. The snapshot can differ from a later live review. No baseline, recruiter identity, candidate acceptance or hiring result is inferred from it. A real pilot needs an agreed conventional-process baseline and direct recruiter assessment before measuring benefit.
 
 ## Data and action contracts
 

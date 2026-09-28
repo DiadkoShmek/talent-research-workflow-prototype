@@ -1,4 +1,4 @@
-import { validateResearchReport } from './research.js?v=0.6.1';
+import { validateResearchReport } from './research.js?v=0.7.0';
 
 const SCHEMA = 'signal-desk-research-review.v1';
 const MAX_BYTES = 2 * 1024 * 1024;
@@ -35,11 +35,18 @@ export function researchReviewView(input) {
   const evidence = new Map(report.leads.flatMap(lead => lead.evidence.map(item => [item.id, lead.id])));
   const evidenceDecisions = new Map();
   const leadDecisions = new Map();
+  const conflictedEvidence = new Set();
   for (const action of input.actions) {
-    if (action?.type === 'evidence') {
+    if (action?.type === 'source-conflict') {
+      if (!exact(action, ['type', 'evidenceId']) || !evidence.has(action.evidenceId) ||
+          conflictedEvidence.has(action.evidenceId)) fail();
+      conflictedEvidence.add(action.evidenceId);
+      evidenceDecisions.delete(action.evidenceId);
+      leadDecisions.delete(evidence.get(action.evidenceId));
+    } else if (action?.type === 'evidence') {
       if (!exact(action, ['type', 'evidenceId', 'decision', 'reason']) ||
           !evidence.has(action.evidenceId) || !['relevant', 'irrelevant', 'uncertain'].includes(action.decision) ||
-          !reasonValid(action.reason)) fail();
+          !reasonValid(action.reason) || (action.decision === 'relevant' && conflictedEvidence.has(action.evidenceId))) fail();
       evidenceDecisions.set(action.evidenceId, action);
       // Any new source decision withdraws the earlier lead handoff, even if the source later looks useful again.
       leadDecisions.delete(evidence.get(action.evidenceId));
@@ -53,7 +60,7 @@ export function researchReviewView(input) {
   }
   const reviewedEvidence = [...evidenceDecisions.values()].length;
   const followUps = [...leadDecisions.values()].filter(action => action.decision === 'follow-up').length;
-  return { report, evidenceDecisions, leadDecisions, reviewedEvidence, followUps,
+    return { report, evidenceDecisions, leadDecisions, conflictedEvidence, reviewedEvidence, followUps,
     actionCount: input.actions.length, exhausted: input.actions.length >= MAX_ACTIONS };
 }
 

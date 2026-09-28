@@ -6,15 +6,17 @@ An interactive prototype with two distinct paths: a bounded public GitHub resear
 
 **[Open the published version →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=en)** · **[Українською →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=uk)** · [Architecture](docs/architecture.md) · [Limits](docs/limits.md)
 
-![Signal Desk v0.6.1: public-source review shown with synthetic test fixtures](docs/screenshots/research-v06-desktop-viewport.png)
+![Signal Desk v0.7: exact commit inspection beside human review, shown with synthetic API fixtures](docs/screenshots/research-v07-1440-product.png)
 
-*v0.6.1 browser screenshot with synthetic API fixtures. An actual public API pass and the test boundaries are in the [verification record](docs/verification.md).*
+*v0.7 browser screenshot with synthetic API fixtures. An actual public API pass and the test boundaries are in the [verification record](docs/verification.md).*
 
 ## A bounded public research pass
 
 For the [Poolday Senior Agentic Software Engineer role](https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday), **Collect from GitHub** makes three concurrent public read requests: the latest 20 commits in `langchain-ai/langgraphjs`, `vercel/ai` and `tldraw/tldraw`. It surfaces at most two accounts per repository and six distinct GitHub accounts overall, grouped by GitHub user ID. Each observation links to a profile and exact commit. Source failures and partial runs remain visible.
 
-The real-source loop now supports inspecting each linked change, recording a reasoned relevance/irrelevance/uncertainty decision, and explicitly choosing an account for **further research only**. A source decision change withdraws the previous follow-up choice. A full report-and-action file can be restored; a smaller script-free card carries only selected source links, reasons and open questions. The research review is not autosaved, so save its file before leaving the page.
+The real-source loop reads an exact public commit on a second explicit click and shows bounded file and diff excerpts next to the review. A GitHub ID conflict is recorded, withdraws an earlier handoff, and blocks a positive assessment of that signal. A matching ID does not establish individual contribution. The human records a reasoned relevance/irrelevance/uncertainty decision and explicitly chooses an account for **further research only**. A source decision change withdraws the previous follow-up choice. A full report-and-action file can be restored; a smaller script-free card carries only selected source links, reasons and open questions. Diff excerpts stay in the tab and are not copied into the card. The research review is not autosaved, so save its file before leaving the page.
+
+The separate **“Did this help a person?”** panel snapshots selected signals and accepts a local outcome and manually entered review minutes for each account. Its JSON can be saved and restored. It starts empty; entered outcomes and assessor labels are unauthenticated assertions. Recruiter feedback and a comparable baseline are still needed before claiming benefit.
 
 These are **three seeded repositories on one platform**, not a whole-market search. A commit association does not prove authorship depth, professional tenure, location, availability, interest or role fit. There is no candidate ranking. The standalone research brief and JSON can be downloaded; a saved JSON report can be reopened with its origin explicitly unverified. This research report never enters the fictional manual queue or approved handoff packet. Live collection needs network access to the public GitHub API and may hit its unauthenticated rate limit. It needs no key or login.
 
@@ -95,6 +97,8 @@ One pure engine owns the rules in both browser and tests. The UI displays derive
 | `src/walkthrough-state.js` / `src/walkthrough.js` | Isolated scripted replay, explanation and offline reading copy |
 | `src/session-file.js` / `src/session-store.js` | Versioned full-session replay and browser-storage adapter |
 | `src/research.js` / `src/research-view.js` | Bounded public GitHub collection, report validation and readable research brief |
+| `src/github-public-read.js` / `src/source-inspection.js` | Bounded exact-commit read, file/diff preview and GitHub ID association check |
+| `src/research-review.js` / `src/pilot-feedback.js` | Separate human research decisions, scoped handoff and local outcome recording |
 | `scripts/research_pass.py` | Separate Python 3 read-only public collection to an explicit local JSON path |
 | `tests/*.test.mjs` | Engine, replay, renderer and storage failure contracts |
 | `scripts/stress.mjs` | Bounded repeat check of complete review/reset flows |

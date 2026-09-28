@@ -54,7 +54,7 @@ def run():
                 assert api_calls == []
                 page.locator("#collect-research").click()
                 expect(page.locator(".research-review-card")).to_have_count(2)
-                assert page.locator(".research-review").evaluate("el => el.nextElementSibling.classList.contains('research-raw-title')"), "Review must precede the full raw list"
+                assert page.locator(".research-review").evaluate("el => el.nextElementSibling.classList.contains('pilot-feedback') && el.nextElementSibling.nextElementSibling.classList.contains('research-raw-title')"), "Review and feedback must precede the full raw list"
                 expect(page.locator("#download-follow-up")).to_be_disabled()
                 first = page.locator('[data-review-lead="github:101"]')
                 signal = first.locator("[data-review-evidence]").first
