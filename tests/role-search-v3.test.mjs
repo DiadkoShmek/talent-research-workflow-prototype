@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { collectRoleSearchV3, validateRoleSearchReportV3, ROLE_SEARCH_LANES_V3 } from '../src/role-search.js?v=0.9.0';
-import { validateResearchReport } from '../src/research.js?v=0.9.0';
-import { createResearchReview, researchReviewAction, researchReviewPacket } from '../src/research-review.js?v=0.9.0';
-import { createPilotFeedback, viewPilotFeedback } from '../src/pilot-feedback.js?v=0.9.0';
+import { collectRoleSearchV3, validateRoleSearchReportV3, ROLE_SEARCH_LANES_V3 } from '../src/role-search.js?v=0.9.1';
+import { validateResearchReport } from '../src/research.js?v=0.9.1';
+import { createResearchReview, researchReviewAction, researchReviewPacket } from '../src/research-review.js?v=0.9.1';
+import { createPilotFeedback, viewPilotFeedback } from '../src/pilot-feedback.js?v=0.9.1';
 
 const dayAgo = () => new Date(Date.now() - 86400000).toISOString().replace(/\.\d{3}Z$/, 'Z');
 function row(lane, number, userId, title) {
@@ -37,13 +37,18 @@ async function sampleReport() {
 test('five role lanes retain repeated PR evidence with one account identity and a human follow-up', async () => {
   const { report, calls } = await sampleReport();
   assert.equal(calls.length, 5);
+  assert.match(decodeURIComponent(calls[0]), /repo:remotion-dev\/remotion/);
   assert.equal(report.schema, 'signal-desk-research.v3');
   assert.equal(report.run.requests, 5);
   assert.equal(report.run.plannedRequests, 5);
   assert.equal(report.leads.length, 10);
   assert.equal(report.lanes.every(lane => lane.observations === 3 && lane.leadIds.length === 2), true);
   assert.equal(report.lanes.reduce((sum, lane) => sum + lane.observations, 0), 15);
+  assert.equal(report.lanes[0].id, 'video-timeline');
   assert.equal(validateResearchReport(structuredClone(report)).leads.length, 10);
+  const previousOrder = structuredClone(report);
+  previousOrder.lanes.push(previousOrder.lanes.shift());
+  assert.equal(validateResearchReport(previousOrder).lanes[4].id, 'video-timeline');
   const remotion = report.leads.find(lead => lead.hypothesisIds.includes('video-timeline') && lead.evidence.length === 2);
   assert.equal(remotion.evidence.length, 2);
   assert.equal(remotion.evidence.every(item => item.repository === 'remotion-dev/remotion'), true);

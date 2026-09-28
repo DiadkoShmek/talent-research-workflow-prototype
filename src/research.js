@@ -1,6 +1,6 @@
 // Read-only, explicit public GitHub pass. Account activity is a lead to inspect, not a fit decision.
-import { readPublicGitHubJson } from './github-public-read.js?v=0.9.0';
-import { validateRoleSearchReport, validateRoleSearchReportV3 } from './role-search.js?v=0.9.0';
+import { readPublicGitHubJson } from './github-public-read.js?v=0.9.1';
+import { validateRoleSearchReport, validateRoleSearchReportV3 } from './role-search.js?v=0.9.1';
 export const RESEARCH_ROLE = Object.freeze({
   title: 'Senior Agentic Software Engineer — Poolday',
   url: 'https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday'

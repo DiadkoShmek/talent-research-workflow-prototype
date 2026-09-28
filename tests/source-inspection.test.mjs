@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { collectResearch } from '../src/research.js?v=0.9.0';
-import { inspectResearchSource } from '../src/source-inspection.js?v=0.9.0';
+import { collectResearch } from '../src/research.js?v=0.9.1';
+import { inspectResearchSource } from '../src/source-inspection.js?v=0.9.1';
 
 const sha = 'a'.repeat(40);
 const evidenceId = `github-commit:langchain-ai/langgraphjs:${sha}`;

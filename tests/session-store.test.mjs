@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createSession, demoProject, transition, viewSession } from '../src/engine.js?v=0.9.0';
+import { createSession, demoProject, transition, viewSession } from '../src/engine.js?v=0.9.1';
 import { SESSION_STORAGE_KEY, sessionStore } from '../src/session-store.js';
 
 function memoryStorage() {

@@ -1,4 +1,4 @@
-# Security boundaries — local v0.9
+# Security boundaries — local v0.9.1
 
 This is a static interview prototype. These are implemented controls and their limits, not a production security certification.
 

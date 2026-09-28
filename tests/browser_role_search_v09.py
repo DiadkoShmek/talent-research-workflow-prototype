@@ -93,7 +93,7 @@ def run():
                 assert len(search_calls) == 5 and not detail_calls
                 if "--screenshots" in sys.argv:
                     page.locator(".research-summary").scroll_into_view_if_needed()
-                    page.screenshot(path=str(ROOT / "docs" / "screenshots" / f"research-v09-{width}-product.png"))
+                    page.screenshot(path=str(ROOT / "docs" / "screenshots" / f"research-v091-{width}-product.png"))
                 video = page.locator('[data-review-lead="github:105"]')
                 expect(video.locator('[data-review-evidence]')).to_have_count(2)
                 for evidence in video.locator('[data-review-evidence]').all():

@@ -1,4 +1,4 @@
-import { readPublicGitHubJson } from './github-public-read.js?v=0.9.0';
+import { readPublicGitHubJson } from './github-public-read.js?v=0.9.1';
 
 const ROLE = Object.freeze({ title: 'Senior Agentic Software Engineer — Poolday',
   url: 'https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday' });
@@ -8,10 +8,9 @@ export const ROLE_SEARCH_LANES = Object.freeze([
   Object.freeze({ id: 'programmable-editor', label: 'Programmable editor', repo: 'tldraw/tldraw', term: 'editor' }),
   Object.freeze({ id: 'agent-recovery', label: 'Agent reliability and recovery', repo: 'triggerdotdev/trigger.dev', term: 'agent' })
 ]);
-export const ROLE_SEARCH_LANES_V3 = Object.freeze([
-  ...ROLE_SEARCH_LANES,
-  Object.freeze({ id: 'video-timeline', label: 'Video timeline and editor', repo: 'remotion-dev/remotion', term: 'timeline' })
-]);
+const VIDEO_LANE = Object.freeze({ id: 'video-timeline', label: 'Video timeline and editor', repo: 'remotion-dev/remotion', term: 'timeline' });
+export const ROLE_SEARCH_LANES_V3 = Object.freeze([VIDEO_LANE, ...ROLE_SEARCH_LANES]);
+const ROLE_SEARCH_LANES_V3_PREVIOUS_ORDER = Object.freeze([...ROLE_SEARCH_LANES, VIDEO_LANE]);
 const NOTE = 'Four role-derived merged-PR title searches in seeded public repositories; title screening is not a skill or candidate ranking.';
 const NOTE_V3 = 'Five role-derived merged-PR title searches in seeded public repositories; at most two sources per account and lane; no person ranking.';
 const ALIGNMENT = Object.freeze({
@@ -274,6 +273,9 @@ export function validateRoleSearchReportV3(input, expectedRole = ROLE) {
       input.run.searchSince !== sinceFor(input.run.observedAt) ||
       !Array.isArray(input.lanes) || input.lanes.length !== 5 ||
       !Array.isArray(input.leads) || input.leads.length > 10) fail();
+  // The earlier v3 release queried video last. Both exact orders remain importable.
+  const definitions = input.lanes[0]?.id === VIDEO_LANE.id
+    ? ROLE_SEARCH_LANES_V3 : ROLE_SEARCH_LANES_V3_PREVIOUS_ORDER;
   const leadMap = new Map();
   const evidenceIds = new Set();
   for (const lead of input.leads) {
@@ -310,8 +312,8 @@ export function validateRoleSearchReportV3(input, expectedRole = ROLE) {
         input.lanes.slice(firstStopped).some(lane => lane?.error !== STOPPED))) ||
       input.lanes.slice(0, -1).some((lane, index) =>
         ['HTTP 403', 'HTTP 429'].includes(lane?.error) && firstStopped !== index + 1)) fail();
-  for (let index = 0; index < ROLE_SEARCH_LANES_V3.length; index++) {
-    const lane = input.lanes[index], definition = ROLE_SEARCH_LANES_V3[index];
+  for (let index = 0; index < definitions.length; index++) {
+    const lane = input.lanes[index], definition = definitions[index];
     const fields = ['id', 'label', 'repo', 'term', 'queryUrl', 'status', 'scanned', 'skipped', 'rejected', 'duplicates', 'capped', 'observations', 'leadIds', 'totalCount', 'incomplete'];
     if (!exact(lane, ['error', 'partial'].includes(lane?.status) ? [...fields, 'error'] : fields) ||
         lane.id !== definition.id || lane.label !== definition.label || lane.repo !== definition.repo || lane.term !== definition.term ||

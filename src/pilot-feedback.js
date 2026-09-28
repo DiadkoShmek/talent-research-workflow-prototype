@@ -1,6 +1,6 @@
-import { researchReviewPacket } from './research-review.js?v=0.9.0';
-import { RESEARCH_ROLE, RESEARCH_LANES } from './research.js?v=0.9.0';
-import { ROLE_SEARCH_LANES_V3 } from './role-search.js?v=0.9.0';
+import { researchReviewPacket } from './research-review.js?v=0.9.1';
+import { RESEARCH_ROLE, RESEARCH_LANES } from './research.js?v=0.9.1';
+import { ROLE_SEARCH_LANES_V3 } from './role-search.js?v=0.9.1';
 
 const SCHEMA = 'signal-desk-pilot-feedback.v1';
 const MAX_BYTES = 1024 * 1024;

@@ -1,5 +1,9 @@
 # Verification record — 28 September 2026
 
+## v0.9.1 role-priority repair (release pending)
+
+The public v0.9 browser runs below exposed a presentation failure: the video-timeline lane, closest to Poolday's product, was fifth and often never received a usable response under GitHub's anonymous limit. v0.9.1 queries that lane first. The collector still stops on HTTP 403/429; a saved v0.9 v3 report with the earlier lane order remains importable. The new 1440/390 px fixture shows video work first and retains the same two-PR account grouping and source-conflict revocation. This changes which evidence is most likely to arrive before a rate stop; it does not fix GitHub API availability or establish candidate quality.
+
 ## Published v0.9 five-axis search release
 
 Code revision `d2635e72013878ecd7b944520bad9796889624bb` passed [offline contracts](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36454712947) and [Pages deployment](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36454711755). **23 public application and v0.9 screenshot files** matched the local release bytes; the private SHA-256 receipt remains outside the public repository. The screenshots use synthetic API fixtures.
