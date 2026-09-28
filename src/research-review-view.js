@@ -1,0 +1,49 @@
+import { researchReviewPacket, researchReviewView } from './research-review.js?v=0.6.0';
+
+const e = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const words = {
+  relevant: ['Варто дослідити', 'Worth researching'],
+  irrelevant: ['Не допомагає в цій ролі', 'Not useful for this role'],
+  uncertain: ['Недостатньо ясно', 'Unclear']
+};
+const unknowns = {
+  '5+ professional years': ['Щонайменше п’ять років професійного досвіду', 'Five or more professional years'],
+  'Europe eligibility': ['Можливість працювати в Європі', 'Europe work eligibility'],
+  'availability and interest': ['Доступність та інтерес до ролі', 'Availability and interest'],
+  'full role fit': ['Відповідність усім вимогам ролі', 'Full role fit']
+};
+
+export function renderResearchReview(session, lang = 'uk', imported = true) {
+  const view = researchReviewView(session);
+  const t = (uk, en) => lang === 'en' ? en : uk;
+  const packet = researchReviewPacket(session, imported);
+  return `<section class="research-review" aria-labelledby="research-review-title">
+    <p class="eyebrow">${t('ЛЮДСЬКЕ РІШЕННЯ НА ПУБЛІЧНОМУ ПРОХОДІ', 'HUMAN DECISION ON A PUBLIC RESEARCH PASS')}</p>
+    <h3 id="research-review-title">${t('Перевірка слідів і наступний крок', 'Review the signals and choose a next step')}</h3>
+    <p>${t('Відкрийте зміну в коді, оцініть її зміст і запишіть причину. Оцінка тут є вашим твердженням, а не автоматичною перевіркою авторства чи досвіду. Передача означає лише наступне дослідження, без контакту з людиною.', 'Open the code change, inspect its substance and record a reason. A review here is your assertion, not automatic verification of authorship or experience. Handoff means further research only, without contacting the person.')}</p>
+    <div class="research-review-stats"><span>${t('Оцінено слідів', 'Signals reviewed')}: <strong>${view.reviewedEvidence}</strong></span><span>${t('До наступного дослідження', 'For follow-up research')}: <strong>${view.followUps}</strong></span><span>${t('Дій у журналі', 'Recorded actions')}: <strong>${view.actionCount}/100</strong></span></div>
+    <div class="research-actions"><button class="button quiet" id="download-review-session">${t('Зберегти всю перевірку', 'Save full review')}</button><button class="button" id="download-follow-up" ${packet ? '' : 'disabled'}>${t('Картка для наступного дослідника', 'Card for the next researcher')}</button><button class="button quiet" id="download-follow-up-json" ${packet ? '' : 'disabled'}>${t('JSON вибраних слідів', 'Selected signals JSON')}</button></div>
+    <p class="research-footnote">${t('Уся перевірка містить звіт і журнал та відновлюється через «Відкрити збережений прохід». Картка містить лише вибрані сліди, причини й відкриті питання. Перезавантаження вкладки скидає цю перевірку, якщо її не зберегти у файл.', 'The full review contains the report and journal and can be restored through Open a saved run. The card contains only selected signals, reasons and open questions. Reloading the tab resets this review unless you save it to a file.')}</p>
+    ${view.exhausted ? `<p class="blocked-note">${t('Журнал заповнений: рішення залишаються видимими, але передачу заблоковано. Почніть новий прохід без старих рішень.', 'The journal is full: decisions remain visible, but handoff is blocked. Start a new pass without old decisions.')}</p>` : ''}
+    <div class="research-review-list">${view.report.leads.map(lead => {
+      const leadDecision = view.leadDecisions.get(lead.id);
+      const relevant = lead.evidence.some(item => view.evidenceDecisions.get(item.id)?.decision === 'relevant');
+      return `<article class="research-review-card" data-review-lead="${e(lead.id)}"><h4><a href="${e(lead.profileUrl)}" target="_blank" rel="noreferrer">@${e(lead.handle)} ↗</a> <span>${leadDecision?.decision === 'follow-up' ? t('Наступне дослідження', 'Follow-up research') : leadDecision?.decision === 'hold' ? t('Зупинено', 'Held') : t('Без рішення', 'No decision')}</span></h4>
+        ${lead.evidence.map(item => {
+          const review = view.evidenceDecisions.get(item.id);
+          return `<div class="research-review-source" data-review-evidence="${e(item.id)}"><a href="${e(item.url)}" target="_blank" rel="noreferrer">${e(item.repository)} · ${e(item.title)} ↗</a><small>${review ? `${e(words[review.decision][lang === 'en' ? 1 : 0])}: ${e(review.reason)}` : t('Ще не оцінено', 'Not reviewed yet')}</small><label>${t('Причина оцінки', 'Reason for assessment')}<input name="research-reason" maxlength="400" autocomplete="off" placeholder="${t('Що видно у самій зміні коду?', 'What is visible in the code change?')}"></label><div class="review-actions">${['relevant', 'irrelevant', 'uncertain'].map(decision => `<button class="button quiet" data-evidence-decision="${decision}" ${view.exhausted ? 'disabled' : ''}>${e(words[decision][lang === 'en' ? 1 : 0])}</button>`).join('')}</div></div>`;
+        }).join('')}
+        <div class="research-review-lead-action"><label>${t('Що наступний дослідник має з’ясувати?', 'What should the next researcher establish?')}<input name="lead-reason" maxlength="400" autocomplete="off" placeholder="${t('Яка прогалина лишилась?', 'Which question remains?')}"></label><div class="review-actions"><button class="button primary" data-lead-decision="follow-up" ${!relevant || view.exhausted ? 'disabled' : ''}>${t('Передати на дослідження', 'Send for further research')}</button><button class="button quiet" data-lead-decision="hold" ${view.exhausted ? 'disabled' : ''}>${t('Зупинити', 'Hold')}</button></div>${leadDecision ? `<small>${e(leadDecision.reason)}</small>` : ''}</div></article>`;
+    }).join('')}</div>
+    <p class="research-footnote">${t('Ви можете змінити оцінку. Кожна нова оцінка сліду скасовує попереднє рішення про передачу цього акаунта. Імпортовані дані структурно перевіряються, але їхнє походження не підтверджене.', 'You can change an assessment. Each new signal assessment withdraws the prior handoff decision for that account. Imported data is structurally checked, but its origin is unverified.')}</p>
+  </section>`;
+}
+
+export function researchFollowUpDocument(session, lang = 'uk', imported = true) {
+  const packet = researchReviewPacket(session, imported);
+  if (!packet) throw new TypeError('no research follow-up');
+  const t = (uk, en) => lang === 'en' ? en : uk;
+  const origin = imported ? t('імпортований файл; походження не підтверджене', 'imported file; origin unverified') : t('публічні запити цього браузера; вміст не автентифіковано', 'public reads in this browser; content unauthenticated');
+  const status = ({ complete: t('повний', 'complete'), partial: t('частковий', 'partial'), failed: t('невдалий', 'failed') })[packet.runStatus];
+  return `<!doctype html><html lang="${lang === 'en' ? 'en' : 'uk'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>Signal Desk — ${t('наступне дослідження', 'further research')}</title><style>body{margin:0;padding:24px;background:#f4f3ed;color:#1b3029;font:15px/1.6 system-ui,sans-serif}main{max-width:900px;margin:auto}article{background:#fff;border:1px solid #d6dcd1;border-radius:10px;padding:20px;margin:18px 0;overflow-wrap:anywhere}small,.muted{color:#58675f}a{color:#255c43}li{margin:12px 0}@media(max-width:600px){body{padding:12px}article{padding:15px}}</style></head><body><main><p class="muted">SIGNAL DESK · ${t('ОБМЕЖЕНА ПЕРЕДАЧА', 'SCOPED HANDOFF')}</p><h1>${t('Сліди для наступного дослідження', 'Signals for further research')}</h1><p><a href="${e(packet.role.url)}">${e(packet.role.title)} ↗</a> · ${e(packet.observedAt)}</p><p>${t('Це записаний у локальній сесії вибір публічних слідів для перевірки. Не схвалення кандидата, не дозвіл на контакт і не підтвердження професійного досвіду.', 'This is a selection of public signals recorded in a local session. It is not candidate approval, permission to contact or confirmation of professional experience.')}</p><p class="muted">${t('Походження', 'Origin')}: ${origin} · ${t('Рішення', 'Decision')}: ${t('локальне, без підтвердження особи перевіряльника', 'local, reviewer identity unverified')} · ${t('Стан збору', 'Collection status')}: ${status}</p>${packet.leads.map(lead => `<article><h2><a href="${e(lead.profileUrl)}">@${e(lead.handle)} ↗</a></h2><p><strong>${t('Наступне питання', 'Next question')}:</strong> ${e(lead.nextResearchReason)}</p><h3>${t('Вибрані джерела та причини', 'Selected sources and reasons')}</h3><ul>${lead.evidence.map(item => `<li><a href="${e(item.url)}">${e(item.repository)} · ${e(item.title)} ↗</a><br><small>${e(item.committedAt)}</small><br>${e(item.reviewReason)}</li>`).join('')}</ul><p><strong>${t('Ще не встановлено', 'Still unknown')}:</strong> ${lead.unknowns.map(value => e(unknowns[value]?.[lang === 'en' ? 1 : 0] ?? value)).join(' · ')}</p></article>`).join('')}<p class="muted">${t('Обсяг пошуку: три заздалегідь обрані репозиторії GitHub; порядок API не є рейтингом людей чи пошуком по всьому ринку.', 'Search scope: three seeded GitHub repositories; API order is neither a ranking nor a whole-market search.')}</p></main></body></html>`;
+}

@@ -1,10 +1,17 @@
 # Verification record — 28 September 2026
 
+## Local v0.6 research-review release candidate
+
+- `npm test`: **47/47 passed**, including source-bound replay, forged action refusal, scoped follow-up packet, decision withdrawal, script injection and 100-action terminal gate.
+- `npm run stress`: **200/200** synthetic fictional review/export/invalidation cycles passed. `python3 -m unittest discover -s tests -p 'test_*.py'`: **14/14** Python tests passed offline.
+- Five Chromium scripts passed at **1440 and 390 px**: manual smoke, recipient handoff, terminal session, v0.5 research/recovery, and the v0.6 public-source review. The v0.6 scenario uses synthetic API fixtures and verifies a source decision, explicit follow-up, selected-only HTML/JSON, full-session export/restore, invalidation on source reassessment, fresh-run reset, no pre-click GitHub calls, no JavaScript/CSP errors and no horizontal overflow. Four checked-in v0.6 screenshots use only synthetic fixtures; desktop/mobile views were visually inspected.
+- `git diff --check` passed. The private live account report remains outside this public repository. These local checks do **not** establish recruiter acceptance, accurate source interpretation or public deployment. Release status must be recorded separately after GitHub Actions, Pages and public-page verification.
+
 ## Published code release v0.5
 
 Code revision `7b41504c9b19a58e89c57cc848ede0c2ac871036` passed [GitHub offline contracts](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36441791486) and [Pages deployment](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36441788089). All fourteen public application files matched local bytes. A subsequent public-page Chromium check at **390 px** observed no pre-click API requests, then three real GETs: **complete, six account IDs, ten observations, 533 ms**. JSON and continuation-note downloads, styled guided handoff and zero page overflow/JavaScript/CSP errors were confirmed. The later documentation update records this code-release proof without changing application bytes.
 
-## Current local v0.5 additions
+## Historical local v0.5 additions
 
 - `npm test`: **44/44 passed**. Includes engine contracts and 200 synthetic cycles; guided replay and both languages; script attribution; full session replay; capped-state restoration; quota/observed-tab conflict; collection/parsing; inconsistent status/count/identity rejection; source-URL substitution and HTML injection tests; Markdown continuation export; exact handoff CSS hash against the site CSP.
 - `python3 -m unittest discover -s tests -p test_research_pass_v1.py`: **8/8 passed** with injected responses and no live requests. This suite is for the new collector, not the historical Python handoff demo.
@@ -65,4 +72,4 @@ python3 tests/browser_smoke.py
 
 Source truth, real identity matching, authenticated human review, role suitability, broad real-world sourcing beyond the three fixed repositories, AI generation, production-grade shared storage, ATS writes and recruiting outcomes. The standard fixture's `asOf` is a fixed replay snapshot; date checks are relative to it, not the operating system clock. The event trail is self-attested local behavior.
 
-No Figma file was requested or created. Historical screenshots and browser interaction were checked directly for earlier versions; v0.5 has the explicit browser gap above. There is no claimed Figma-to-code verification.
+No Figma file was requested or created. Browser checks for v0.5 and local v0.6 are recorded above. There is no claimed Figma-to-code verification.

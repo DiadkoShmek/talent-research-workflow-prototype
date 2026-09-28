@@ -1,6 +1,6 @@
 # Evidence and limits
 
-This is an independent interview prototype. Its manual-review example uses invented people and source text. A user can import a local JSON example; the application cannot verify whether imported content is fictional. A separate v0.5 research pass reads public GitHub commit metadata for a Poolday role. Neither path has access to A-Players' internal systems.
+This is an independent interview prototype. Its manual-review example uses invented people and source text. A user can import a local JSON example; the application cannot verify whether imported content is fictional. A separate v0.6 research pass reads public GitHub commit metadata and allows local human research triage for a Poolday role. Neither path has access to A-Players' internal systems.
 
 ## What a live demonstration can establish
 
@@ -17,6 +17,8 @@ The Poolday example queries the latest 20 public commits in `langchain-ai/langgr
 A GitHub commit association is a lead for inspection. It does not establish the person's role in the change, five professional years, European eligibility, availability, interest, current employment or suitability. A commit title can be misleading; the report links to the exact change for human review. No messages are sent. GitHub limits or network failures can yield a partial or failed run, which the report shows. The elapsed time measures collection only. There are no model calls, broader web search, ATS or Brain access.
 
 The public research report is separate from the fictional manual queue and `signal-desk-handoff.v2` recipient packet. It downloads as script-free HTML or `signal-desk-research.v1` JSON and can be imported from a saved JSON file. Strict shape and URL validation does not authenticate its provenance; imported reports are labelled unverified. Research reports persist only through explicit file save/import. The browser's local autosave covers the manual decisions, not the public report.
+
+The real-source review is a separate `signal-desk-research-review.v1` report-and-action file, with a 100-action cap and no browser autosave. Replaying it does not authenticate the author of its reasons. The follow-up packet carries only currently selected relevant commits and stated next questions; it is not a `signal-desk-handoff.v2` candidate approval. A new GitHub collection clears the previous review, and any new source assessment withdraws that account’s prior follow-up choice. Downloaded snapshots cannot be recalled. Reading an exact commit in another tab remains a human task; the app cannot prove that it happened.
 
 Each session is limited to 2000 recorded actions. At that limit, previous decisions remain visible as history, but new decisions and handoff export are blocked. Reset starts a new session with no reviews or approvals. The v0.5 local session file can restore recorded decisions, including the read-only cap. Reset still discards prior decisions; restoring a capped file does not reopen it.
 

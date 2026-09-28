@@ -135,7 +135,7 @@ def run():
                     "name": "bad-research.json", "mimeType": "application/json", "buffer": json.dumps(malformed_report).encode()
                 })
                 assert page.locator(".research-lead").count() == 2
-                assert "Файл дослідження відхилено" in page.locator("#research-root").inner_text()
+                expect(page.locator("#research-root .blocked-note[role='alert']")).to_contain_text("Файл дослідження відхилено")
                 assert "DRAFT_UNSUBMITTED_NOTE" == page.locator('[data-evidence="obs-01::0"] input[name="reason"]').input_value()
 
                 page.locator("#open-walkthrough").click()

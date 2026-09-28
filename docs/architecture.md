@@ -1,6 +1,6 @@
 # Signal Desk architecture
 
-Signal Desk demonstrates two separate operations: a bounded read-only public GitHub pass, then a fictional source-by-source human review with a controlled local handoff. The [public Talent Engineer posting](https://aplayers.na.teamtailor.com/jobs/617015-talent-engineer-ai-automation-a-players) motivates the workflow; the research pass uses the [public Poolday Senior Agentic Software Engineer posting](https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday) as its concrete brief. The manual fixture contains fictional people. This independent artifact is not an A-Players system.
+Signal Desk demonstrates a bounded read-only public GitHub pass with a separate human source-review and further-research handoff, plus a fictional criterion-by-criterion approval engine. These paths have different authorities. The [public Talent Engineer posting](https://aplayers.na.teamtailor.com/jobs/617015-talent-engineer-ai-automation-a-players) motivates the workflow; the research pass uses the [public Poolday Senior Agentic Software Engineer posting](https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday) as its concrete brief. The manual fixture contains fictional people. This independent artifact is not an A-Players system.
 
 ## Decision boundary
 
@@ -18,7 +18,9 @@ The browser interface makes those decisions inspectable. It does not rank candid
 
 ```mermaid
 flowchart LR
-    R[Three fixed GitHub commit feeds] --> RB[Separate research brief]
+    R[Three fixed GitHub commit feeds] --> RB[Validated public research report]
+    RB --> RR[Research-only review replay]
+    RR --> RH[Selected-source follow-up card]
     B[Human search plan and criteria] --> E[Pure policy engine]
     F[Fictional proposed findings] --> E
     U[Reviewer actions in browser] --> E
@@ -39,6 +41,14 @@ The engine contract is `demoProject(scenario)` for a fictional project, `createS
 The three seeded lanes are `langchain-ai/langgraphjs` (agent orchestration), `vercel/ai` (TypeScript AI tooling), and `tldraw/tldraw` (programmable React editors). The browser uses `Promise.all` for three GitHub public `/commits?per_page=20` reads; the Python CLI uses three worker threads. At most two accounts per lane and two associated commits per account per lane are retained, for at most six distinct GitHub account IDs across lanes. A GitHub ID, not a name, joins repeated observations. The commit link, repository, first-line title and timestamps are inspectable, but this association does not prove depth of contribution, employment, tenure, location, availability, or suitability.
 
 Each lane records scanned, skipped, rejected and retained counts; a request failure or wholly malformed rows mark the lane as an error; usable observations alongside malformed rows produce a partial lane. The report records elapsed request time and `complete`, `partial` or `failed` collection status. This is time to collect public metadata, never time to a qualified candidate. GitHub may rate-limit unauthenticated calls. The schema `signal-desk-research.v1` validates fixed lanes, source URLs, identifiers and size before imported reports are displayed. That structural validation does not authenticate an imported JSON file or establish the truth of a commit title. HTML output escapes displayed text and contains no script. A downloaded research report persists only through explicit file export/import; manual-session autosave covers the fictional review queue only.
+
+## Public-source decision loop (v0.6)
+
+The public report remains `signal-desk-research.v1`. `src/research-review.js` adds an independent `signal-desk-research-review.v1` session: the exact validated report plus a bounded action list. Its reducer replays source decisions (`relevant`, `irrelevant`, `uncertain`) and account decisions (`follow-up`, `hold`). Each needs an 8–400 character reason. A follow-up requires at least one source judged relevant by the local reviewer. Every later source decision for the same account withdraws the previous account decision, including a same-value reassessment; there is no silent reactivation. A fresh collection creates a new empty review even when GitHub IDs repeat. A malformed import keeps the current browser state.
+
+`researchReviewPacket` derives `signal-desk-research-follow-up.v1` only from current follow-up decisions and their relevant sources. It omits held accounts, rejected/uncertain sources and the complete journal. The result is strictly **further research**, without candidate approval, contact or ATS authority. The HTML renderer is script-free, escapes source and reviewer text, and includes source links, reasons, unknowns and provenance limits. Imported report or session files are structurally validated but unauthenticated. A coherent forged journal is possible; the file is a self-attested demonstration, not an audit. At 100 actions the review is read-only and recipient export is blocked.
+
+The browser uses explicit local file download/restore for the real-source review. It does not autosave public account data. The existing fictional engine and its local autosave remain separate because its `synthetic://` source contract would otherwise misrepresent GitHub associations as verified criterion evidence. Current public-source review does **not** inspect diffs automatically, identify a person beyond GitHub ID, establish role fit, or measure a recruiter outcome.
 
 ## Data and action contracts
 

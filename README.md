@@ -2,17 +2,19 @@
 
 ### Evidence first. Then a decision.
 
-An interactive prototype with two separate paths: a bounded public GitHub research pass, and a fictional manual review workflow that ends in a readable local handoff card.
+An interactive prototype with two distinct paths: a bounded public GitHub research and human follow-up loop, and a fictional manual review workflow that ends in a readable local handoff card.
 
 **[Open the published version →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=en)** · **[Українською →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=uk)** · [Architecture](docs/architecture.md) · [Limits](docs/limits.md)
 
-![Signal Desk v0.5: public-source workflow shown with synthetic test fixtures](docs/screenshots/research-v05-desktop-viewport.png)
+![Signal Desk v0.6: public-source review shown with synthetic test fixtures](docs/screenshots/research-v06-desktop-viewport.png)
 
-*v0.5 browser screenshot with synthetic API fixtures. A separate actual public API pass is documented in the [verification record](docs/verification.md).*
+*v0.6 browser screenshot with synthetic API fixtures. An actual public API pass and the test boundaries are in the [verification record](docs/verification.md).*
 
 ## A bounded public research pass
 
 For the [Poolday Senior Agentic Software Engineer role](https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday), **Collect from GitHub** makes three concurrent public read requests: the latest 20 commits in `langchain-ai/langgraphjs`, `vercel/ai` and `tldraw/tldraw`. It surfaces at most two accounts per repository and six distinct GitHub accounts overall, grouped by GitHub user ID. Each observation links to a profile and exact commit. Source failures and partial runs remain visible.
+
+The real-source loop now supports inspecting each linked change, recording a reasoned relevance/irrelevance/uncertainty decision, and explicitly choosing an account for **further research only**. A source decision change withdraws the previous follow-up choice. A full report-and-action file can be restored; a smaller script-free card carries only selected source links, reasons and open questions. The research review is not autosaved, so save its file before leaving the page.
 
 These are **three seeded repositories on one platform**, not a whole-market search. A commit association does not prove authorship depth, professional tenure, location, availability, interest or role fit. There is no candidate ranking. The standalone research brief and JSON can be downloaded; a saved JSON report can be reopened with its origin explicitly unverified. This research report never enters the fictional manual queue or approved handoff packet. Live collection needs network access to the public GitHub API and may hit its unauthenticated rate limit. It needs no key or login.
 

@@ -1,5 +1,5 @@
-import { WALKTHROUGH_STEPS, walkthroughAt } from './walkthrough-state.js?v=0.5.0';
-import { renderHandoff } from './handoff.js?v=0.5.0';
+import { WALKTHROUGH_STEPS, walkthroughAt } from './walkthrough-state.js?v=0.6.0';
+import { renderHandoff } from './handoff.js?v=0.6.0';
 
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const copy = {
