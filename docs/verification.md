@@ -1,11 +1,17 @@
 # Verification record — 28 September 2026
 
-## Local v0.6 research-review release candidate
+## Published code release v0.6
+
+Code revision `dda170c62eb13fb10f2c12f00a4cd67d08f8506c` passed [GitHub offline contracts](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36444360217) and [Pages deployment](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36444357940). Fifteen public application files matched local bytes, including the new review policy and renderer. A Chromium check on the **published page** at 1440 and 390 px used synthetic GitHub API fixtures and completed source assessment → explicit follow-up → selected-only JSON. It observed no pre-click API requests, exactly three on click, no unexpected external requests, JavaScript/CSP errors or horizontal overflow.
+
+A separate **real public-page API pass** at 390 px made three actual GitHub GETs after the click and displayed six account IDs and responses from all three seeded lanes in about **0.52 seconds**. Six accounts are research leads, not qualified candidates; this one observed run is neither an availability promise nor a recruiting benchmark. The later verification-document commit changes no application code.
+
+## Local v0.6 proof
 
 - `npm test`: **47/47 passed**, including source-bound replay, forged action refusal, scoped follow-up packet, decision withdrawal, script injection and 100-action terminal gate.
 - `npm run stress`: **200/200** synthetic fictional review/export/invalidation cycles passed. `python3 -m unittest discover -s tests -p 'test_*.py'`: **14/14** Python tests passed offline.
 - Five Chromium scripts passed at **1440 and 390 px**: manual smoke, recipient handoff, terminal session, v0.5 research/recovery, and the v0.6 public-source review. The v0.6 scenario uses synthetic API fixtures and verifies a source decision, explicit follow-up, selected-only HTML/JSON, full-session export/restore, invalidation on source reassessment, fresh-run reset, no pre-click GitHub calls, no JavaScript/CSP errors and no horizontal overflow. Four checked-in v0.6 screenshots use only synthetic fixtures; desktop/mobile views were visually inspected.
-- `git diff --check` passed. The private live account report remains outside this public repository. These local checks do **not** establish recruiter acceptance, accurate source interpretation or public deployment. Release status must be recorded separately after GitHub Actions, Pages and public-page verification.
+- `git diff --check` passed. The private live account report remains outside this public repository. These local checks do **not** establish recruiter acceptance or accurate source interpretation. Deployment and a public-page check are recorded separately above.
 
 ## Published code release v0.5
 
