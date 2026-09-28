@@ -55,7 +55,8 @@ function validateProject(input) {
     });
     return finding;
   });
-  return freeze({ id: id(p.id, 'project ID'), title: loc(p.title, 'project title'), asOf, cutoff, criteria, hypotheses, findings });
+  const title = loc(p.title, 'project title');
+  return freeze({ id: id(p.id, 'project ID'), title, objective: p.objective === undefined ? title : loc(p.objective, 'project objective'), asOf, cutoff, criteria, hypotheses, findings });
 }
 
 function makeSession(data) {
@@ -64,6 +65,21 @@ function makeSession(data) {
   return token;
 }
 function getSession(state) { const data = sessions.get(state); if (!data) fail('unknown session'); return data; }
+function defaultPlan(project) {
+  return freeze({ objective: project.objective, requiredCriterionIds: project.criteria.map(c => c.id), activeHypothesisIds: project.hypotheses.map(h => h.id), reason: null });
+}
+function validatePlan(action, project) {
+  const objective = loc(action.objective, 'plan objective');
+  const required = arr(action.requiredCriterionIds, 'required criterion IDs', MAX.criteria).map(x => id(x, 'required criterion ID'));
+  const active = arr(action.activeHypothesisIds, 'active hypothesis IDs', MAX.hypotheses).map(x => id(x, 'active hypothesis ID'));
+  if (!required.length || !active.length) fail('plan requires criteria and hypotheses');
+  if (new Set(required).size !== required.length || new Set(active).size !== active.length) fail('duplicate plan ID');
+  const requiredSet = new Set(required), activeSet = new Set(active);
+  if (required.some(x => !project.criteria.some(c => c.id === x))) fail('unknown required criterion');
+  if (active.some(x => !project.hypotheses.some(h => h.id === x))) fail('unknown active hypothesis');
+  return { objective, requiredCriterionIds: project.criteria.filter(c => requiredSet.has(c.id)).map(c => c.id),
+    activeHypothesisIds: project.hypotheses.filter(h => activeSet.has(h.id)).map(h => h.id), reason: str(action.reason, 'plan reason', 500) };
+}
 function evidenceFor(project) {
   return project.findings.flatMap(f => f.claims.map((c, i) => ({
     id: `${f.id}::${i}`, personKey: f.personKey, criterionId: c.criterionId, quote: c.quote,
@@ -72,50 +88,80 @@ function evidenceFor(project) {
 }
 function candidatesFor(d) {
   const byPerson = new Map();
+  const allByPerson = new Map();
   const refOwners = new Map();
   for (const f of d.project.findings) {
-    if (!byPerson.has(f.personKey)) byPerson.set(f.personKey, { personKey: f.personKey, names: new Set(), refs: new Set(), hypothesisIds: new Set(), observations: 0, evidence: [] });
-    const c = byPerson.get(f.personKey);
-    c.names.add(f.name); c.refs.add(f.identityRef); c.hypothesisIds.add(f.hypothesisId); c.observations++;
+    if (!allByPerson.has(f.personKey)) allByPerson.set(f.personKey, { names: new Set(), refs: new Set() });
+    allByPerson.get(f.personKey).names.add(f.name);
+    allByPerson.get(f.personKey).refs.add(f.identityRef);
     if (!refOwners.has(f.identityRef)) refOwners.set(f.identityRef, new Set());
     refOwners.get(f.identityRef).add(f.personKey);
+    if (!d.plan.activeHypothesisIds.includes(f.hypothesisId)) continue;
+    if (!byPerson.has(f.personKey)) byPerson.set(f.personKey, { personKey: f.personKey, name: f.name, hypothesisIds: new Set(), observations: 0, evidence: [] });
+    const c = byPerson.get(f.personKey);
+    c.hypothesisIds.add(f.hypothesisId); c.observations++;
   }
-  for (const e of evidenceFor(d.project)) byPerson.get(e.personKey).evidence.push({ id: e.id, criterionId: e.criterionId, quote: e.quote, source: e.source, hypothesisId: e.hypothesisId, fresh: e.fresh, review: d.reviews[e.id] || null });
+  for (const e of evidenceFor(d.project)) {
+    if (!d.plan.activeHypothesisIds.includes(e.hypothesisId)) continue;
+    byPerson.get(e.personKey).evidence.push({ id: e.id, criterionId: e.criterionId, quote: e.quote, source: e.source, hypothesisId: e.hypothesisId, fresh: e.fresh, review: d.reviews[e.id] || null });
+  }
   return [...byPerson.values()].map(c => {
-    const identityRefs = [...c.refs], names = [...c.names];
+    const all = allByPerson.get(c.personKey);
+    const identityRefs = [...all.refs], names = [...all.names];
     const blockers = [];
     if (names.length > 1) blockers.push('conflicting-names');
     if (identityRefs.length > 1) blockers.push('conflicting-identity-refs');
     if (identityRefs.some(ref => refOwners.get(ref).size > 1)) blockers.push('conflicting-shared-identity-ref');
-    const missingCriteria = d.project.criteria.filter(k => !c.evidence.some(e => e.criterionId === k.id && e.fresh && e.review?.decision === 'accept')).map(k => k.id);
+    const missingCriteria = d.plan.requiredCriterionIds.filter(criterionId => !c.evidence.some(e => e.criterionId === criterionId && e.fresh && e.review?.decision === 'accept'));
     const identityConfirmed = d.identities[c.personKey] === true;
     if (!identityConfirmed) blockers.push('identity-unconfirmed');
     if (missingCriteria.length) blockers.push('missing-accepted-fresh-evidence');
     const qualified = blockers.length === 0;
     const status = blockers.some(b => b.startsWith('conflicting-')) ? 'blocked' : d.approvals[c.personKey] && qualified ? 'approved' : qualified ? 'ready' : 'needs-review';
-    return { personKey: c.personKey, name: names[0], status, blockers, missingCriteria, identityConfirmed, evidence: c.evidence, hypothesisIds: [...c.hypothesisIds], identityRefs };
+    return { personKey: c.personKey, name: c.name, status, blockers, missingCriteria, identityConfirmed, evidence: c.evidence, hypothesisIds: [...c.hypothesisIds], identityRefs };
   });
 }
 function view(d) {
   const candidates = candidatesFor(d);
+  const activeFindings = d.project.findings.filter(f => d.plan.activeHypothesisIds.includes(f.hypothesisId));
+  const allEvidence = evidenceFor(d.project);
   const approved = candidates.filter(c => c.status === 'approved').length;
   const hypotheses = d.project.hypotheses.map(h => {
     const findings = d.project.findings.filter(f => f.hypothesisId === h.id);
-    return { id: h.id, label: h.label, rationale: h.rationale, observations: findings.length, people: new Set(findings.map(f => f.personKey)).size, approved: candidates.filter(c => c.status === 'approved' && c.hypothesisIds.includes(h.id)).length };
+    const active = d.plan.activeHypothesisIds.includes(h.id);
+    const availablePeople = new Set(findings.map(f => f.personKey)).size;
+    const evidence = active ? allEvidence.filter(e => e.hypothesisId === h.id) : [];
+    const contributingApproved = candidates.filter(c => c.status === 'approved' && c.evidence.some(e => e.hypothesisId === h.id && e.fresh && e.review?.decision === 'accept' && d.plan.requiredCriterionIds.includes(e.criterionId))).length;
+    return { id: h.id, label: h.label, rationale: h.rationale, active,
+      observations: active ? findings.length : 0, people: active ? availablePeople : 0,
+      availableObservations: findings.length, availablePeople,
+      acceptedEvidence: evidence.filter(e => e.fresh && d.reviews[e.id]?.decision === 'accept').length,
+      rejectedEvidence: evidence.filter(e => e.fresh && d.reviews[e.id]?.decision === 'reject').length,
+      pendingEvidence: evidence.filter(e => e.fresh && !d.reviews[e.id]).length,
+      staleEvidence: evidence.filter(e => !e.fresh).length,
+      contributingApproved, approved: contributingApproved };
   });
-  const metrics = { observations: d.project.findings.length, people: candidates.length, mergedObservations: d.project.findings.length - candidates.length, needsReview: candidates.filter(c => c.status === 'needs-review').length, blocked: candidates.filter(c => c.status === 'blocked').length, ready: candidates.filter(c => c.status === 'ready').length, approved };
-  return freeze({ project: d.project, revision: d.revision, candidates, hypotheses, metrics, events: d.events, exportPacket: approved ? packet(d, candidates) : null });
+  const coverage = d.project.criteria.filter(k => d.plan.requiredCriterionIds.includes(k.id)).map(k => ({ criterionId: k.id,
+    // Proposed counts a person with any fresh recorded claim, including a later rejected claim.
+    proposedPeople: candidates.filter(c => c.evidence.some(e => e.criterionId === k.id && e.fresh)).length,
+    reviewedPeople: candidates.filter(c => c.evidence.some(e => e.criterionId === k.id && e.fresh && e.review?.decision === 'accept')).length,
+    missingPeople: candidates.filter(c => !c.evidence.some(e => e.criterionId === k.id && e.fresh && e.review?.decision === 'accept')).length }));
+  const metrics = { observations: activeFindings.length, people: candidates.length, mergedObservations: activeFindings.length - candidates.length, needsReview: candidates.filter(c => c.status === 'needs-review').length, blocked: candidates.filter(c => c.status === 'blocked').length, ready: candidates.filter(c => c.status === 'ready').length, approved };
+  return freeze({ project: d.project, plan: d.plan, revision: d.revision, candidates, hypotheses, coverage, metrics, events: d.events, exportPacket: approved ? packet(d, candidates) : null });
 }
 function packet(d, candidates) {
   return freeze({ schema: 'signal-desk-handoff.v1', mode: 'synthetic-local-demo', integrity: 'self-attested, unauthenticated',
     projectId: d.project.id, projectTitle: d.project.title, criteria: d.project.criteria, hypotheses: d.project.hypotheses,
-    asOf: d.project.asOf, cutoff: d.project.cutoff, revision: d.revision,
+    asOf: d.project.asOf, cutoff: d.project.cutoff, revision: d.revision, plan: d.plan,
     candidates: candidates.filter(c => c.status === 'approved').map(c => ({ personKey: c.personKey, name: c.name, identityRefs: c.identityRefs, hypothesisIds: c.hypothesisIds,
-      evidence: c.evidence.filter(e => e.fresh && e.review?.decision === 'accept').map(e => ({ id: e.id, criterionId: e.criterionId, quote: e.quote, source: e.source, hypothesisId: e.hypothesisId, reviewer: e.review.reviewer, reason: e.review.reason })) })),
+      evidence: c.evidence.filter(e => e.fresh && e.review?.decision === 'accept' && d.plan.requiredCriterionIds.includes(e.criterionId)).map(e => ({ id: e.id, criterionId: e.criterionId, quote: e.quote, source: e.source, hypothesisId: e.hypothesisId, reviewer: e.review.reviewer, reason: e.review.reason })) })),
     events: d.events });
 }
 
-export function createSession(project) { return makeSession({ project: validateProject(project), revision: 0, reviews: Object.create(null), identities: Object.create(null), approvals: Object.create(null), events: [] }); }
+export function createSession(project) {
+  const validated = validateProject(project);
+  return makeSession({ project: validated, plan: defaultPlan(validated), revision: 0, reviews: Object.create(null), identities: Object.create(null), approvals: Object.create(null), events: [] });
+}
 export function viewSession(state) { return view(getSession(state)); }
 export function exportHandoff(state) {
   const d = getSession(state), candidates = candidatesFor(d);
@@ -124,7 +170,7 @@ export function exportHandoff(state) {
 }
 export function transition(state, action) {
   const old = getSession(state); obj(action, 'action');
-  const next = { project: old.project, revision: old.revision + 1,
+  const next = { project: old.project, plan: old.plan, revision: old.revision + 1,
     reviews: Object.assign(Object.create(null), old.reviews),
     identities: Object.assign(Object.create(null), old.identities),
     approvals: Object.assign(Object.create(null), old.approvals), events: [...old.events] };
@@ -135,6 +181,7 @@ export function transition(state, action) {
     if (!['accept', 'reject'].includes(action.decision)) fail('invalid review decision');
     const evidence = evidenceFor(next.project).find(e => e.id === evidenceId);
     if (!evidence) fail('unknown evidence ID');
+    if (!next.plan.activeHypothesisIds.includes(evidence.hypothesisId)) fail('evidence belongs to inactive hypothesis');
     next.reviews[evidenceId] = { decision: action.decision, reviewer, reason };
     delete next.approvals[evidence.personKey];
     event = { revision: next.revision, type: 'review', evidenceId, personKey: evidence.personKey, decision: action.decision, reviewer, reason };
@@ -155,6 +202,7 @@ export function transition(state, action) {
     event = { revision: next.revision, type: 'approve', personKey, reviewer };
   } else if (action.type === 'revoke') {
     const personKey = id(action.personKey, 'person key'), reviewer = str(action.reviewer, 'reviewer', 120);
+    if (!candidatesFor(next).some(c => c.personKey === personKey)) fail('candidate absent from active plan');
     if (!next.approvals[personKey]) fail('candidate is not approved');
     delete next.approvals[personKey];
     event = { revision: next.revision, type: 'revoke', personKey, reviewer };
@@ -165,6 +213,15 @@ export function transition(state, action) {
     next.project = freeze({ ...next.project, cutoff });
     next.reviews = Object.create(null); next.identities = Object.create(null); next.approvals = Object.create(null);
     event = { revision: next.revision, type: 'setCutoff', cutoff, invalidated: 'reviews, identities, approvals' };
+  } else if (action.type === 'setPlan') {
+    const plan = validatePlan(action, next.project), reviewer = str(action.reviewer, 'reviewer', 120);
+    if (JSON.stringify(plan.objective) === JSON.stringify(old.plan.objective) &&
+      JSON.stringify(plan.requiredCriterionIds) === JSON.stringify(old.plan.requiredCriterionIds) &&
+      JSON.stringify(plan.activeHypothesisIds) === JSON.stringify(old.plan.activeHypothesisIds)) fail('plan unchanged');
+    next.plan = freeze(plan);
+    next.reviews = Object.create(null); next.identities = Object.create(null); next.approvals = Object.create(null);
+    event = { revision: next.revision, type: 'setPlan', before: old.plan, after: next.plan,
+      reason: plan.reason, reviewer, invalidated: 'reviews, identities, approvals' };
   } else fail('unknown action');
   next.events.push(event);
   freeze(next);
@@ -179,7 +236,9 @@ function finding(id, personKey, name, identityRef, hypothesisId, observedAt, cla
 function claim(criterionId, uk, en) { return { criterionId, quote: { uk, en } }; }
 export function demoProject(scenario = 'standard') {
   if (!['standard', 'conflict', 'future-date'].includes(scenario)) fail('unknown demo scenario');
-  const p = { id: 'signal-desk-demo', title: { uk: 'Синтетичний пошук: операційний партнер', en: 'Synthetic search: operations partner' }, asOf: '2026-09-28', cutoff: '2026-08-01',
+  const p = { id: 'signal-desk-demo', title: { uk: 'Синтетичний пошук: операційний партнер', en: 'Synthetic search: operations partner' },
+    objective: { uk: 'Знайти людину, яка координувала запити між командами й скорочувала ручну передачу роботи через перевірену автоматизацію.', en: 'Find a person who coordinated requests across teams and reduced manual handoffs through verified automation.' },
+    asOf: '2026-09-28', cutoff: '2026-08-01',
     criteria: [
       { id: 'operations', label: { uk: 'Операційна робота', en: 'Operations work' } },
       { id: 'automation', label: { uk: 'Автоматизація процесу', en: 'Workflow automation' } },

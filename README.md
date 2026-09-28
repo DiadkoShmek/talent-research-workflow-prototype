@@ -2,7 +2,7 @@
 
 ### Evidence first. Then a decision.
 
-An interactive research workbench: inspect the source behind a claim, make a reasoned review, and carry only approved research into a handoff packet.
+An interactive research workbench: set the search objective, required criteria and active research channels; inspect the source behind a claim; carry only explicitly approved research into a local handoff packet.
 
 **[Open the working demo →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=en)** · **[Українською →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=uk)** · [Architecture](docs/architecture.md) · [Limits](docs/limits.md)
 
@@ -18,7 +18,9 @@ The sample has **8 observations, 6 fictional people, 4 research hypotheses and 1
 4. Reject an accepted claim or change the observation cutoff. The old approval no longer stands.
 5. Select the identity-collision or future-date scenario and observe the refusal.
 
-This is a **working offline interaction**, not live recruiting. The built-in people and source documents are fictional. Imported sample content is labelled as unverified; a synthetic reference does not establish fictionality. The application calls no model or external API; session changes disappear on reload. Export downloads a local JSON file and does not write to an ATS.
+**One-minute plan challenge:** after approving Olena, open “The brief drives the research,” turn off the `automation-builders` channel while keeping automation required, and record a reason. All prior reviews, identity confirmations and approvals reset. Olena now lacks accepted automation evidence, and the handoff closes. A known identity conflict still blocks handoff even if its conflicting channel is inactive.
+
+This is a **working offline interaction**, not live recruiting. The built-in people and source documents are fictional. Imported sample content is labelled as unverified; a synthetic reference does not establish fictionality. Objective text explains the intent; the selected criteria and channels drive the rules. There is no AI interpretation of the text or real source search. Session changes disappear on reload. Export downloads a local JSON file with accepted fresh evidence for selected required criteria; it does not write to an ATS.
 
 ## The practical problem
 
@@ -47,20 +49,21 @@ No package installation, API key, login or candidate data is needed. `npm start`
 
 ```mermaid
 flowchart LR
-    A[Role criteria + proposed findings] --> B[Input and date validation]
-    B --> C[Identity grouping + collision checks]
+    A[Objective + required criteria + active channels] --> B[Validated synthetic findings]
+    B --> C[Identity grouping + archived collision checks]
     C --> D[Source-by-source human review]
-    D --> E[Current policy + explicit approval]
-    E --> F[Local evidence packet + decision trail]
+    D --> E[Current plan + explicit approval]
+    E --> F[Local accepted-evidence packet + decision trail]
     F -. future authorized adapter .-> G[ATS]
 ```
 
-One pure engine owns the rules in both browser and tests. The UI displays derived state; it cannot turn a badge into permission. Reviews belong to evidence items, changes revoke approvals, and source/criterion provenance survives export. See the [full architecture and failure model](docs/architecture.md).
+One pure engine owns the rules in both browser and tests. The UI displays derived state; it cannot turn a badge into permission. Reviews belong to evidence items. Effective plan or cutoff changes reset reviews, identity confirmations and approvals. Channel contribution counts only approved people with accepted fresh required evidence from that channel; a person can contribute to several channels, so these counts cannot be added as separate wins. Required-criterion coverage counts unique active people with fresh proposed versus accepted evidence. See the [full architecture and failure model](docs/architecture.md).
 
 | Surface | Purpose |
 | --- | --- |
 | `src/engine.js` | Validated input, immutable session, policy, events and export |
 | `src/app.js` | Bilingual working interface and local JSON import/export |
+| `src/search-plan.js` | Search-plan controls, channel contributions and criterion coverage display |
 | `tests/engine.test.mjs` | Adversarial contracts and deterministic replay |
 | `scripts/stress.mjs` | Bounded repeat check of complete review/reset flows |
 | `docs/pilot-plan.uk.md` | First conversation, baseline and one-search pilot |
@@ -68,9 +71,10 @@ One pure engine owns the rules in both browser and tests. The UI displays derive
 ## What has been checked
 
 - Missing, stale, future-dated and conflicting evidence cannot silently pass the handoff gate.
-- Review changes and policy resets invalidate previous approval.
+- Review changes and effective plan or cutoff resets invalidate previous approval.
+- Inactive channels have no current review workload; archived identity conflicts still block a person.
 - Input/view mutations and prototype-shaped IDs do not forge approval.
-- The browser flow has been exercised at desktop and phone sizes: review → identity → approve → export → invalidate.
+- The browser flow has been exercised at desktop and phone sizes: review → identity → approve → export → change plan → inspect the evidence gap.
 - The repeat check is local deterministic evidence, not a production load test or a measured improvement in recruiting.
 
 [Verification record](docs/verification.md) · [Implemented behavior and known gaps](docs/limits.md)

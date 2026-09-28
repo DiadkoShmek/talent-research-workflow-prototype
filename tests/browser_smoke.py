@@ -105,15 +105,55 @@ def run():
                 assert page.locator('.tour').count() == 1
                 assert 'Олена' in page.locator('.detail h3').inner_text()
                 page.locator('#end-tour').click()
+                # A changed search plan must govern the same review engine.
+                for evidence_id in ['obs-01::0','obs-01::1','obs-02::0']:
+                    card = page.locator(f'[data-evidence="{evidence_id}"]')
+                    if not card.locator('details').evaluate('(n)=>n.open'):
+                        card.locator('summary').click()
+                    card.locator('input[name="reason"]').fill('Reviewed for the plan-change experiment')
+                    card.locator('button[value="accept"]').click()
+                page.locator('#identity-check').check()
+                page.locator('#approve-button').click()
+                assert page.locator('[data-hypothesis="automation-builders"] .channel-outcome strong').inner_text() == '1'
+                page.locator('#search-plan > summary').click()
+                assert not page.evaluate('document.documentElement.scrollWidth > innerWidth')
+                page.locator('input[name="hypothesis"][value="automation-builders"]').uncheck()
+                page.locator('#plan-reason').fill('Test what the automation channel contributes')
+                page.locator('#apply-plan').click()
+                assert page.locator('#export-button').is_disabled()
+                assert not page.locator('#identity-check').is_checked()
+                assert page.locator('.review-record').count() == 0
+                assert page.locator('[data-evidence="obs-02::0"]').count() == 0
+                assert page.locator('.candidate').count() == 5
+                assert page.locator('[data-hypothesis="automation-builders"] .channel-numbers').inner_text().count('0') == 4
+                page.locator('input[name="hypothesis"][value="community-ops"]').uncheck()
+                page.locator('input[name="criterion"][value="automation"]').uncheck()
+                page.locator('#plan-reason').fill('Narrow the experiment while retaining known identity conflicts')
+                page.locator('#apply-plan').click()
+                assert page.locator('.coverage-row[data-criterion]').count() == 2
+                assert page.locator('[data-criterion="automation"]').count() == 0
+                page.locator('[data-person="person-iryna"]').click()
+                assert page.locator('#identity-check').is_disabled()
+                assert page.locator('#approve-button').is_disabled()
+                # Empty selections cannot replace the current plan.
+                for box in page.locator('input[name="criterion"]').all(): box.uncheck()
+                page.locator('#plan-reason').fill('Invalid empty criteria experiment')
+                page.locator('#apply-plan').click()
+                assert 'plan requires' in page.locator('#notice').inner_text()
+                assert page.locator('.coverage-row[data-criterion]').count() == 2
+                page.locator('#scenario').select_option('standard')
+                page.locator('#search-plan').evaluate('(n)=>n.open=false')
                 page.evaluate('window.scrollTo(0,0)')
                 if args.screenshots and label == 'desktop':
                     page.goto(base+'/?lang=en')
                     page.wait_for_selector('.workbench')
                     page.screenshot(path=str(ROOT/'docs/screenshots/desktop-preview.png'))
+                    page.locator('#search-plan > summary').click()
+                    page.locator('#search-plan').screenshot(path=str(ROOT/'docs/screenshots/search-plan.png'))
                 assert not page.evaluate('document.documentElement.scrollWidth > innerWidth')
                 assert not errors, errors
                 assert not external, external
-                checks.append(f'{label} {width}px: review, identity, approval, download, rejection, invalidation, import escaping, language, overflow and no external calls PASS')
+                checks.append(f'{label} {width}px: review, identity, approval, download, plan scope/invalidation, archived conflicts, coverage, import escaping, language, overflow and no external calls PASS')
                 page.close()
             browser.close()
     finally:

@@ -3,6 +3,12 @@ import assert from 'node:assert/strict';
 import { createSession, demoProject, exportHandoff, transition, viewSession } from '../src/engine.js';
 
 const reviewer = 'Demo reviewer';
+function setPlan(state, overrides = {}) {
+  const old = viewSession(state).plan;
+  return transition(state, { type: 'setPlan', objective: old.objective,
+    requiredCriterionIds: old.requiredCriterionIds, activeHypothesisIds: old.activeHypothesisIds,
+    reason: 'Synthetic search brief changed', reviewer, ...overrides });
+}
 function approvePerson(session, personKey) {
   let state = session;
   const candidate = viewSession(state).candidates.find(c => c.personKey === personKey);
@@ -22,6 +28,7 @@ test('demo has four hypotheses and visible synthetic source quotations', () => {
     assert.ok(f.source.text.en.includes(c.quote.en));
   }
   const v = viewSession(createSession(p));
+  assert.deepEqual(v.plan.objective, p.objective);
   assert.deepEqual(v.metrics, { observations: 8, people: 6, mergedObservations: 2, needsReview: 5, blocked: 1, ready: 0, approved: 0 });
   assert.throws(() => exportHandoff(createSession(p)), /no approved/);
 });
@@ -125,6 +132,10 @@ test('malformed data and future observations fail closed', () => {
   assert.throws(() => createSession(t), /invalid ID/);
   const u = demoProject(); u.findings[1].source.ref = u.findings[0].source.ref;
   assert.throws(() => createSession(u), /conflicting source snapshot/);
+  const v = demoProject(); v.objective = { uk: '', en: 'Valid' };
+  assert.throws(() => createSession(v), /invalid text/);
+  const w = demoProject(); delete w.objective;
+  assert.deepEqual(viewSession(createSession(w)).plan.objective, w.title);
 });
 
 test('object prototype names cannot create phantom approvals', () => {
@@ -135,6 +146,101 @@ test('object prototype names cannot create phantom approvals', () => {
   const c = viewSession(state).candidates.find(c => c.personKey === 'constructor');
   assert.equal(c.status, 'needs-review');
   assert.throws(() => transition(state, { type: 'revoke', personKey: 'constructor', reviewer }), /not approved/);
+});
+
+test('plan change records reason, clears every gate and binds export to new policy', () => {
+  const approved = approvePerson(createSession(demoProject()), 'person-taras');
+  const changed = setPlan(approved, { requiredCriterionIds: ['collaboration', 'operations'], activeHypothesisIds: ['customer-ops'] });
+  const v = viewSession(changed), c = v.candidates.find(c => c.personKey === 'person-taras');
+  assert.deepEqual(v.plan.requiredCriterionIds, ['operations', 'collaboration']);
+  assert.deepEqual(v.plan.activeHypothesisIds, ['customer-ops']);
+  assert.equal(v.plan.reason, 'Synthetic search brief changed');
+  assert.equal(v.metrics.approved, 0);
+  assert.equal(c.identityConfirmed, false);
+  assert.ok(c.evidence.every(e => e.review === null));
+  assert.deepEqual(v.events.at(-1).before, viewSession(approved).plan);
+  assert.deepEqual(v.events.at(-1).after, v.plan);
+  assert.equal(v.events.at(-1).reviewer, reviewer);
+  assert.equal(v.project.findings.length, 8);
+  assert.throws(() => exportHandoff(changed), /no approved/);
+  const reapproved = approvePerson(changed, 'person-taras');
+  const packet = exportHandoff(reapproved);
+  assert.deepEqual(packet.plan, viewSession(reapproved).plan);
+  assert.deepEqual(packet.candidates[0].evidence.map(e => e.criterionId), ['operations', 'collaboration']);
+});
+
+test('invalid and equivalent plans fail without changing session', () => {
+  const state = createSession(demoProject());
+  const plan = viewSession(state).plan;
+  assert.throws(() => setPlan(state, { activeHypothesisIds: [...plan.activeHypothesisIds].reverse() }), /unchanged/);
+  assert.throws(() => setPlan(state, { requiredCriterionIds: [] }), /requires/);
+  assert.throws(() => setPlan(state, { requiredCriterionIds: ['operations', 'operations'] }), /duplicate/);
+  assert.throws(() => setPlan(state, { requiredCriterionIds: ['unknown'] }), /unknown/);
+  assert.throws(() => setPlan(state, { activeHypothesisIds: ['unknown'] }), /unknown/);
+  assert.throws(() => setPlan(state, { objective: { uk: '', en: 'x' } }), /invalid text/);
+  assert.throws(() => setPlan(state, { reason: '' }), /invalid text/);
+  assert.equal(viewSession(state).revision, 0);
+  assert.deepEqual(viewSession(state).plan, plan);
+});
+
+test('active plan filters candidates and evidence but hidden identity conflict remains', () => {
+  let state = setPlan(createSession(demoProject()), { activeHypothesisIds: ['founder-ops'] });
+  const v = viewSession(state);
+  assert.deepEqual(v.metrics, { observations: 2, people: 2, mergedObservations: 0, needsReview: 2, blocked: 0, ready: 0, approved: 0 });
+  assert.equal(v.candidates.find(c => c.personKey === 'person-olena').evidence.length, 2);
+  assert.equal(v.hypotheses.find(h => h.id === 'automation-builders').active, false);
+  const inactive = v.hypotheses.find(h => h.id === 'automation-builders');
+  assert.equal(inactive.observations, 0);
+  assert.equal(inactive.availableObservations, 2);
+  assert.equal(inactive.pendingEvidence, 0);
+  assert.equal(inactive.staleEvidence, 0);
+  assert.throws(() => transition(state, { type: 'review', evidenceId: 'obs-02::0', decision: 'accept', reviewer, reason: 'Hidden claim' }), /inactive/);
+  assert.throws(() => transition(state, { type: 'identity', personKey: 'person-taras', confirmed: true, reviewer }), /unknown person/);
+  state = setPlan(state, { activeHypothesisIds: ['customer-ops'] });
+  const iryna = viewSession(state).candidates.find(c => c.personKey === 'person-iryna');
+  assert.equal(iryna.status, 'blocked');
+  assert.ok(iryna.blockers.includes('conflicting-identity-refs'));
+});
+
+test('shared identity reference in inactive channel still blocks active candidate', () => {
+  const p = demoProject();
+  p.findings[7].identityRef = p.findings[6].identityRef;
+  const state = setPlan(createSession(p), { activeHypothesisIds: ['customer-ops'] });
+  const taras = viewSession(state).candidates.find(c => c.personKey === 'person-taras');
+  assert.equal(taras.status, 'blocked');
+  assert.ok(taras.blockers.includes('conflicting-shared-identity-ref'));
+  assert.throws(() => transition(state, { type: 'identity', personKey: 'person-kateryna', confirmed: true, reviewer }), /unknown person/);
+});
+
+test('hypothesis contribution requires accepted fresh evidence for a required criterion', () => {
+  let state = setPlan(createSession(demoProject()), { requiredCriterionIds: ['automation'] });
+  const olena = viewSession(state).candidates.find(c => c.personKey === 'person-olena');
+  for (const e of olena.evidence) state = transition(state, { type: 'review', evidenceId: e.id, decision: 'accept', reviewer, reason: 'Checked' });
+  state = transition(state, { type: 'identity', personKey: 'person-olena', confirmed: true, reviewer });
+  state = transition(state, { type: 'approve', personKey: 'person-olena', reviewer });
+  const v = viewSession(state);
+  assert.deepEqual(v.coverage.map(c => c.criterionId), ['automation']);
+  assert.equal(v.hypotheses.find(h => h.id === 'founder-ops').contributingApproved, 0);
+  assert.equal(v.hypotheses.find(h => h.id === 'automation-builders').contributingApproved, 1);
+  assert.deepEqual(exportHandoff(state).candidates[0].evidence.map(e => e.criterionId), ['automation']);
+});
+
+test('coverage counts people once despite multiple fresh sources for the same criterion', () => {
+  const p = demoProject();
+  const duplicate = structuredClone(p.findings[0]);
+  duplicate.id = 'obs-09'; duplicate.source.ref = 'synthetic://source/obs-09';
+  p.findings.push(duplicate);
+  let state = setPlan(createSession(p), { requiredCriterionIds: ['operations'], activeHypothesisIds: ['founder-ops'] });
+  const olena = viewSession(state).candidates.find(c => c.personKey === 'person-olena');
+  for (const e of olena.evidence.filter(e => e.criterionId === 'operations')) state = transition(state, { type: 'review', evidenceId: e.id, decision: 'accept', reviewer, reason: 'Checked' });
+  state = transition(state, { type: 'identity', personKey: 'person-olena', confirmed: true, reviewer });
+  state = transition(state, { type: 'approve', personKey: 'person-olena', reviewer });
+  const v = viewSession(state), operations = v.coverage.find(c => c.criterionId === 'operations');
+  assert.deepEqual(operations, { criterionId: 'operations', proposedPeople: 2, reviewedPeople: 1, missingPeople: 1 });
+  const founder = v.hypotheses.find(h => h.id === 'founder-ops');
+  assert.equal(founder.acceptedEvidence, 2);
+  assert.equal(founder.contributingApproved, 1);
+  assert.equal(v.metrics.mergedObservations, 1);
 });
 
 test('synthetic deterministic stress: 200 runs, no network or state leak', () => {

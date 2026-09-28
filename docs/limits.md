@@ -8,6 +8,8 @@ The browser workbench can demonstrate whether the review rule is coherent and in
 
 The older Python command-line demo is a separate reference. Its tests and 200 repeated runs apply to `research_handoff.py`, not automatically to the browser engine. Browser behavior should be reported as verified only after its own tests and an actual UI run.
 
+An in-session search plan can change the objective text, selected required criteria, and which existing sample channels participate. This changes the computed queue and clears previous reviews, identity confirmations, and approvals. It does not interpret the objective, discover sources, or establish that one channel performs better in real recruiting. Known identity conflicts remain blocked even when the conflicting observation is in an inactive channel.
+
 ## Trust and privacy boundaries
 
 | Boundary | Present behavior | Unknown or future work |
@@ -21,6 +23,8 @@ The older Python command-line demo is a separate reference. Its tests and 200 re
 | Internal knowledge | None | Brain schema, permission scope, sensitive client information |
 
 The observation date is a recency signal only. The demo uses a supplied fixed `asOf` snapshot (2026-09-28 in the standard example) to refuse later observations; it does not use the computer's current date for this rule. Source snippets and accepted reviews are not independent proof of truth, skill, consent, or fit. The tool does not infer protected traits, psychological traits, or suitability scores. It does not contact, reject, or hire anyone. The export is a local demonstration file, not a TeamTailor write or consent record.
+
+Channel counts describe local review state: fresh accepted, rejected, and pending claims, with stale claims separately. An inactive channel has zero current review workload; its archived sample availability is a separate field. Contribution to a handoff requires accepted fresh evidence for a selected required criterion. One person may appear in several channels, so these counts are not additive successes. Coverage shows selected required criteria and counts unique active people with a fresh proposed claim or fresh accepted claim; neither count means a recruiter accepted the person.
 
 ## Outcome claims needing a pilot
 
