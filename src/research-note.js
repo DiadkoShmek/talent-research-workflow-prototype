@@ -1,15 +1,17 @@
-import { validateResearchReport } from './research.js?v=0.7.0';
+import { validateResearchReport } from './research.js?v=0.8.0';
 
 const RATIONALE = {
   uk: {
     'agent-orchestration': 'Графи й виконання агентів дають видимі технічні сліди для перевірки оркестрації.',
     'ts-agent-tooling': 'TypeScript SDK дає видимі зміни в інструментах, викликах і потокових відповідях.',
-    'programmable-editor': 'Редактор на React дає видимі зміни в інтерфейсі та програмованій взаємодії.'
+    'programmable-editor': 'Редактор на React дає видимі зміни в інтерфейсі та програмованій взаємодії.',
+    'agent-recovery': 'Продукт із довгими процесами агентів дає сліди відновлення, контексту й надійності.'
   },
   en: {
     'agent-orchestration': 'Agent graph and run code provides inspectable signals for orchestration work.',
     'ts-agent-tooling': 'A TypeScript SDK provides inspectable changes in tools, calls, and streaming.',
-    'programmable-editor': 'A React editor provides inspectable changes in UI and programmable interaction.'
+    'programmable-editor': 'A React editor provides inspectable changes in UI and programmable interaction.',
+    'agent-recovery': 'A product with long-running agents offers traces of recovery, context and reliability.'
   }
 };
 
@@ -51,13 +53,13 @@ export function researchNote(input, lang = 'uk', imported = true) {
     `**${uk ? 'Дата збору' : 'Collected at'}:** ${report.run.observedAt}`,
     `**${uk ? 'Стан проходу' : 'Run status'}:** ${report.run.status}`,
     `**${uk ? 'Час збору' : 'Collection time'}:** ${report.run.elapsedMs} ms ${uk ? '(це не час до придатного кандидата)' : '(not time to a qualified candidate)'}`,
-    `**${uk ? 'Обсяг' : 'Scope'}:** ${report.leads.length} ${uk ? 'унікальних GitHub ID, три вибрані репозиторії на одній платформі; порядок API не ранжує людей' : 'distinct GitHub IDs, three seeded repositories on one platform; API order does not rank people'}`,
+    `**${uk ? 'Обсяг' : 'Scope'}:** ${report.leads.length} ${uk ? 'унікальних GitHub ID' : 'distinct GitHub IDs'}, ${report.lanes.length} ${uk ? 'заздалегідь вибраних напрямів на GitHub; порядок API не ранжує людей' : 'seeded GitHub lanes; API order does not rank people'}`,
     '',
-    `## ${uk ? 'Чому ці три напрями' : 'Why these three lanes'}`,
+    `## ${uk ? 'Чому ці напрями' : 'Why these lanes'}`,
     ''
   ];
   for (const lane of report.lanes) {
-    lines.push(`- **${markdownText(lane.repo)}** — ${RATIONALE[lang][lane.id]} ${uk ? 'Запит' : 'Query'}: [GET](${lane.queryUrl}). ${uk ? 'Стан' : 'Status'}: ${lane.status}; ${uk ? 'переглянуто' : 'scanned'} ${lane.scanned}, ${uk ? 'збережено змін' : 'retained changes'} ${lane.observations}${lane.error ? `; ${uk ? 'помилка' : 'error'}: ${markdownText(lane.error)}` : ''}.`);
+    lines.push(`- **${markdownText(lane.repo)}** — ${RATIONALE[lang][lane.id]} ${uk ? 'Запит' : 'Query'}: [GET](${lane.queryUrl}). ${uk ? 'Стан' : 'Status'}: ${lane.status}; ${uk ? 'переглянуто' : 'scanned'} ${lane.scanned}, ${uk ? 'збережено змін' : 'retained changes'} ${lane.observations}${lane.duplicates !== undefined ? `, ${uk ? 'дублі' : 'duplicates'} ${lane.duplicates}, ${uk ? 'поза лімітом' : 'over cap'} ${lane.capped}` : ''}${lane.error ? `; ${uk ? 'помилка' : 'error'}: ${markdownText(lane.error)}` : ''}.`);
   }
   lines.push('', `## ${uk ? 'Публічні акаунти для подальшої перевірки' : 'Public accounts for further inspection'}`, '');
   if (!report.leads.length) lines.push(uk ? 'Цей обмежений прохід не дав акаунтів. Це не висновок про весь ринок.' : 'This bounded pass surfaced no accounts. It says nothing about the whole market.', '');
@@ -65,14 +67,14 @@ export function researchNote(input, lang = 'uk', imported = true) {
     lines.push(`### [@${markdownText(lead.handle)}](${lead.profileUrl})`,
       `${uk ? 'GitHub ID' : 'GitHub ID'}: ${lead.id}. ${uk ? 'Зв’язок між джерелами встановлено за ID, без зіставлення імен.' : 'Sources were linked by ID, without name matching.'}`, '');
     for (const evidence of lead.evidence) {
-      lines.push(`- [${markdownText(evidence.repository)} · ${evidence.id.slice(-40)}](${evidence.url}) — ${uk ? 'коміт' : 'commit'} ${evidence.committedAt}; ${uk ? 'побачено' : 'observed'} ${evidence.observedAt}.`,
-        `  - **${uk ? 'Назва коміту, неперевірений текст джерела' : 'Commit title, unverified source text'}:** “${markdownText(evidence.title)}”`);
+      lines.push(`- [${markdownText(evidence.repository)} · ${evidence.kind === 'github-pr' ? `PR #${evidence.number}` : evidence.id.slice(-40)}](${evidence.url}) — ${evidence.kind === 'github-pr' ? (uk ? 'злито' : 'merged') : (uk ? 'коміт' : 'commit')} ${evidence.mergedAt ?? evidence.committedAt}; ${uk ? 'побачено' : 'observed'} ${evidence.observedAt}.`,
+        `  - **${uk ? 'Назва зміни, неперевірений текст джерела' : 'Change title, unverified source text'}:** “${markdownText(evidence.title)}”`);
     }
     lines.push('', `**${uk ? 'Ще невідомо' : 'Still unknown'}:** ${lead.unknowns.map(item => UNKNOWN[lang][item]).join('; ')}.`, '');
   }
   lines.push(`## ${uk ? 'Наступні три дії з колегою' : 'Three next steps with a colleague'}`, '',
     uk ? '1. Рекрутер звіряє вимоги Poolday та вже відомі команді джерела; позначає, які акаунти справді нові для поточного пошуку.' : '1. A recruiter checks the Poolday brief and sources the team already uses; mark which accounts are genuinely new to this search.',
-    uk ? '2. Дослідник відкриває кожен коміт і перевіряє зміст внеску та особу; рекрутер окремо оцінює релевантність і прогалини. Рішення про контакт лишається людині.' : '2. A researcher opens each commit and checks the contribution and identity; the recruiter separately assesses relevance and gaps. Contact remains a human decision.',
+    uk ? '2. Дослідник відкриває кожну зміну й перевіряє зміст внеску та особу; рекрутер окремо оцінює релевантність і прогалини. Рішення про контакт лишається людині.' : '2. A researcher opens each change and checks the contribution and identity; the recruiter separately assesses relevance and gaps. Contact remains a human decision.',
     uk ? '3. На одному погодженому пошуку порівняти з початковим процесом: час до першого прийнятого рекрутером профілю, хвилини перевірки на прийнятий профіль і частку нових корисних знахідок. Виграш наперед не припускається.' : '3. In one agreed search, compare with the baseline: time to first recruiter-accepted profile, review minutes per accepted profile, and the share of novel useful findings. No improvement is assumed.',
     '',
     uk ? 'Межа: це передача контексту дослідження, без підключення до Brain чи ATS, без оцінок людей, повідомлень або рішень про найм.' : 'Boundary: this transfers research context without Brain or ATS integration, person scores, messages, or hiring decisions.',

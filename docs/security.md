@@ -1,11 +1,11 @@
-# Security boundaries — local v0.7
+# Security boundaries — local v0.8
 
 This is a static interview prototype. These are implemented controls and their limits, not a production security certification.
 
 | Boundary | Control | Remaining limit |
 |---|---|---|
-| Public GitHub → research report | Three fixed HTTPS endpoints; GET only; browser credentials omitted; redirects refused; response cap 2 MiB; bounded records; explicit malformed/partial/failure states | API attribution and public text can be wrong. GitHub `User` is an account type, not proof of a human or independent authorship. No arbitrary-URL crawler. |
-| Exact commit → in-tab preview | URL derived from a validated source; returned SHA and HTML URL must match; response cap 1 MiB, eight shown files, 24 lines/2400 characters per excerpt, HTML escaping, basic email and token-like text masking | The preview is incomplete and masking is not a comprehensive secret detector. Patch text is not persisted or sent to the follow-up packet. |
+| Public GitHub → research report | Four role-derived fixed-repository search queries (or three earlier commit feeds); HTTPS GET only; browser credentials omitted; redirects refused; response cap 2 MiB; bounded records; explicit malformed/partial/failure states | Search can miss relevant work or surface misleading titles. API attribution and public text can be wrong. GitHub `User` is an account type, not proof of a human or independent authorship. No arbitrary-URL crawler. |
+| Exact PR or commit → in-tab preview | URL derived from a validated source; returned PR number, merge date and HTML URL or commit SHA and URL must match; response cap 1 MiB per request, eight shown files, 24 lines/2400 characters per excerpt, HTML escaping, basic email and token-like text masking | The preview is incomplete and masking is not a comprehensive secret detector. PR inspection uses two GETs; patch text is not persisted or sent to the follow-up packet. |
 | GitHub ID mismatch → research decision | Mismatch adds a replayed conflict action, withdraws prior follow-up and blocks positive assessment of that source | API attribution and imported journals are not authenticated. A forged file can omit a conflict; already downloaded packets cannot be revoked. |
 | Research JSON → page / exported HTML | Exact schema, canonical source URLs, consistent counts, immutable account IDs, strict dates, escaped text; no HTML execution | A coherent edited file can fabricate observations and timestamps. Imported provenance remains unverified. |
 | Manual decisions → restored session | Original project and actions replayed through the engine; 2 MiB / 2000-action caps; no trusted imported approval bit | Replay establishes rule consistency, not reviewer identity, authenticity or truth. |
@@ -17,9 +17,9 @@ This is a static interview prototype. These are implemented controls and their l
 
 ## Network and authority
 
-The manual example, guided replay and storage code do not call external APIs. Public collection runs only after its button or the Python `--live` flag; each exact-commit detail requires another explicit click. No credentials are read; no company systems, messaging or personal email fields are used for discovery. The browser reader has a 10-second abort per request; Python uses a 10-second socket timeout (not a strict wall-clock deadline for a slow streamed response). API availability and anonymous rate limits can prevent a run.
+The manual example, guided replay and storage code do not call external APIs. Public collection runs only after its button or the Python `--live` flag for the older commit pass; each exact PR/commit detail requires another explicit click. No credentials are read; no company systems, messaging or personal email fields are used for discovery. The browser reader has a 10-second abort per request; Python uses a 10-second socket timeout (not a strict wall-clock deadline for a slow streamed response). API availability and anonymous rate limits can prevent a run.
 
-Collected accounts are research leads. No automatic hiring, rejection, contact, suitability scoring, protected-trait inference or eligibility decision is implemented. A recent commit may be a release chore or a coauthored change; inspecting the full source is necessary before drawing narrower technical conclusions.
+Collected accounts are research leads. No automatic hiring, rejection, contact, suitability scoring, protected-trait inference or eligibility decision is implemented. A technical PR title may disguise a small change; inspecting the full source and discussing individual contribution are necessary before drawing narrower technical conclusions.
 
 ## Executed proof and release gate
 

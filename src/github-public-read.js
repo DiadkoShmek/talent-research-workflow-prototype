@@ -3,7 +3,11 @@ export async function readPublicGitHubJson(fetcher, url, limit = 2 * 1024 * 1024
   if (typeof fetcher !== 'function' || !Number.isSafeInteger(limit) || limit < 1 || limit > 2 * 1024 * 1024)
     throw new TypeError('invalid GitHub read');
   const target = new URL(url);
-  if (target.origin !== 'https://api.github.com' || !/^\/repos\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/commits(?:\/[0-9a-f]{40}(?:[0-9a-f]{24})?)?$/.test(target.pathname))
+  const commits = /^\/repos\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/commits(?:\/[0-9a-f]{40}(?:[0-9a-f]{24})?)?$/.test(target.pathname);
+  const pulls = /^\/repos\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/pulls\/[1-9]\d*(?:\/files)?$/.test(target.pathname);
+  const search = target.pathname === '/search/issues' && target.searchParams.has('q') &&
+    target.searchParams.get('q').length <= 256 && target.searchParams.get('per_page') === '20';
+  if (target.origin !== 'https://api.github.com' || (!commits && !pulls && !search))
     throw new TypeError('invalid GitHub read');
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 10000);

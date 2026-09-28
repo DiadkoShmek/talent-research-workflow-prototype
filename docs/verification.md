@@ -1,5 +1,15 @@
 # Verification record — 28 September 2026
 
+## Local v0.8 role-search proof
+
+The primary browser path now searches four role-derived public GitHub merged-PR lanes in selected repositories; the earlier recent-commit pass remains as a comparison. It records exact query URLs and skip/reject/incomplete counts, then lets a reviewer inspect the exact PR and its files, make a source-bound decision, export selected follow-up and record local feedback. This is a bounded technical-work discovery demonstration, not a whole-market OSINT system or a candidate-quality claim.
+
+- `npm test`: **58/58 passed**. Python offline suite: **14/14 passed**. `npm run stress`: **200/200** synthetic manual-engine cycles. `node --check` on the app and new collector plus `git diff --check` passed.
+- Seven Chromium scripts passed at **1440 and 390 px**: manual smoke, handoff, session cap, v0.5 collection, v0.6 review, v0.7 source inspection/feedback and v0.8 role search. The v0.8 fixture asserts no pre-click API calls, four exact search requests, two explicit PR detail/file requests, a source-ID conflict withdrawing follow-up, selected-only packet, saved v2 review restoration, feedback export, no JavaScript errors and no horizontal overflow.
+- A **live Node public-API run** after final title screening and accounting returned four responsive lanes and seven distinct GitHub IDs in **2,054 ms**. The four lanes scanned 7/20/20/20 API rows and retained 2/2/2/1 account IDs; every scanned row is counted as retained, skipped, malformed, duplicate or beyond the per-lane cap. This is one collection observation, not a recruiter-reviewed result or an availability benchmark. The private JSON is outside the public repository.
+- An earlier actual local Chromium click after title screening returned seven cards across four lanes and read an exact PR detail plus files with no JavaScript error or phone-width overflow. The screenshot and public-account details remain in the private dossier.
+- Publication, public-file byte parity and published-page behavior for v0.8 must be checked after release; local tests do not establish them.
+
 ## Local v0.7 source and feedback proof
 
 The browser now reads an exact public commit only after a second click. It checks the returned SHA and canonical commit URL, bounds response bytes, file count and diff excerpts, and compares the numeric GitHub author ID with the saved lead. A conflicting ID is recorded in the review action log, withdraws an earlier follow-up and blocks a later positive assessment of that source. The separate pilot-feedback snapshot records local outcomes and manually entered review minutes; it starts empty and makes no claim that A-Players evaluated a profile.
@@ -89,6 +99,6 @@ python3 tests/browser_smoke.py
 
 ## What remains unproved
 
-Source truth, real identity matching, authenticated human review, role suitability, broad real-world sourcing beyond the three fixed repositories, AI generation, production-grade shared storage, ATS writes and recruiting outcomes. The standard fixture's `asOf` is a fixed replay snapshot; date checks are relative to it, not the operating system clock. The event trail is self-attested local behavior.
+Source truth, real identity matching, authenticated human review, role suitability, broad real-world sourcing beyond the four selected repositories, AI generation, production-grade shared storage, ATS writes and recruiting outcomes. The standard fixture's `asOf` is a fixed replay snapshot; date checks are relative to it, not the operating system clock. The event trail is self-attested local behavior.
 
 No Figma file was requested or created. Browser checks for v0.5 and local v0.6 are recorded above. There is no claimed Figma-to-code verification.

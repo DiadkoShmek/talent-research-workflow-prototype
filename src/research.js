@@ -1,5 +1,6 @@
 // Read-only, explicit public GitHub pass. Account activity is a lead to inspect, not a fit decision.
-import { readPublicGitHubJson } from './github-public-read.js?v=0.7.0';
+import { readPublicGitHubJson } from './github-public-read.js?v=0.8.0';
+import { validateRoleSearchReport } from './role-search.js?v=0.8.0';
 export const RESEARCH_ROLE = Object.freeze({
   title: 'Senior Agentic Software Engineer — Poolday',
   url: 'https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday'
@@ -144,6 +145,7 @@ export async function collectResearch(fetcher = globalThis.fetch) {
 }
 
 export function validateResearchReport(input) {
+  if (input?.schema === 'signal-desk-research.v2') return validateRoleSearchReport(input, RESEARCH_ROLE);
   const fail = () => { throw new TypeError('invalid research report'); };
   if (!exactKeys(input, ['schema', 'role', 'run', 'lanes', 'leads']) || input.schema !== 'signal-desk-research.v1' ||
       !exactKeys(input.role, ['title', 'url']) ||

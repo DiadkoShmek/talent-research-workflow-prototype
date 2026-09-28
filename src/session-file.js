@@ -1,4 +1,4 @@
-import { createSession, transition, viewSession } from './engine.js?v=0.7.0';
+import { createSession, transition, viewSession } from './engine.js?v=0.8.0';
 
 export const MAX_SESSION_BYTES = 2 * 1024 * 1024;
 const SCHEMA = 'signal-desk-session.v1';

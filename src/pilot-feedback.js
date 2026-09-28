@@ -1,5 +1,6 @@
-import { researchReviewPacket } from './research-review.js?v=0.7.0';
-import { RESEARCH_ROLE, RESEARCH_LANES } from './research.js?v=0.7.0';
+import { researchReviewPacket } from './research-review.js?v=0.8.0';
+import { RESEARCH_ROLE, RESEARCH_LANES } from './research.js?v=0.8.0';
+import { ROLE_SEARCH_LANES } from './role-search.js?v=0.8.0';
 
 const SCHEMA = 'signal-desk-pilot-feedback.v1';
 const MAX_BYTES = 1024 * 1024;
@@ -31,20 +32,25 @@ function validateSource(source) {
         lead.profileUrl !== `https://github.com/${lead.handle}` || !reason(lead.nextResearchReason) ||
         !Array.isArray(lead.hypothesisIds) || lead.hypothesisIds.length < 1 ||
         new Set(lead.hypothesisIds).size !== lead.hypothesisIds.length ||
-        lead.hypothesisIds.some(id => !RESEARCH_LANES.some(lane => lane.id === id)) ||
+        lead.hypothesisIds.some(id => ![...RESEARCH_LANES, ...ROLE_SEARCH_LANES].some(lane => lane.id === id)) ||
         JSON.stringify(lead.unknowns) !== JSON.stringify(unknowns) ||
         !Array.isArray(lead.evidence) || lead.evidence.length < 1 || lead.evidence.length > 6) fail();
     ids.add(lead.id);
     const evidenceIds = new Set();
     for (const item of lead.evidence) {
-      if (!exact(item, ['id', 'kind', 'url', 'repository', 'title', 'committedAt', 'observedAt', 'reviewReason']) ||
-          item.kind !== 'github-commit' || typeof item.id !== 'string' || evidenceIds.has(item.id) ||
-          !/^github-commit:[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+:[0-9a-f]{40}(?:[0-9a-f]{24})?$/.test(item.id) ||
-          item.url !== `https://github.com/${item.id.slice('github-commit:'.length).replace(/:([0-9a-f]+)$/, '/commit/$1')}` ||
-          !RESEARCH_LANES.some(lane => lane.repo === item.repository && item.id.startsWith(`github-commit:${lane.repo}:`) && lead.hypothesisIds.includes(lane.id)) ||
+      const commit = item?.kind === 'github-commit';
+      const lane = [...RESEARCH_LANES, ...ROLE_SEARCH_LANES].find(candidate => candidate.repo === item?.repository);
+      if (!exact(item, commit ? ['id', 'kind', 'url', 'repository', 'title', 'committedAt', 'observedAt', 'reviewReason'] :
+        ['id', 'kind', 'url', 'repository', 'title', 'mergedAt', 'observedAt', 'number', 'reviewReason']) ||
+          typeof item.id !== 'string' || evidenceIds.has(item.id) || !lane || !lead.hypothesisIds.includes(lane.id) ||
+          (commit ? (!/^github-commit:[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+:[0-9a-f]{40}(?:[0-9a-f]{24})?$/.test(item.id) ||
+            item.url !== `https://github.com/${item.id.slice('github-commit:'.length).replace(/:([0-9a-f]+)$/, '/commit/$1')}`) :
+            (!Number.isSafeInteger(item.number) || item.number <= 0 ||
+              item.id !== `github-pr:${lane.repo}:${item.number}` || item.url !== `https://github.com/${lane.repo}/pull/${item.number}`)) ||
           typeof item.title !== 'string' || !item.title || item.title.length > 160 ||
-          item.observedAt !== source.observedAt || typeof item.committedAt !== 'string' ||
-          !Number.isFinite(Date.parse(item.committedAt)) || Date.parse(item.committedAt) > Date.parse(source.observedAt) ||
+          item.observedAt !== source.observedAt || typeof (commit ? item.committedAt : item.mergedAt) !== 'string' ||
+          !Number.isFinite(Date.parse(commit ? item.committedAt : item.mergedAt)) ||
+          Date.parse(commit ? item.committedAt : item.mergedAt) > Date.parse(source.observedAt) ||
           !reason(item.reviewReason)) fail();
       evidenceIds.add(item.id);
     }
