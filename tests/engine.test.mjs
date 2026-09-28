@@ -243,6 +243,29 @@ test('coverage counts people once despite multiple fresh sources for the same cr
   assert.equal(v.metrics.mergedObservations, 1);
 });
 
+test('event cap makes current session read-only while earlier revision remains exportable', () => {
+  const beforeCap = approvePerson(createSession(demoProject()), 'person-olena');
+  let state = beforeCap;
+  const limit = viewSession(state).session.eventLimit;
+  assert.deepEqual(viewSession(state).session, { exhausted: false, eventCount: 5, eventLimit: limit });
+  for (let i = 5; i < limit; i++) state = transition(state, {
+    type: 'review', evidenceId: 'obs-03::0', decision: 'reject', reviewer, reason: 'Synthetic cap replay'
+  });
+  const v = viewSession(state);
+  assert.deepEqual(v.session, { exhausted: true, eventCount: limit, eventLimit: limit });
+  assert.equal(v.metrics.approved, 1); // Historical approval stays visible.
+  assert.equal(v.candidates.find(c => c.personKey === 'person-olena').status, 'approved');
+  assert.equal(v.exportPacket, null);
+  assert.throws(() => exportHandoff(state), /session event limit reached; start a new session/);
+  assert.throws(() => transition(state, { type: 'revoke', personKey: 'person-olena', reviewer }), /event limit reached/);
+  assert.throws(() => transition(state, { type: 'setCutoff', cutoff: '2026-09-01' }), /event limit reached/);
+  assert.equal(exportHandoff(beforeCap).candidates.length, 1);
+  assert.equal(viewSession(beforeCap).session.exhausted, false);
+  const fresh = createSession(v.project);
+  assert.equal(viewSession(fresh).session.eventCount, 0);
+  assert.equal(viewSession(fresh).metrics.approved, 0);
+});
+
 test('synthetic deterministic stress: 200 runs, no network or state leak', () => {
   for (let i = 0; i < 200; i++) {
     const state = approvePerson(createSession(demoProject()), 'person-olena');

@@ -123,6 +123,7 @@ function candidatesFor(d) {
 }
 function view(d) {
   const candidates = candidatesFor(d);
+  const exhausted = d.events.length >= MAX.events;
   const activeFindings = d.project.findings.filter(f => d.plan.activeHypothesisIds.includes(f.hypothesisId));
   const allEvidence = evidenceFor(d.project);
   const approved = candidates.filter(c => c.status === 'approved').length;
@@ -147,7 +148,8 @@ function view(d) {
     reviewedPeople: candidates.filter(c => c.evidence.some(e => e.criterionId === k.id && e.fresh && e.review?.decision === 'accept')).length,
     missingPeople: candidates.filter(c => !c.evidence.some(e => e.criterionId === k.id && e.fresh && e.review?.decision === 'accept')).length }));
   const metrics = { observations: activeFindings.length, people: candidates.length, mergedObservations: activeFindings.length - candidates.length, needsReview: candidates.filter(c => c.status === 'needs-review').length, blocked: candidates.filter(c => c.status === 'blocked').length, ready: candidates.filter(c => c.status === 'ready').length, approved };
-  return freeze({ project: d.project, plan: d.plan, revision: d.revision, candidates, hypotheses, coverage, metrics, events: d.events, exportPacket: approved ? packet(d, candidates) : null });
+  return freeze({ project: d.project, plan: d.plan, revision: d.revision, session: { exhausted, eventCount: d.events.length, eventLimit: MAX.events },
+    candidates, hypotheses, coverage, metrics, events: d.events, exportPacket: approved && !exhausted ? packet(d, candidates) : null });
 }
 function packet(d, candidates) {
   return freeze({ schema: 'signal-desk-handoff.v1', mode: 'synthetic-local-demo', integrity: 'self-attested, unauthenticated',
@@ -165,6 +167,7 @@ export function createSession(project) {
 export function viewSession(state) { return view(getSession(state)); }
 export function exportHandoff(state) {
   const d = getSession(state), candidates = candidatesFor(d);
+  if (d.events.length >= MAX.events) fail('session event limit reached; start a new session');
   if (!candidates.some(c => c.status === 'approved')) fail('no approved candidates');
   return copy(packet(d, candidates));
 }

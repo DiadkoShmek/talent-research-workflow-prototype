@@ -10,6 +10,8 @@ The older Python command-line demo is a separate reference. Its tests and 200 re
 
 An in-session search plan can change the objective text, selected required criteria, and which existing sample channels participate. This changes the computed queue and clears previous reviews, identity confirmations, and approvals. It does not interpret the objective, discover sources, or establish that one channel performs better in real recruiting. Known identity conflicts remain blocked even when the conflicting observation is in an inactive channel.
 
+Each session is limited to 2000 recorded actions. At that limit, previous decisions remain visible as history, but new decisions and handoff export are blocked. Reset starts a new session with no reviews or approvals. This local limit and reset do not provide durable storage or recovery.
+
 ## Trust and privacy boundaries
 
 | Boundary | Present behavior | Unknown or future work |
