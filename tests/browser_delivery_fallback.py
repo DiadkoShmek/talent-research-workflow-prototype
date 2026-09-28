@@ -49,6 +49,10 @@ def run():
                     html = page.locator('a[href="docs/meeting-brief.uk.html"]')
                     expect(pdf).to_be_visible()
                     expect(html).to_be_visible()
+                    if failure == "app-unavailable":
+                        expect(page.locator(".startup-fallback h1")).to_have_text(
+                            "Робочий стіл завантажується")
+                        assert pdf.bounding_box()["height"] >= 44
                     assert not page.evaluate("document.documentElement.scrollWidth > innerWidth")
                     print(f"PASS {'WebKit' if webkit else 'Chromium'} {width}px {failure}: visible PDF/HTML fallback, no overflow")
                     context.close()

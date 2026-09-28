@@ -85,3 +85,11 @@
 .pilot-feedback-card label{display:block;font-size:11px;font-weight:600;margin:10px 0}
 .pilot-feedback-card input,.pilot-feedback-card select{display:block;width:100%;min-height:38px;margin-top:5px;padding:8px;border:1px solid var(--line);border-radius:5px;background:var(--paper);font-size:12px}
 @media(max-width:760px){.pilot-feedback{padding:17px}.pilot-feedback h3{font-size:21px}.pilot-feedback-grid{grid-template-columns:1fr}}
+/* The only content left when the app module fails must still be usable on a phone. */
+.startup-fallback{max-width:660px;margin:clamp(24px,8vh,88px) auto;padding:32px;border:1px solid var(--line);border-radius:10px;background:var(--white)}
+.startup-fallback h1{font-size:clamp(26px,5vw,38px);line-height:1.15;letter-spacing:-1.2px;margin:0 0 15px}
+.startup-fallback>p:not(.eyebrow){font-size:14px;line-height:1.65;color:var(--muted)}
+.startup-fallback nav{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0}
+.startup-fallback nav a{display:inline-flex;align-items:center;min-height:44px;padding:10px 13px;border:1px solid var(--line);border-radius:6px;text-decoration:none;font-weight:650;background:var(--paper)}
+.startup-fallback nav a:hover{border-color:var(--green)}
+@media(max-width:700px){.startup-fallback{margin:16px;padding:22px}.startup-fallback nav a{width:100%}}

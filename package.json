@@ -1,6 +1,6 @@
 {
   "name": "signal-desk",
-  "version": "0.10.4",
+  "version": "0.10.5",
   "private": true,
   "type": "module",
   "description": "Bounded public GitHub research and separate fictional evidence-review handoff.",

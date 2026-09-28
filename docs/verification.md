@@ -1,5 +1,9 @@
 # Verification record — 28 September 2026
 
+## v0.10.5 readable startup fallback, local proof
+
+The v0.10.4 `app.js` failure kept the fallback links, but its unstyled paragraph sat flush against the phone edge below a permanent loading label. v0.10.5 gives the initial HTML a semantic heading, a short failure instruction and three full-width 44 px links at 390 px. The links remain plain HTML if CSS also fails. A screenshot of the 390 px app-module failure was inspected: the fallback fits the viewport without clipping. The local 503/forged-archive/app-module matrix again passed at 1440 and 390 px in Chromium and Linux WebKit, including a 44 px target assertion for the missing-module case. `npm test`: **68/68**. This remains proxy evidence, not a physical iPhone Safari result.
+
 ## v0.10.4 delivery-failure fallback, local proof
 
 An adversarial Chromium probe against v0.10.3 separately blocked the archival JSON and `src/app.js`. In both cases the public-archive PDF link count was **zero**: the app showed an error without the fallback, or remained on its loading shell. v0.10.4 places direct PDF/HTML links in the initial HTML and in the research error view. `tests/browser_delivery_fallback.py` forces **HTTP 503**, a structurally forged 200 archive body, and app-module failure at **1440 and 390 px**. All six scenarios passed locally in Chromium and in the digest-pinned Linux WebKit container using its iPhone 13 mobile profile at 390 px: PDF and HTML links visible, no horizontal overflow. On archive failures, the manual workspace stayed visible, no archive review cards were manufactured, and no page JavaScript error occurred. `npm test`: **68/68** including the static-shell/error-view contract; Python unit tests: **14/14**.
