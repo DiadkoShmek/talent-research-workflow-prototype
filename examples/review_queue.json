@@ -1,0 +1,162 @@
+{
+  "role_id": "demo-backend-01",
+  "summary": {
+    "input_findings": 6,
+    "unique_people": 5,
+    "duplicate_findings_collapsed": 1,
+    "ready_for_human_source_check": 3,
+    "needs_more_evidence": 2,
+    "identity_conflicts": 0
+  },
+  "queue": [
+    {
+      "person_key": "synthetic-001",
+      "display_name": "Candidate A",
+      "status": "ready_for_human_source_check",
+      "missing_criteria": [],
+      "hypotheses": [
+        "conference talks",
+        "open-source contributions"
+      ],
+      "record_ids": [
+        "r1",
+        "r2"
+      ],
+      "evidence": [
+        {
+          "criterion_id": "api",
+          "snippet": "Explained an API migration they led",
+          "source_ref": "synthetic://talk/a",
+          "observed_at": "2026-09-21",
+          "hypothesis": "conference talks",
+          "fresh": true
+        },
+        {
+          "criterion_id": "python",
+          "snippet": "Maintained a Python package",
+          "source_ref": "synthetic://repo/a",
+          "observed_at": "2026-09-20",
+          "hypothesis": "open-source contributions",
+          "fresh": true
+        }
+      ]
+    },
+    {
+      "person_key": "synthetic-002",
+      "display_name": "Candidate B",
+      "status": "needs_more_evidence",
+      "missing_criteria": [
+        "api"
+      ],
+      "hypotheses": [
+        "specialist communities"
+      ],
+      "record_ids": [
+        "r3"
+      ],
+      "evidence": [
+        {
+          "criterion_id": "python",
+          "snippet": "Discussed a Python service",
+          "source_ref": "synthetic://community/b",
+          "observed_at": "2026-09-22",
+          "hypothesis": "specialist communities",
+          "fresh": true
+        }
+      ]
+    },
+    {
+      "person_key": "synthetic-003",
+      "display_name": "Candidate C",
+      "status": "needs_more_evidence",
+      "missing_criteria": [
+        "api",
+        "python"
+      ],
+      "hypotheses": [
+        "open-source contributions"
+      ],
+      "record_ids": [
+        "r4"
+      ],
+      "evidence": [
+        {
+          "criterion_id": "api",
+          "snippet": "Historic API contribution",
+          "source_ref": "synthetic://repo/c",
+          "observed_at": "2024-01-15",
+          "hypothesis": "open-source contributions",
+          "fresh": false
+        },
+        {
+          "criterion_id": "python",
+          "snippet": "Historic Python project",
+          "source_ref": "synthetic://repo/c",
+          "observed_at": "2024-01-15",
+          "hypothesis": "open-source contributions",
+          "fresh": false
+        }
+      ]
+    },
+    {
+      "person_key": "synthetic-004",
+      "display_name": "Candidate D",
+      "status": "ready_for_human_source_check",
+      "missing_criteria": [],
+      "hypotheses": [
+        "conference talks"
+      ],
+      "record_ids": [
+        "r5"
+      ],
+      "evidence": [
+        {
+          "criterion_id": "api",
+          "snippet": "Presented API ownership case",
+          "source_ref": "synthetic://talk/d",
+          "observed_at": "2026-09-19",
+          "hypothesis": "conference talks",
+          "fresh": true
+        },
+        {
+          "criterion_id": "python",
+          "snippet": "Demonstrated Python tooling",
+          "source_ref": "synthetic://talk/d",
+          "observed_at": "2026-09-19",
+          "hypothesis": "conference talks",
+          "fresh": true
+        }
+      ]
+    },
+    {
+      "person_key": "synthetic-005",
+      "display_name": "Candidate E",
+      "status": "ready_for_human_source_check",
+      "missing_criteria": [],
+      "hypotheses": [
+        "maintainer lists"
+      ],
+      "record_ids": [
+        "r6"
+      ],
+      "evidence": [
+        {
+          "criterion_id": "api",
+          "snippet": "Listed as API project maintainer",
+          "source_ref": "synthetic://maintainer/e",
+          "observed_at": "2026-09-18",
+          "hypothesis": "maintainer lists",
+          "fresh": true
+        },
+        {
+          "criterion_id": "python",
+          "snippet": "Listed as Python maintainer",
+          "source_ref": "synthetic://maintainer/e",
+          "observed_at": "2026-09-18",
+          "hypothesis": "maintainer lists",
+          "fresh": true
+        }
+      ]
+    }
+  ]
+}

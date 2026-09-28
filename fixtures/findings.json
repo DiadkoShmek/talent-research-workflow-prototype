@@ -1,0 +1,47 @@
+[
+  {
+    "record_id": "r1", "person_key": "synthetic-001", "display_name": "Candidate A",
+    "hypothesis": "open-source contributions", "source_ref": "synthetic://repo/a",
+    "observed_at": "2026-09-20",
+    "claims": [{"criterion_id": "python", "snippet": "Maintained a Python package"}]
+  },
+  {
+    "record_id": "r2", "person_key": "synthetic-001", "display_name": "Candidate A",
+    "hypothesis": "conference talks", "source_ref": "synthetic://talk/a",
+    "observed_at": "2026-09-21",
+    "claims": [{"criterion_id": "api", "snippet": "Explained an API migration they led"}]
+  },
+  {
+    "record_id": "r3", "person_key": "synthetic-002", "display_name": "Candidate B",
+    "hypothesis": "specialist communities", "source_ref": "synthetic://community/b",
+    "observed_at": "2026-09-22",
+    "claims": [{"criterion_id": "python", "snippet": "Discussed a Python service"}]
+  },
+  {
+    "record_id": "r4", "person_key": "synthetic-003", "display_name": "Candidate C",
+    "hypothesis": "open-source contributions", "source_ref": "synthetic://repo/c",
+    "observed_at": "2024-01-15",
+    "claims": [
+      {"criterion_id": "python", "snippet": "Historic Python project"},
+      {"criterion_id": "api", "snippet": "Historic API contribution"}
+    ]
+  },
+  {
+    "record_id": "r5", "person_key": "synthetic-004", "display_name": "Candidate D",
+    "hypothesis": "conference talks", "source_ref": "synthetic://talk/d",
+    "observed_at": "2026-09-19",
+    "claims": [
+      {"criterion_id": "python", "snippet": "Demonstrated Python tooling"},
+      {"criterion_id": "api", "snippet": "Presented API ownership case"}
+    ]
+  },
+  {
+    "record_id": "r6", "person_key": "synthetic-005", "display_name": "Candidate E",
+    "hypothesis": "maintainer lists", "source_ref": "synthetic://maintainer/e",
+    "observed_at": "2026-09-18",
+    "claims": [
+      {"criterion_id": "python", "snippet": "Listed as Python maintainer"},
+      {"criterion_id": "api", "snippet": "Listed as API project maintainer"}
+    ]
+  }
+]

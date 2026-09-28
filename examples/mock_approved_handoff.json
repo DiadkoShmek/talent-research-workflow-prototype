@@ -1,0 +1,12 @@
+[
+  {
+    "role_id": "demo-backend-01",
+    "person_key": "synthetic-001",
+    "display_name": "Candidate A",
+    "source_refs": [
+      "synthetic://repo/a",
+      "synthetic://talk/a"
+    ],
+    "state": "mock_human_approved_research_handoff"
+  }
+]

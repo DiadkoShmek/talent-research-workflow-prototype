@@ -1,0 +1,9 @@
+{
+  "role_id": "demo-backend-01",
+  "role_title": "Demo Backend Engineer",
+  "freshness_cutoff": "2025-10-01",
+  "criteria": [
+    {"id": "python", "label": "Evidence of Python work"},
+    {"id": "api", "label": "Evidence of API ownership"}
+  ]
+}
