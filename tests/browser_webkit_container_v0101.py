@@ -16,6 +16,7 @@ def run():
     parser = argparse.ArgumentParser()
     parser.add_argument("--offline-only", action="store_true")
     parser.add_argument("--saved-file", type=Path, help="Persist or reopen the public download across containers")
+    parser.add_argument("--screenshot", type=Path, help="Save the mobile WebKit viewport for visual review")
     args = parser.parse_args()
     expected = ROOT / "docs/meeting-brief.uk.html"
     with sync_playwright() as playwright:
@@ -51,12 +52,15 @@ def run():
         expect(page.locator(".source-inspection-result")).to_have_count(2)
         assert not calls and not errors
         assert page.locator("body").evaluate("el => el.scrollWidth <= innerWidth + 1")
+        if args.screenshot:
+            assert args.screenshot.parent.is_dir()
+            page.screenshot(path=str(args.screenshot))
         with TemporaryDirectory() as temp:
             Path(temp).chmod(0o755)
             target = args.saved_file or Path(temp) / "meeting-brief.uk.html"
             assert target.parent.is_dir()
             with page.expect_download() as event:
-                page.locator(".research-snapshot a[download]").click()
+                page.locator(".research-snapshot a[download]").tap()
             event.value.save_as(target)
             assert target.read_bytes() == expected.read_bytes()
             context.close()
