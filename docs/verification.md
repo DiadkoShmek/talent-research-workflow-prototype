@@ -1,6 +1,12 @@
 # Verification record — 28 September 2026
 
-## Local v0.9 five-axis search proof (release pending)
+## Published v0.9 five-axis search release
+
+Code revision `d2635e72013878ecd7b944520bad9796889624bb` passed [offline contracts](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36454712947) and [Pages deployment](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36454711755). **23 public application and v0.9 screenshot files** matched the local release bytes; the private SHA-256 receipt remains outside the public repository. The screenshots use synthetic API fixtures.
+
+The first actual public-page click at **390 px** made no GitHub reads before the button and then five search GETs. Four returned HTTP 200 and the fifth HTTP 403; the app labelled the run **partial**, retained **7 GitHub IDs / 12 PR associations across 4 responsive lanes in 6,785 ms**, and displayed the failed fifth lane. There was no JavaScript page exception or horizontal overflow; the browser console reported the expected failed-resource 403. This is a useful failure observation, not a five-lane success or a recruiter result. The public browser receipt and screenshot remain in the private dossier.
+
+A second public-page click after the reported search reset made **four** search GETs (three HTTP 200, then HTTP 403), retained **6 IDs / 10 PR associations**, and marked the fifth lane *not requested after HTTP 403/429*. There were no JavaScript page exceptions or horizontal overflow. This demonstrates the implemented stop policy in a real browser; it also shows that this anonymous API path is unreliable under the current shared rate budget. We did not keep retrying for a clean public screenshot.
 
 The v0.9 primary button adds a video-timeline axis in `remotion-dev/remotion` and retains up to two distinct merged PRs per numeric account ID in each lane. It binds five exact query URLs, all scanned-row dispositions, account/source grouping and the actual number of requests. A 403/429 stops subsequent lanes. Legacy v2 reports still import.
 
