@@ -1,5 +1,5 @@
-import { validateResearchReport } from './research.js?v=0.8.0';
-import { readPublicGitHubJson } from './github-public-read.js?v=0.8.0';
+import { validateResearchReport } from './research.js?v=0.9.0';
+import { readPublicGitHubJson } from './github-public-read.js?v=0.9.0';
 
 const MAX_DETAIL_BYTES = 1024 * 1024;
 const MAX_FILES = 8;

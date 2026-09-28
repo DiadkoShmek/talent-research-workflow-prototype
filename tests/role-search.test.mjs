@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { collectRoleSearch, validateRoleSearchReport, ROLE_SEARCH_LANES } from '../src/role-search.js?v=0.8.0';
-import { validateResearchReport } from '../src/research.js?v=0.8.0';
-import { createResearchReview, researchReviewAction, researchReviewPacket } from '../src/research-review.js?v=0.8.0';
-import { createPilotFeedback, recordPilotFeedback, viewPilotFeedback } from '../src/pilot-feedback.js?v=0.8.0';
-import { inspectResearchSource } from '../src/source-inspection.js?v=0.8.0';
+import { collectRoleSearch, validateRoleSearchReport, ROLE_SEARCH_LANES } from '../src/role-search.js?v=0.9.0';
+import { validateResearchReport } from '../src/research.js?v=0.9.0';
+import { createResearchReview, researchReviewAction, researchReviewPacket } from '../src/research-review.js?v=0.9.0';
+import { createPilotFeedback, recordPilotFeedback, viewPilotFeedback } from '../src/pilot-feedback.js?v=0.9.0';
+import { inspectResearchSource } from '../src/source-inspection.js?v=0.9.0';
 
 function row(lane, id, type = 'User', title = `fix: improve ${lane.term} recovery`) {
   const number = 1000 + id;

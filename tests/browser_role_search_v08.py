@@ -1,4 +1,4 @@
-"""Role-derived merged-PR search through source inspection, review and local feedback."""
+"""Legacy v2 role-search import through inspection, review and local feedback."""
 
 from datetime import datetime, timedelta, timezone
 from functools import partial
@@ -86,13 +86,16 @@ def run():
                 page.route("**/*", route_request)
                 page.goto(base + "/?lang=uk")
                 assert not query_calls and not detail_calls and not file_calls
-                page.locator("#collect-role-search").click()
+                legacy_report = page.evaluate("""async () => {
+                    const { collectRoleSearch } = await import('./src/role-search.js?v=0.9.0');
+                    return collectRoleSearch(fetch);
+                }""")
+                page.locator("#research-file").set_input_files({
+                    "name": "legacy-role-v2.json", "mimeType": "application/json",
+                    "buffer": json.dumps(legacy_report).encode()})
                 expect(page.locator(".research-review-card")).to_have_count(4)
                 assert len(query_calls) == 4 and not detail_calls
                 assert all("is%3Apr" in url and "is%3Amerged" in url for url in query_calls)
-                if "--screenshots" in sys.argv:
-                    page.locator(".research-summary").scroll_into_view_if_needed()
-                    page.screenshot(path=str(ROOT / "docs" / "screenshots" / f"research-v08-{width}-product.png"))
                 first = page.locator('[data-review-lead="github:101"] [data-review-evidence]').first
                 first.locator("[data-inspect-source]").click()
                 expect(first.locator(".source-inspection-result")).to_be_visible()
@@ -146,7 +149,7 @@ def run():
                 expect(restored_page.locator('[data-review-lead="github:102"] [data-evidence-decision="relevant"]')).to_be_disabled()
                 assert not restored_errors
                 restored_page.close()
-                print(f"PASS {width}px: role search, merged PR source proof, conflict withdrawal, feedback and no overflow")
+                print(f"PASS {width}px: v2 import, merged PR source proof, conflict withdrawal, feedback and no overflow")
             browser.close()
     finally:
         server.shutdown()

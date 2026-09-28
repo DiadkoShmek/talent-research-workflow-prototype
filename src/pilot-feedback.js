@@ -1,6 +1,6 @@
-import { researchReviewPacket } from './research-review.js?v=0.8.0';
-import { RESEARCH_ROLE, RESEARCH_LANES } from './research.js?v=0.8.0';
-import { ROLE_SEARCH_LANES } from './role-search.js?v=0.8.0';
+import { researchReviewPacket } from './research-review.js?v=0.9.0';
+import { RESEARCH_ROLE, RESEARCH_LANES } from './research.js?v=0.9.0';
+import { ROLE_SEARCH_LANES_V3 } from './role-search.js?v=0.9.0';
 
 const SCHEMA = 'signal-desk-pilot-feedback.v1';
 const MAX_BYTES = 1024 * 1024;
@@ -23,7 +23,7 @@ function validateSource(source) {
       !['imported-file-unverified', 'same-browser-public-api-read-self-attested'].includes(source.sourceOrigin) ||
       source.decisionAuthority !== 'local-human-assertion-unauthenticated' ||
       typeof source.selectionLimit !== 'string' || source.selectionLimit.length > 300 ||
-      !Array.isArray(source.leads) || source.leads.length < 1 || source.leads.length > 6) fail();
+      !Array.isArray(source.leads) || source.leads.length < 1 || source.leads.length > 10) fail();
   const ids = new Set();
   for (const lead of source.leads) {
     if (!exact(lead, ['id', 'handle', 'profileUrl', 'hypothesisIds', 'evidence', 'nextResearchReason', 'unknowns']) ||
@@ -32,14 +32,14 @@ function validateSource(source) {
         lead.profileUrl !== `https://github.com/${lead.handle}` || !reason(lead.nextResearchReason) ||
         !Array.isArray(lead.hypothesisIds) || lead.hypothesisIds.length < 1 ||
         new Set(lead.hypothesisIds).size !== lead.hypothesisIds.length ||
-        lead.hypothesisIds.some(id => ![...RESEARCH_LANES, ...ROLE_SEARCH_LANES].some(lane => lane.id === id)) ||
+        lead.hypothesisIds.some(id => ![...RESEARCH_LANES, ...ROLE_SEARCH_LANES_V3].some(lane => lane.id === id)) ||
         JSON.stringify(lead.unknowns) !== JSON.stringify(unknowns) ||
-        !Array.isArray(lead.evidence) || lead.evidence.length < 1 || lead.evidence.length > 6) fail();
+        !Array.isArray(lead.evidence) || lead.evidence.length < 1 || lead.evidence.length > 10) fail();
     ids.add(lead.id);
     const evidenceIds = new Set();
     for (const item of lead.evidence) {
       const commit = item?.kind === 'github-commit';
-      const lane = [...RESEARCH_LANES, ...ROLE_SEARCH_LANES].find(candidate => candidate.repo === item?.repository);
+      const lane = [...RESEARCH_LANES, ...ROLE_SEARCH_LANES_V3].find(candidate => candidate.repo === item?.repository);
       if (!exact(item, commit ? ['id', 'kind', 'url', 'repository', 'title', 'committedAt', 'observedAt', 'reviewReason'] :
         ['id', 'kind', 'url', 'repository', 'title', 'mergedAt', 'observedAt', 'number', 'reviewReason']) ||
           typeof item.id !== 'string' || evidenceIds.has(item.id) || !lane || !lead.hypothesisIds.includes(lane.id) ||

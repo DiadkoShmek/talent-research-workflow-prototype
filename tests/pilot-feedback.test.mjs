@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { collectResearch } from '../src/research.js?v=0.8.0';
-import { createResearchReview, researchReviewAction } from '../src/research-review.js?v=0.8.0';
-import { createPilotFeedback, recordPilotFeedback, restorePilotFeedback, viewPilotFeedback } from '../src/pilot-feedback.js?v=0.8.0';
+import { collectResearch } from '../src/research.js?v=0.9.0';
+import { createResearchReview, researchReviewAction } from '../src/research-review.js?v=0.9.0';
+import { createPilotFeedback, recordPilotFeedback, restorePilotFeedback, viewPilotFeedback } from '../src/pilot-feedback.js?v=0.9.0';
 
 async function selectedReview() {
   const sha = 'a'.repeat(40);

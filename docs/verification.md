@@ -1,5 +1,13 @@
 # Verification record — 28 September 2026
 
+## Local v0.9 five-axis search proof (release pending)
+
+The v0.9 primary button adds a video-timeline axis in `remotion-dev/remotion` and retains up to two distinct merged PRs per numeric account ID in each lane. It binds five exact query URLs, all scanned-row dispositions, account/source grouping and the actual number of requests. A 403/429 stops subsequent lanes. Legacy v2 reports still import.
+
+- `npm test`: **61/61**; `npm run stress`: **200/200** local review cycles; Python offline tests: **14/14**. Chromium fixture scripts run at 1440 and 390 px, including the v0.8 import compatibility path and v0.9 repeated-PR and rate/conflict path. Screenshots are synthetic fixtures, not live candidates.
+- One live public GitHub API collection at `2026-09-28T16:49:21Z` completed **5/5 requests in 2,234 ms**, with **8 distinct GitHub IDs and 14 retained PR associations**. The five lanes retained 4/3/3/2/2 PRs. Two exact public Remotion PRs, [#11763](https://github.com/remotion-dev/remotion/pull/11763) and [#11703](https://github.com/remotion-dev/remotion/pull/11703), shared one numeric GitHub ID; exact PR inspection matched the saved ID and returned changed-file facts. This is one availability observation and a trace of public code changes, not evidence of a person's years of work, availability, recruiter interest or role fit. The full account-bearing JSON stays in the private dossier.
+- The narrower title and seeded-repository strategy was chosen after broad merged-PR queries returned noisy first pages. It trades recall for a reviewable example; we have not measured recall, precision or time saved against a recruiter baseline.
+
 ## Published v0.8 role-search release
 
 Code revision `9e177d77ea855ea5e716fea5457a6d2234fc48cf` passed [offline contracts](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36452452136) and [Pages deployment](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36452450885). **23 public application and v0.8 screenshot files** matched the local release bytes; the private byte receipt remains outside this repository. The screenshots use synthetic API fixtures.
@@ -105,6 +113,6 @@ python3 tests/browser_smoke.py
 
 ## What remains unproved
 
-Source truth, real identity matching, authenticated human review, role suitability, broad real-world sourcing beyond the four selected repositories, AI generation, production-grade shared storage, ATS writes and recruiting outcomes. The standard fixture's `asOf` is a fixed replay snapshot; date checks are relative to it, not the operating system clock. The event trail is self-attested local behavior.
+Source truth, real identity matching, authenticated human review, role suitability, broad real-world sourcing beyond the five selected repositories, AI generation, production-grade shared storage, ATS writes and recruiting outcomes. The standard fixture's `asOf` is a fixed replay snapshot; date checks are relative to it, not the operating system clock. The event trail is self-attested local behavior.
 
 No Figma file was requested or created. Browser checks for v0.5 and local v0.6 are recorded above. There is no claimed Figma-to-code verification.

@@ -1,17 +1,19 @@
-import { validateResearchReport } from './research.js?v=0.8.0';
+import { validateResearchReport } from './research.js?v=0.9.0';
 
 const RATIONALE = {
   uk: {
     'agent-orchestration': 'Графи й виконання агентів дають видимі технічні сліди для перевірки оркестрації.',
     'ts-agent-tooling': 'TypeScript SDK дає видимі зміни в інструментах, викликах і потокових відповідях.',
     'programmable-editor': 'Редактор на React дає видимі зміни в інтерфейсі та програмованій взаємодії.',
-    'agent-recovery': 'Продукт із довгими процесами агентів дає сліди відновлення, контексту й надійності.'
+    'agent-recovery': 'Продукт із довгими процесами агентів дає сліди відновлення, контексту й надійності.',
+    'video-timeline': 'Відеоредактор дає видимі зміни в таймлайні, кадрах та інструментах монтажу.'
   },
   en: {
     'agent-orchestration': 'Agent graph and run code provides inspectable signals for orchestration work.',
     'ts-agent-tooling': 'A TypeScript SDK provides inspectable changes in tools, calls, and streaming.',
     'programmable-editor': 'A React editor provides inspectable changes in UI and programmable interaction.',
-    'agent-recovery': 'A product with long-running agents offers traces of recovery, context and reliability.'
+    'agent-recovery': 'A product with long-running agents offers traces of recovery, context and reliability.',
+    'video-timeline': 'A video editor offers inspectable changes in the timeline, frames and editing controls.'
   }
 };
 

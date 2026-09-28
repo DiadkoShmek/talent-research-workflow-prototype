@@ -1,4 +1,4 @@
-import { createSession, demoProject, transition, viewSession } from './engine.js?v=0.8.0';
+import { createSession, demoProject, transition, viewSession } from './engine.js?v=0.9.0';
 
 export const WALKTHROUGH_STEPS = 5;
 

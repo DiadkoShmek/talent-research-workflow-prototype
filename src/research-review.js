@@ -1,4 +1,4 @@
-import { validateResearchReport } from './research.js?v=0.8.0';
+import { validateResearchReport } from './research.js?v=0.9.0';
 
 const SCHEMA = 'signal-desk-research-review.v1';
 const MAX_BYTES = 2 * 1024 * 1024;
