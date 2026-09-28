@@ -10,7 +10,7 @@ import argparse
 import json
 import os
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 
 ROOT = Path(__file__).resolve().parents[1]
 class QuietHandler(SimpleHTTPRequestHandler):
@@ -94,7 +94,7 @@ def run():
                 project['findings'][0]['name'] = '<img src=x onerror="window.injected=true">'
                 project['findings'][1]['name'] = project['findings'][0]['name']
                 page.locator('#project-file').set_input_files({'name':'sample.json','mimeType':'application/json','buffer':json.dumps(project).encode()})
-                page.wait_for_function("document.querySelector('.ribbon').textContent.includes('User-supplied')")
+                expect(page.locator('.ribbon')).to_contain_text('User-supplied')
                 assert page.locator('#scenario').input_value() == 'imported'
                 assert not page.evaluate('window.injected === true')
                 assert page.locator('.detail h3 img').count() == 0

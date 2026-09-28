@@ -1,6 +1,31 @@
-# Verification record — 28 September 2026 (v0.4)
+# Verification record — 28 September 2026
 
-## Executed checks
+## Current local v0.5 additions
+
+- `npm test`: **44/44 passed**. Includes engine contracts and 200 synthetic cycles; guided replay and both languages; script attribution; full session replay; capped-state restoration; quota/observed-tab conflict; collection/parsing; inconsistent status/count/identity rejection; source-URL substitution and HTML injection tests; Markdown continuation export; exact handoff CSS hash against the site CSP.
+- `python3 -m unittest discover -s tests -p test_research_pass_v1.py`: **8/8 passed** with injected responses and no live requests. This suite is for the new collector, not the historical Python handoff demo.
+- `node --check src/app.js` and `git diff --check`: passed.
+- **Actual public pass:** the Python CLI completed three unauthenticated GET requests at `2026-09-28T14:50:55Z`. 60 records examined; 17 known skipped rows (bot/organization/null author categories), zero malformed records; six distinct GitHub account IDs; ten retained commit associations. All three lanes returned `ok`. Measured collection time: **490 ms**, one run, excluding later source review. These are not six qualified or recruiter-accepted candidates.
+- The actual Python output was accepted by the JS `validateResearchReport` in **Node**, then rendered into Ukrainian and English standalone HTML. Private data files are outside this repository. This proves cross-runtime acceptance of this run, not universal parity or browser fetch/CORS behavior.
+- Independent read-only review checked app state replacement, original-project tracking, module identity, scripted attribution, export scope, source validation and public collection integration. Found and fixed malformed data being treated as empty; also repaired `failed` with usable observations by adding explicit lane `partial`. Both collectors reject impossible/future dates and conflicting duplicate commit ownership.
+- CUA was unavailable. After Artur directly authorized local Playwright, **v0.5 browser checks passed at 1440 and 390 px**: `browser_smoke.py`, `browser_handoff.py`, `browser_session_limit.py`, and `browser_research_v05.py`. The new test intercepts GitHub with synthetic fixtures: three requests only on click, immutable-ID grouping, reports/continuation-note downloads, draft isolation, styled walkthrough packet, offline HTML, autosave/reload, valid report/session restoration after reset, and failed imports preserving state. Source/API parsing adversaries are also covered independently in Node/Python. An initial harness wait used eval blocked by the new CSP; it was replaced with locator assertions without weakening the policy.
+- **Actual browser API pass:** at `2026-09-28T15:06:22Z`, Chromium loaded the local page and made exactly three real GitHub GET requests after the button click. Result: `complete`, all three lanes `ok`, six accounts, ten observations, **521 ms**. Actual JSON/HTML downloads succeeded; no JavaScript or CSP errors. This separately verifies the browser fetch/CORS path for one run. It is not an uptime promise or recruiting benchmark.
+- Screenshots `research-v05-*` use synthetic API fixtures and are distinguished from the private screenshot of the actual public-source run. Private account reports, source review and live proof are kept outside the public repository.
+- Local review measured synchronous session serialization around 185 ms at 2000 actions for a small fixture. It replays the full history after each accepted action; this is not a phone performance guarantee.
+- `.github/workflows/verify.yml` runs offline contract checks with read-only permissions and pinned action revisions. It does not gate or deploy the separate GitHub Pages workflow; remote run status is separate evidence.
+- These are local v0.5 proofs. Publishing must additionally establish the deployed revision, public asset bytes and behavior; v0.4 evidence below is historical.
+
+### Release checks
+
+1. Local core/browser scenarios passed at desktop and phone widths; inspect the deployed page again after release.
+2. Local actual GitHub collection and explicit-click isolation passed. API failures and partial results have deterministic parser tests; availability remains external.
+3. Saved research import, JSON/HTML/Markdown downloads, and full manual session restore passed in Chromium. Private real reports remain outside the public repository.
+4. Browser autosave/reload and guided/manual draft isolation passed. Storage denial/quota/observed-tab conflict are covered with an injected Node storage adapter; concurrent real tabs are not a supported collaboration mode.
+5. Existing handoff, event-cap and full smoke paths passed against v0.5. Inspect the release file list; keep real account reports and the private dossier outside the public repo.
+
+## Historical v0.4 record
+
+### Previously executed checks
 
 - `npm test`: **19/19** Node engine tests passed. New v0.4 cases check that the recipient packet excludes another person's decision notes, overwritten reviews, and internal plan-change notes while retaining only the latest supporting decisions. Earlier cases cover plan changes, scope, archived identity conflicts, unique-person coverage, immutable state and the 2000-event terminal gate.
 - `python3 tests/browser_handoff.py --screenshots`: **1440/390 px passed**. Added a rejected Petro note, approved Olena, and inspected the actual JSON and readable HTML downloads: the unrelated structured event and its note were absent. Opened the downloaded HTML offline and checked its evidence, unknowns, next human action, overflow and lack of external requests. Checked English labels/download, unsafe imported names/source text/reasons rendered as text, and no scripts or injected images in the output. Inspected the saved desktop and phone handoff screenshots.
@@ -34,6 +59,6 @@ python3 tests/browser_smoke.py
 
 ## What remains unproved
 
-Source truth, real identity matching, authenticated human review, role suitability, real sourcing, AI generation, persistent storage, ATS writes and recruiting outcomes. The standard fixture's `asOf` is a fixed replay snapshot; date checks are relative to it, not the operating system clock. The event trail is self-attested local behavior.
+Source truth, real identity matching, authenticated human review, role suitability, broad real-world sourcing beyond the three fixed repositories, AI generation, production-grade shared storage, ATS writes and recruiting outcomes. The standard fixture's `asOf` is a fixed replay snapshot; date checks are relative to it, not the operating system clock. The event trail is self-attested local behavior.
 
-No Figma file was requested or created. Screenshots and browser interaction were checked directly; there is no claimed Figma-to-code verification.
+No Figma file was requested or created. Historical screenshots and browser interaction were checked directly for earlier versions; v0.5 has the explicit browser gap above. There is no claimed Figma-to-code verification.

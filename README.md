@@ -2,11 +2,25 @@
 
 ### Evidence first. Then a decision.
 
-An interactive research workbench: set the search objective, required criteria and active research channels; inspect the source behind a claim; carry explicitly approved research into a readable local handoff card.
+An interactive prototype with two separate paths: a bounded public GitHub research pass, and a fictional manual review workflow that ends in a readable local handoff card.
 
-**[Open the working demo →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=en)** · **[Українською →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=uk)** · [Architecture](docs/architecture.md) · [Limits](docs/limits.md)
+**[Open the published version →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=en)** · **[Українською →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=uk)** · [Architecture](docs/architecture.md) · [Limits](docs/limits.md)
 
-![Signal Desk: research queue, source evidence and human review](docs/screenshots/desktop-preview.png)
+![Signal Desk v0.5: public-source workflow shown with synthetic test fixtures](docs/screenshots/research-v05-desktop-viewport.png)
+
+*v0.5 browser screenshot with synthetic API fixtures. A separate actual public API pass is documented in the [verification record](docs/verification.md).*
+
+## A bounded public research pass
+
+For the [Poolday Senior Agentic Software Engineer role](https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday), **Collect from GitHub** makes three concurrent public read requests: the latest 20 commits in `langchain-ai/langgraphjs`, `vercel/ai` and `tldraw/tldraw`. It surfaces at most two accounts per repository and six distinct GitHub accounts overall, grouped by GitHub user ID. Each observation links to a profile and exact commit. Source failures and partial runs remain visible.
+
+These are **three seeded repositories on one platform**, not a whole-market search. A commit association does not prove authorship depth, professional tenure, location, availability, interest or role fit. There is no candidate ranking. The standalone research brief and JSON can be downloaded; a saved JSON report can be reopened with its origin explicitly unverified. This research report never enters the fictional manual queue or approved handoff packet. Live collection needs network access to the public GitHub API and may hit its unauthenticated rate limit. It needs no key or login.
+
+## A walkthrough that explains itself
+
+Choose **Watch the guided example** for five steps: task, insufficient evidence, a supporting source, a readable packet, and approval withdrawal. Each step explains the consequence. Scripted decisions are explicitly attributed to automated replay on fictional data, through the same engine; the separate manual queue is untouched. Save the walkthrough as a script-free offline reading copy. `?lang=en&demo=1` opens it immediately.
+
+Recorded manual decisions and the plan are saved in this browser when local storage is available, then restored through engine replay. Unsubmitted input drafts are not saved. The UI reports storage failures or observed other-tab changes. **Save session file / Restore session file** provide a full local project-and-action backup, distinct from the recipient handoff. A session file is self-attested, not an authenticated audit. Multi-tab collaborative editing is not supported.
 
 ## Try to change its mind
 
@@ -20,7 +34,7 @@ The sample has **8 observations, 6 fictional people, 4 research hypotheses and 1
 
 **One-minute plan challenge:** after approving Olena, open “The brief drives the research,” turn off the `automation-builders` channel while keeping automation required, and record a reason. All prior reviews, identity confirmations and approvals reset. Olena now lacks accepted automation evidence, and the handoff closes. A known identity conflict still blocks handoff even if its conflicting channel is inactive.
 
-This is a **working offline interaction**, not live recruiting. The built-in people and source documents are fictional. Imported sample content is labelled as unverified; a synthetic reference does not establish fictionality. Objective text explains the intent; selected criteria and channels govern which already-collected observations appear in the current review. Switching a channel off does not stop or start a real search. There is no AI interpretation of the text or real source search. Session changes disappear on reload. The readable HTML and JSON files download locally; neither writes to an ATS.
+The **manual queue** works offline with fictional people and source documents. Imported sample content is labelled as unverified; a synthetic reference does not establish fictionality. Objective text explains the intent; selected criteria and channels govern which already-collected observations appear in the current review. Switching a channel off does not control GitHub collection. There is no AI interpretation of the text or candidate evaluation. Recorded decisions resume on reload when local storage succeeds; the save status is visible. The readable HTML and JSON files download locally; neither writes to an ATS.
 
 For a tougher review, import the [fictional webinar example](examples/webinar-rehearsal.json). It quotes training attendance against a criterion for hands-on automation. Rejecting that claim leaves the handoff blocked. Accepting it can satisfy the formal rule, which shows why a human must judge the **meaning** of the source, not just whether its words appear in a document.
 
@@ -45,18 +59,27 @@ npm test
 npm run stress
 ```
 
-No package installation, API key, login or candidate data is needed. `npm start` runs the same local server. The project-download button supplies a valid synthetic input example for the importer; imports start with no reviews or approvals.
+No package installation, API key, login or candidate data is needed. `npm start` runs the same local server. A new public collection does require network access. The project-download button supplies a valid synthetic input example for the manual importer; imports start with no reviews or approvals.
+
+Python 3 also exposes the same bounded public GitHub pass as a separate command:
+
+```bash
+python3 scripts/research_pass.py --live --output /tmp/signal-desk-research.json
+```
+
+It makes three public GET requests and writes JSON only to the chosen local path. Without `--live`, it prints help. The browser uses `src/research.js` instead.
 
 ## Small surface, explicit rules
 
 ```mermaid
 flowchart LR
+    G[Three public GitHub commit feeds] --> H[Separate research brief]
     A[Objective + required criteria + active channels] --> B[Validated synthetic findings]
     B --> C[Identity grouping + archived collision checks]
     C --> D[Source-by-source human review]
     D --> E[Current plan + explicit approval]
     E --> F[Readable local card + scoped decision receipts]
-    F -. future authorized adapter .-> G[ATS]
+    F -. future authorized adapter .-> ATS[ATS]
 ```
 
 One pure engine owns the rules in both browser and tests. The UI displays derived state; it cannot turn a badge into permission. Reviews belong to evidence items. Effective plan or cutoff changes reset reviews, identity confirmations and approvals. The recipient packet carries only the latest decisions supporting its currently accepted required evidence, identity confirmation and approval; the full in-session journal stays in the local workbench. Channel contribution counts only approved people with accepted fresh required evidence from that channel; a person can contribute to several channels, so these counts cannot be added as separate wins. Required-criterion coverage counts unique active people with fresh proposed versus accepted evidence. See the [full architecture and failure model](docs/architecture.md).
@@ -67,7 +90,11 @@ One pure engine owns the rules in both browser and tests. The UI displays derive
 | `src/app.js` | Bilingual working interface and local project import/download |
 | `src/search-plan.js` | Search-plan controls, channel contributions and criterion coverage display |
 | `src/handoff.js` | Readable recipient cards and standalone script-free HTML download |
-| `tests/engine.test.mjs` | Adversarial contracts and deterministic replay |
+| `src/walkthrough-state.js` / `src/walkthrough.js` | Isolated scripted replay, explanation and offline reading copy |
+| `src/session-file.js` / `src/session-store.js` | Versioned full-session replay and browser-storage adapter |
+| `src/research.js` / `src/research-view.js` | Bounded public GitHub collection, report validation and readable research brief |
+| `scripts/research_pass.py` | Separate Python 3 read-only public collection to an explicit local JSON path |
+| `tests/*.test.mjs` | Engine, replay, renderer and storage failure contracts |
 | `scripts/stress.mjs` | Bounded repeat check of complete review/reset flows |
 | `docs/pilot-plan.uk.md` | First conversation, baseline and one-search pilot |
 
@@ -77,14 +104,15 @@ One pure engine owns the rules in both browser and tests. The UI displays derive
 - Review changes and effective plan or cutoff resets invalidate previous approval.
 - Inactive channels have no current review workload; archived identity conflicts still block a person.
 - Input/view mutations and prototype-shaped IDs do not forge approval.
-- The browser flow has been exercised at desktop and phone sizes: review → identity → approve → export → change plan → inspect the evidence gap.
+- Earlier versions had desktop/phone browser checks. The v0.5 walkthrough and persistence have unit-level proof; their new browser pass is pending because the browser tool was unavailable.
+- Public research collection has deterministic tests for source failures and report boundaries; collecting from GitHub in a browser still needs a browser pass.
 - The repeat check is local deterministic evidence, not a production load test or a measured improvement in recruiting.
 
 [Verification record](docs/verification.md) · [Implemented behavior and known gaps](docs/limits.md)
 
 ## The first real pilot
 
-Shadow the team's live searches first, agree on the biggest source of lost time, then test one small workflow against a recorded baseline. Connecting authorized research sources, Brain or TeamTailor comes after access, data rules and the actual process are understood. No such connectors are implemented here. [Pilot plan in Ukrainian](docs/pilot-plan.uk.md).
+Shadow the team's live searches first, agree on the biggest source of lost time, then test one small workflow against a recorded baseline. Moving beyond the fixed public GitHub pass, or connecting Brain or TeamTailor, requires access, data rules and understanding of the actual process. There are no Brain or ATS connectors here. [Pilot plan in Ukrainian](docs/pilot-plan.uk.md).
 
 ## Authorship
 
@@ -102,3 +130,7 @@ python3 stress.py
 ```
 
 </details>
+
+[Security boundaries and controls](docs/security.md).
+
+**Colleague continuation:** after collection, “Context for the next colleague” downloads Markdown with the role, source rationale, queries, findings, unknowns and next checks. It is portable context, not a Brain integration.

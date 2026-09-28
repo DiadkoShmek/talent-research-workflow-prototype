@@ -1,27 +1,36 @@
 # Evidence and limits
 
-This is an independent interview prototype. Its built-in example uses invented people and source text. A user can import a local JSON example; the application cannot verify whether imported content is fictional. It has no relationship with A-Players' internal systems.
+This is an independent interview prototype. Its manual-review example uses invented people and source text. A user can import a local JSON example; the application cannot verify whether imported content is fictional. A separate v0.5 research pass reads public GitHub commit metadata for a Poolday role. Neither path has access to A-Players' internal systems.
 
 ## What a live demonstration can establish
 
-The browser workbench can demonstrate whether the review rule is coherent and inspectable: a reviewer sees a proposed finding, confirms identity, reviews claims individually, changes the freshness cutoff, approves or revokes a handoff, and sees a local export change. Automated tests can establish deterministic outcomes for those local actions. This is **workflow behavior**, not proof that claims are true or that recruiters save time.
+The browser's fictional workbench can demonstrate whether the review rule is coherent and inspectable: a reviewer sees a proposed finding, confirms identity, reviews claims individually, changes the freshness cutoff, approves or revokes a handoff, and sees a local export change. A separate public GitHub pass can show three query URLs, returned account associations, exact commit links, source errors and an exportable research brief. Automated tests can establish deterministic outcomes for local rules. None of this proves professional qualification or that recruiters save time.
 
 The older Python command-line demo is a separate reference. Its tests and 200 repeated runs apply to `research_handoff.py`, not automatically to the browser engine. Browser behavior should be reported as verified only after its own tests and an actual UI run.
 
-An in-session search plan can change the objective text, selected required criteria, and which existing sample channels participate. This filters already-collected observations, changes the computed queue and clears previous reviews, identity confirmations, and approvals. A channel switch does not start or stop real-world searching. The tool does not interpret the objective, discover sources, or establish that one channel performs better in real recruiting. Known identity conflicts remain blocked even when the conflicting observation is in an inactive channel.
+An in-session **manual** search plan can change the objective text, selected required criteria, and which existing fictional channels participate. This filters already-collected observations, changes the computed queue and clears previous reviews, identity confirmations, and approvals. A channel switch does not start or stop the GitHub pass. The tool does not interpret the objective or establish that one channel performs better in real recruiting. Known identity conflicts remain blocked even when the conflicting observation is in an inactive channel.
 
-Each session is limited to 2000 recorded actions. At that limit, previous decisions remain visible as history, but new decisions and handoff export are blocked. Reset starts a new session with no reviews or approvals. This local limit and reset do not provide durable storage or recovery.
+## Public GitHub pass: exact scope
+
+The Poolday example queries the latest 20 public commits in `langchain-ai/langgraphjs`, `vercel/ai` and `tldraw/tldraw` with three parallel unauthenticated GET requests. It retains at most two GitHub user accounts per repository, six distinct IDs overall, and up to two associated commits per account per repository. It groups by GitHub ID, never by a similar name. All three lanes share one platform and were chosen in advance. The returned order is not a ranking, a market sample or evidence of channel effectiveness.
+
+A GitHub commit association is a lead for inspection. It does not establish the person's role in the change, five professional years, European eligibility, availability, interest, current employment or suitability. A commit title can be misleading; the report links to the exact change for human review. No messages are sent. GitHub limits or network failures can yield a partial or failed run, which the report shows. The elapsed time measures collection only. There are no model calls, broader web search, ATS or Brain access.
+
+The public research report is separate from the fictional manual queue and `signal-desk-handoff.v2` recipient packet. It downloads as script-free HTML or `signal-desk-research.v1` JSON and can be imported from a saved JSON file. Strict shape and URL validation does not authenticate its provenance; imported reports are labelled unverified. Research reports persist only through explicit file save/import. The browser's local autosave covers the manual decisions, not the public report.
+
+Each session is limited to 2000 recorded actions. At that limit, previous decisions remain visible as history, but new decisions and handoff export are blocked. Reset starts a new session with no reviews or approvals. The v0.5 local session file can restore recorded decisions, including the read-only cap. Reset still discards prior decisions; restoring a capped file does not reopen it.
 
 ## Trust and privacy boundaries
 
 | Boundary | Present behavior | Unknown or future work |
 | --- | --- | --- |
 | Candidate data | Built-in fictional fixture; local JSON import allowed with fictionality unverified | Legal basis, consent, retention, deletion, access controls for real people |
-| Sources | Embedded source text; imported references must begin with `synthetic://`; quotes must occur in text | Fetching, source availability, ownership, citation integrity, truth of imported content |
+| Manual sources | Embedded fictional source text; imported references must begin with `synthetic://`; quotes must occur in text | Source truth, consent, ownership and reliable citation integrity |
+| Public research | Three fixed GitHub commit feeds, linked observations and visible source failures | Wider discovery, contribution depth, current profile facts, recruitment permission |
 | Identity | Declared grouping, collision hold within a group or across groups sharing one identity reference, and in-session human confirmation | Reliable real-person matching and correction |
 | Review | In-session actions | Authenticated reviewer, durable audit trail, training and quality checks |
-| Storage | Memory cleared on reload; local HTML and JSON snapshot downloads | Encrypted persistence, backups, retention, retraction of an already shared file |
-| External systems | None | TeamTailor mapping, credentials, rate limits, idempotency, retries, rollback |
+| Storage | Local browser save and replay for manual decisions; explicit full-session JSON backup/restore; separate recipient and research HTML/JSON | Encryption, authenticated history, shared multi-user storage, managed backups/retention, retraction of a shared file |
+| External systems | Read-only public GitHub API for the research pass | TeamTailor mapping, credentials, rate limits, idempotency, retries, rollback |
 | Internal knowledge | None | Brain schema, permission scope, sensitive client information |
 
 The observation date is a recency signal only. The demo uses a supplied fixed `asOf` snapshot (2026-09-28 in the standard example) to refuse later observations; it does not use the computer's current date for this rule. Source snippets and accepted reviews are not independent proof of truth, skill, consent, or fit. In the [fictional webinar example](../examples/webinar-rehearsal.json), accepting a quote about training attendance can satisfy the automation criterion even though the source does not establish hands-on implementation. The human reviewer owns that semantic judgment. The tool does not infer protected traits, psychological traits, or suitability scores. It does not contact, reject, or hire anyone. The export is a local demonstration snapshot, not a TeamTailor write or consent record.
@@ -32,6 +41,14 @@ Channel counts describe local review state: fresh accepted, rejected, and pendin
 
 ## Outcome claims needing a pilot
 
-The [public role brief](https://aplayers.na.teamtailor.com/jobs/617015-talent-engineer-ai-automation-a-players) expresses a desired shorter time to first qualified candidate and more high-signal interviews. This prototype has no baseline, live search, recruiter usage, ATS data, or hiring outcome. It cannot establish speed improvement, accuracy, recruiter acceptance, interview conversion, or revenue impact.
+The [Talent Engineer role brief](https://aplayers.na.teamtailor.com/jobs/617015-talent-engineer-ai-automation-a-players) expresses a desired shorter time to first qualified candidate and more high-signal interviews. The prototype now has a narrow live **public metadata** pass, but no hiring baseline, recruiter assessment, ATS data or outcome. It cannot establish speed improvement, candidate quality, recruiter acceptance, interview conversion or revenue impact.
 
 The first real test should compare one permitted search with its baseline and record speed **and** quality: time to first recruiter-accepted profile, review minutes per accepted profile, duplicates, missing fields, stale or wrong claims, and acceptance rate. A faster queue that sends more weak or uncheckable profiles is a failure. See the [Ukrainian pilot plan](pilot-plan.uk.md).
+
+## v0.5 continuation and guided-mode limits
+
+The guided walkthrough replays prewritten decisions through the real engine on a separate fictional session. It does not perform live research or establish the viewer’s own review ability. Its offline document is a static explanation of successive stages; the approved packet shown at one stage is historical after the withdrawal stage.
+
+Autosave covers submitted decisions and the plan, not unsubmitted text, selection, filters or expanded source cards. It is local to the browser origin/profile, may be unavailable or cleared by browser settings, and is not encrypted by this application. Other-tab changes observed before a write cause a refusal to overwrite; truly simultaneous writers are not serialized. Use one editing tab and download a full-session file for an explicit backup. Corrupted browser storage is left untouched and autosave stays unavailable for that load. A valid explicit file restore can continue in memory even when browser storage is unavailable.
+
+Session restoration validates format, limits and transitions, not authenticity. An internally consistent edited history can restore to an approved state; there is no trusted signer. The 2 MiB file bound and 2000-action bound are independent. A session containing a very large project plus long notes may exceed the file bound before reaching the action cap; the UI reports the save failure. Full session files include all input and decision notes, unlike recipient packets.

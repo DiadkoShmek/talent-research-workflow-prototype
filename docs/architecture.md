@@ -1,6 +1,6 @@
 # Signal Desk architecture
 
-Signal Desk demonstrates one recruiting operation: turning proposed research into source-by-source human review and a controlled local handoff. The [public Talent Engineer posting](https://aplayers.na.teamtailor.com/jobs/617015-talent-engineer-ai-automation-a-players) motivates the problem. The built-in fixture contains fictional people; this independent artifact is not an A-Players system.
+Signal Desk demonstrates two separate operations: a bounded read-only public GitHub pass, then a fictional source-by-source human review with a controlled local handoff. The [public Talent Engineer posting](https://aplayers.na.teamtailor.com/jobs/617015-talent-engineer-ai-automation-a-players) motivates the workflow; the research pass uses the [public Poolday Senior Agentic Software Engineer posting](https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday) as its concrete brief. The manual fixture contains fictional people. This independent artifact is not an A-Players system.
 
 ## Decision boundary
 
@@ -18,6 +18,7 @@ The browser interface makes those decisions inspectable. It does not rank candid
 
 ```mermaid
 flowchart LR
+    R[Three fixed GitHub commit feeds] --> RB[Separate research brief]
     B[Human search plan and criteria] --> E[Pure policy engine]
     F[Fictional proposed findings] --> E
     U[Reviewer actions in browser] --> E
@@ -27,9 +28,17 @@ flowchart LR
     X -. future authorized adapter .-> ATS[TeamTailor or other ATS]
 ```
 
-`src/engine.js` is the canonical browser policy engine, with no browser or network dependency. `src/app.js` renders its state, dispatches actions, and accepts local JSON project imports; `src/search-plan.js` renders plan controls, channel results, and required-criterion coverage; `src/handoff.js` renders the packet into recipient cards and a standalone script-free HTML document; `src/style.css` owns the workbench presentation. The static app has no login, service, model call, or external provider. State lives in memory and disappears on reload. Exports are local HTML and JSON downloads. The existing Python `research_handoff.py` and JSON examples are an earlier offline reference; the browser neither calls Python nor shares its runtime.
+`src/engine.js` is the canonical manual-review policy engine, with no browser or network dependency. `src/app.js` renders its state, dispatches actions, and accepts local JSON project imports; `src/search-plan.js` renders plan controls, channel results, and required-criterion coverage; `src/handoff.js` renders the packet into recipient cards and a standalone script-free HTML document; `src/style.css` owns the workbench presentation. The static page has no login, server, model call, ATS or Brain connector. A deliberate research click does make public GitHub API requests. Recorded manual decisions and their initial project are saved to local browser storage when available, then reconstructed by engine replay after reload. Unsubmitted input drafts are not persisted. Exports are local HTML and JSON downloads. The older `research_handoff.py` and JSON examples are a separate reference; the browser does not call that Python module.
+
+`src/research.js` owns the browser's read-only research collection and strict report validation. `src/research-view.js` renders an inspectable report and standalone HTML. `src/research-note.js` derives a portable Markdown continuation note from the validated report: role, source rationale and queries, observed findings, unknowns and next colleague checks. It is an explicit local download, not a Brain integration or an authenticated decision record. `scripts/research_pass.py` is a separate Python 3 CLI that makes the same three fixed public GET requests and writes JSON to an explicitly chosen local path. Browser collection and CLI collection are distinct implementations; neither feeds findings into the manual review engine. The research report has its own import/download controls and is not a candidate approval or ATS write.
 
 The engine contract is `demoProject(scenario)` for a fictional project, `createSession(project)` for initial state, `transition(state, action)` for an immutable next state, `viewSession(state)` for a read model, and `exportHandoff(state)` for the approved local packet. The view exposes project, active plan, revision, candidates, hypotheses, criterion coverage, metrics, the full local event journal, and export packet. The packet declares `signal-desk-handoff.v2`, `synthetic-local-demo`, `self-attested, unauthenticated`, and `eventsScope: latest-supporting-decisions-only`. It carries the selected criteria/channels, objective, current accepted fresh required evidence, reviewer reasons, and the latest identity and approval receipts. It omits unrelated historical actions, global policy events, and `plan.reason`. These fields describe a bounded recipient snapshot; they do not authenticate a reviewer or certify a source. The UI supports Ukrainian and English labels; language does not alter policy.
+
+## Public research contract (v0.5)
+
+The three seeded lanes are `langchain-ai/langgraphjs` (agent orchestration), `vercel/ai` (TypeScript AI tooling), and `tldraw/tldraw` (programmable React editors). The browser uses `Promise.all` for three GitHub public `/commits?per_page=20` reads; the Python CLI uses three worker threads. At most two accounts per lane and two associated commits per account per lane are retained, for at most six distinct GitHub account IDs across lanes. A GitHub ID, not a name, joins repeated observations. The commit link, repository, first-line title and timestamps are inspectable, but this association does not prove depth of contribution, employment, tenure, location, availability, or suitability.
+
+Each lane records scanned, skipped, rejected and retained counts; a request failure or wholly malformed rows mark the lane as an error; usable observations alongside malformed rows produce a partial lane. The report records elapsed request time and `complete`, `partial` or `failed` collection status. This is time to collect public metadata, never time to a qualified candidate. GitHub may rate-limit unauthenticated calls. The schema `signal-desk-research.v1` validates fixed lanes, source URLs, identifiers and size before imported reports are displayed. That structural validation does not authenticate an imported JSON file or establish the truth of a commit title. HTML output escapes displayed text and contains no script. A downloaded research report persists only through explicit file export/import; manual-session autosave covers the fictional review queue only.
 
 ## Data and action contracts
 
@@ -50,7 +59,7 @@ An accepted observation is research evidence for a reviewer to consider, not pro
 
 The local JSON importer accepts the same validated project shape and allows source references beginning with `synthetic://`; it does not fetch sources. A source includes the full inspectable text, and each claim's quote must appear in that text. This is a structural check, not external verification. The engine cannot prove that user-supplied text describes fictional people. The UI labels imported content as unverified fictionality and starts a fresh session with no reviews, identity confirmations, or approvals.
 
-The plan can change the objective wording, require a subset of existing criteria, and activate a subset of existing fictional research channels. It does not parse natural language or search for new people. Active channels filter **already-collected** observations and claims in the current review and handoff; a switch does not start or stop future sourcing. Identity conflicts are checked against **all archived findings**, including inactive channels, so hiding one channel cannot turn a known ambiguous identity into a safe one. Every plan change records the reason and reviewer in the local journal and invalidates prior reviews, identity confirmations, and approvals.
+The manual plan can change the objective wording, require a subset of existing criteria, and activate a subset of existing fictional research channels. It does not parse natural language or control GitHub collection. Active manual channels filter **already-collected** fictional observations and claims in the current review and handoff; a switch does not start or stop public sourcing. Identity conflicts are checked against **all archived findings**, including inactive channels, so hiding one channel cannot turn a known ambiguous identity into a safe one. Every plan change records the reason and reviewer in the local journal and invalidates prior reviews, identity confirmations, and approvals.
 
 ## State and invariants
 
@@ -67,7 +76,7 @@ stateDiagram-v2
     Approved --> NeedsIdentity: plan change clears decisions
 ```
 
-The diagram is illustrative: identity can be confirmed before or after evidence review. Status is derived from the current project, active plan, and actions, never an independent permission flag. Export is fail closed when identity is unconfirmed, any **selected required** criterion lacks at least one accepted fresh claim from an active channel, or approval is missing. A pending or rejected alternative does not block a criterion already covered by another accepted fresh claim. Duplicate observations retain distinct source references; reviewing one evidence item never reviews another. Revocation, cutoff change, and plan change recompute the export immediately. The full local journal explains in-session changes; the recipient packet includes only the latest supporting decisions. Neither is a durable authenticated audit.
+The diagram is illustrative: identity can be confirmed before or after evidence review. Status is derived from the current project, active plan, and actions, never an independent permission flag. Export is fail closed when identity is unconfirmed, any **selected required** criterion lacks at least one accepted fresh claim from an active channel, or approval is missing. A pending or rejected alternative does not block a criterion already covered by another accepted fresh claim. Duplicate observations retain distinct source references; reviewing one evidence item never reviews another. Revocation, cutoff change, and plan change recompute the export immediately. The full local journal explains in-session changes; the recipient packet includes only the latest supporting decisions. Neither is an authenticated audit; local session storage preserves self-attested actions only.
 
 | Failure or change | Expected behavior |
 | --- | --- |
@@ -95,9 +104,19 @@ Focused engine tests should exercise each invariant without the browser. A UI sm
 
 The view also exposes `session.exhausted`, `eventCount`, and `eventLimit`. At 2000 events, the session becomes read-only: historical statuses remain visible, `exportPacket` is null, and `exportHandoff` refuses export independently of the UI. A fresh session must be created to resume decisions; existing reviews and approvals do not carry over.
 
+## Guided presentation and session recovery (v0.5)
+
+`src/walkthrough-state.js` replays five isolated synthetic stages through the same `createSession` and `transition` functions. It never receives or mutates the manual session. Every decision names the scripted replay as its reviewer. `src/walkthrough.js` derives visible status and the recipient card from those engine views. Opening and stepping the presentation replaces only its own DOM subtree, preserving unfinished manual input during those interactions. Other full workbench renders retain their existing input-draft limitations. Its offline reading copy contains all five historical stages, no script, and no external resources.
+
+`src/session-file.js` owns `signal-desk-session.v1`: canonical initial project plus exact replayable actions, up to 2000 actions and 2 MiB. `serializeSession(originProject, state)` verifies the supplied origin/actions reproduce the current view; `restoreSession(envelope)` validates and replays before returning a replacement. Imported `approved` booleans or unknown fields cannot grant permission. Restore at the journal cap remains read-only. A full session file contains the entire journal, including records excluded from the recipient packet; the UI keeps these downloads distinct.
+
+`src/session-store.js` takes an injected storage adapter, reads the previous bytes, and checks for an observed change before saving. Invalid stored content is retained; quota/permission errors preserve existing data and report autosave unavailability. This check is **not atomic compare-and-swap across tabs**, a collaboration protocol, encryption, authentication or backup retention. The app saves after successful actions and deliberate resets/imports; a malformed restore cannot replace the current state. Restored sources and identities are labelled as unverified.
+
+A coherent rewritten history is still forgeable. Replay validates allowed transitions, not who performed them or source truth. Origin validation establishes reproduction of the final view: because `setCutoff` does not record its prior cutoff, some different initial cutoffs can converge after a reset. File loading does not make either origin authoritative.
+
 ## Why a static state machine
 
-Three options were considered: a presentation-only dashboard, this deterministic state machine, and a backend with provider integrations. A dashboard cannot show what changes when a reviewer rejects one claim or moves the cutoff. A backend requires accounts, secrets, source permissions, retention rules, and provider contracts before the workflow has been observed. The browser state machine is the smallest artifact that lets an interviewer challenge the policy live. It is a design probe, not a claim that the team's bottleneck is already known.
+Three options were considered for the manual review: a presentation-only dashboard, this deterministic state machine, and a backend with provider integrations. A dashboard cannot show what changes when a reviewer rejects one claim or moves the cutoff. A backend requires accounts, secrets, source permissions, retention rules, and provider contracts before the workflow has been observed. The browser state machine lets an interviewer challenge the policy. A separate bounded public GitHub read demonstrates a narrow discovery loop without claiming the team's bottleneck is already known.
 
 ## Boundary for a real pilot
 
@@ -113,6 +132,6 @@ flowchart LR
     T --> R[Write receipt or retry queue]
 ```
 
-These adapters **do not exist in this prototype**. They would need permitted source access, identity and reviewer authentication, role-specific data rules, retention and deletion, field mapping, least-privilege ATS credentials, idempotency keys, retries, reconciliation against the ATS as source of truth, and correction of an erroneous write. A versioned decision should bind role criteria, evidence, cutoff, and reviewer; otherwise an old approval can appear valid after policy changes. The outbox would separate a human decision from a network write and permit safe retry without duplicate ATS records.
+The prototype has only the fixed public GitHub read. Authorized production source adapters, an outbox and an ATS adapter **do not exist**. They would need permitted source access, identity and reviewer authentication, role-specific data rules, retention and deletion, field mapping, least-privilege ATS credentials, idempotency keys, retries, reconciliation against the ATS as source of truth, and correction of an erroneous write. A versioned decision should bind role criteria, evidence, cutoff, and reviewer; otherwise an old approval can appear valid after policy changes. The outbox would separate a human decision from a network write and permit safe retry without duplicate ATS records.
 
 An internal knowledge base may inform a human scorecard only with explicit access and an agreed read scope. Its schema, permissions, and contents are unknown here. The first pilot decision is where the team really loses time: discovery, source verification, identity resolution, or handoff. See the [pilot plan](pilot-plan.uk.md) and [limits](limits.md).
