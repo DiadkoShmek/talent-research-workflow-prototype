@@ -67,6 +67,7 @@ def run():
                 expect(page.locator(".research-snapshot")).to_be_visible()
                 expect(page.locator(".research-review-card")).to_have_count(8)
                 expect(page.locator(".source-inspection-result")).to_have_count(2)
+                expect(page.locator("#open-showcase")).to_be_disabled()
                 expect(page.locator(".research-snapshot a[download]")).to_have_attribute(
                     "href", "docs/meeting-brief.uk.html")
                 assert not api_calls
@@ -80,10 +81,16 @@ def run():
                 ids = ("github-pr:remotion-dev/remotion:11763", "github-pr:remotion-dev/remotion:11703")
                 lead_id = page.locator(f'[data-review-evidence="{ids[0]}"]').evaluate(
                     "el => el.closest('[data-review-lead]').getAttribute('data-review-lead')")
-                for evidence_id in ids:
+                for index, evidence_id in enumerate(ids):
                     source = page.locator(f'[data-review-evidence="{evidence_id}"]')
                     source.locator('[name="research-reason"]').fill("Timeline files merit a closer human review.")
                     source.locator('[data-evidence-decision="relevant"]').click()
+                    if index == 0:
+                        before = json.loads(downloaded_text(page, "#download-review-session"))
+                        assert len(before["actions"]) == 1
+                        page.evaluate("async () => { await document.querySelector('#open-showcase').onclick(); }")
+                        after = json.loads(downloaded_text(page, "#download-review-session"))
+                        assert after == before, "Reopening the active archive must not reset a review"
                 lead = page.locator(f'[data-review-lead="{lead_id}"]')
                 lead.locator('[name="lead-reason"]').fill("Check the individual design contribution and role context.")
                 lead.locator('[data-lead-decision="follow-up"]').click()
@@ -109,6 +116,11 @@ def run():
                 assert len(api_calls) == 6
                 assert "repo:remotion-dev/remotion" in parse_qs(urlparse(api_calls[1]).query)["q"][0]
                 assert page.locator(".research-review-card").count() == 8
+                page.once("dialog", lambda dialog: dialog.dismiss())
+                page.locator("#adopt-live-run").click()
+                retained = json.loads(downloaded_text(page, "#download-review-session"))
+                assert len(retained["actions"]) == 3 and page.locator(".research-snapshot").count() == 1
+                page.once("dialog", lambda dialog: dialog.accept())
                 page.locator("#adopt-live-run").click()
                 expect(page.locator(".research-review-card")).to_have_count(1)
                 assert page.locator(".research-snapshot").count() == 0
@@ -118,6 +130,40 @@ def run():
                 expect(screened).to_contain_text("fix: timeline frame alignment during trim")
                 assert screened.locator("a").get_attribute("href") == "https://github.com/remotion-dev/remotion/pull/9002"
                 expect(page.locator("#download-follow-up-json")).to_be_disabled()
+                source = page.locator("[data-review-evidence]").first
+                source.locator('[name="research-reason"]').fill("Keep this source for an explicit review decision.")
+                source.locator('[data-evidence-decision="relevant"]').click()
+                before = json.loads(downloaded_text(page, "#download-review-session"))
+                page.once("dialog", lambda dialog: dialog.dismiss())
+                page.locator("#open-showcase").click()
+                after = json.loads(downloaded_text(page, "#download-review-session"))
+                assert after == before, "Cancelling archive replacement must retain the current review"
+
+                # A review recorded while the archive fetch is pending must win the race.
+                page.evaluate("""() => {
+                    window.__originalFetch = window.fetch;
+                    window.fetch = (url, options) => String(url).includes('poolday-public-pass-2026-09-28.json')
+                        ? new Promise(resolve => { window.__releaseShowcase = () => resolve(window.__originalFetch(url, options)); })
+                        : window.__originalFetch(url, options);
+                }""")
+                page.once("dialog", lambda dialog: dialog.accept())
+                page.locator("#open-showcase").click()
+                page.wait_for_function("typeof window.__releaseShowcase === 'function'")
+                source = page.locator("[data-review-evidence]").first
+                source.locator('[name="research-reason"]').fill("A newer human decision arrived during archive loading.")
+                source.locator('[data-evidence-decision="relevant"]').click()
+                during_load = json.loads(downloaded_text(page, "#download-review-session"))
+                assert len(during_load["actions"]) == 2
+                page.evaluate("() => window.__releaseShowcase()")
+                expect(page.locator("#research-root [role=alert]")).to_be_visible()
+                assert json.loads(downloaded_text(page, "#download-review-session")) == during_load
+                page.evaluate("() => { window.fetch = window.__originalFetch; }")
+
+                page.once("dialog", lambda dialog: dialog.accept())
+                page.locator("#open-showcase").click()
+                expect(page.locator(".research-review-card")).to_have_count(8)
+                opened = json.loads(downloaded_text(page, "#download-review-session"))
+                assert opened["actions"] == [], "Confirmed replacement starts a fresh review"
                 assert not unexpected and not errors
                 assert page.locator("body").evaluate("el => el.scrollWidth <= window.innerWidth + 1")
                 print(f"PASS {width}px: bundled sources, human packet, rate-stop preservation and explicit live adoption")

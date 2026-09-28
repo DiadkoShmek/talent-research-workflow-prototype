@@ -29,6 +29,7 @@ def run():
             for label, width, height in (("desktop", 1440, 1000), ("mobile", 390, 844)):
                 page = browser.new_page(viewport={"width": width, "height": height}, reduced_motion="reduce", accept_downloads=True)
                 errors, csp_errors, unexpected, api_calls = [], [], [], []
+                mode = {"value": "ok"}
                 page.on("pageerror", lambda error: errors.append(str(error)))
                 page.on("console", lambda message: csp_errors.append(message.text)
                         if message.type == "error" and "Content Security Policy" in message.text else None)
@@ -39,6 +40,9 @@ def run():
                         route.continue_()
                     elif url.startswith(API_PREFIX):
                         api_calls.append(url)
+                        if mode["value"] == "rate":
+                            route.fulfill(status=403, content_type="application/json", body='{"message":"API rate limit exceeded"}')
+                            return
                         for repo in REPOS:
                             if url == f"{API_PREFIX}{repo}/commits?per_page=20":
                                 route.fulfill(status=200, content_type="application/json", body=json.dumps(FIXTURES[repo]))
@@ -86,17 +90,40 @@ def run():
                 first.locator("[data-review-evidence]").first.locator('[data-evidence-decision="uncertain"]').click()
                 expect(page.locator("#download-follow-up")).to_be_disabled()
                 assert "Без рішення" in page.locator('[data-review-lead="github:101"]').inner_text()
+                before_import = json.loads(downloaded_text(page, "#download-review-session"))
+                page.once("dialog", lambda dialog: dialog.dismiss())
+                page.locator("#research-file").set_input_files({"name": "saved-review.json", "mimeType": "application/json", "buffer": json.dumps(saved).encode()})
+                assert json.loads(downloaded_text(page, "#download-review-session")) == before_import
+                page.once("dialog", lambda dialog: dialog.accept())
                 page.locator("#research-file").set_input_files({"name": "saved-review.json", "mimeType": "application/json", "buffer": json.dumps(saved).encode()})
                 expect(page.locator("#download-follow-up")).to_be_enabled()
                 restored = json.loads(downloaded_text(page, "#download-follow-up-json"))
                 assert restored["sourceOrigin"] == "imported-file-unverified"
 
-                # A fresh source run has no inherited decisions, even when account IDs repeat.
+                # A failed source refresh is staged, never substituted for reviewed work.
+                mode["value"] = "rate"
                 page.locator("#collect-research").click()
+                expect(page.locator(".research-attempt")).to_be_visible()
+                failed = json.loads(downloaded_text(page, "#download-live-attempt"))
+                assert failed["run"]["status"] == "failed" and failed["run"]["requests"] == 3
+                assert json.loads(downloaded_text(page, "#download-review-session")) == saved
+                expect(page.locator("#adopt-live-run")).to_be_disabled()
+
+                # A successful new run also stages; cancellation keeps earlier decisions.
+                mode["value"] = "ok"
+                page.locator("#collect-research").click()
+                expect(page.locator(".research-attempt")).to_be_visible()
+                assert json.loads(downloaded_text(page, "#download-review-session")) == saved
+                assert len(api_calls) == 9
+                page.once("dialog", lambda dialog: dialog.dismiss())
+                page.locator("#adopt-live-run").click()
+                assert json.loads(downloaded_text(page, "#download-review-session")) == saved
+                page.once("dialog", lambda dialog: dialog.accept())
+                page.locator("#adopt-live-run").click()
                 expect(page.locator(".research-review-card")).to_have_count(2)
                 expect(page.locator("#download-follow-up")).to_be_disabled()
                 assert "Дій у журналі: 0/100" in page.locator(".research-review-stats").inner_text()
-                assert len(api_calls) == 6 and not unexpected
+                assert len(api_calls) == 9 and not unexpected
                 assert not errors and not csp_errors, (errors, csp_errors)
                 assert page.locator("body").evaluate("el => el.scrollWidth <= window.innerWidth + 1"), "horizontal overflow"
                 page.close()

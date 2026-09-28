@@ -8,7 +8,7 @@ import { sessionStore } from './session-store.js?v=0.10.0';
 import { collectResearch, validateResearchReport } from './research.js?v=0.10.0';
 import { collectRoleSearchV3 } from './role-search.js?v=0.10.0';
 import { loadShowcase } from './showcase.js?v=0.10.0';
-import { renderResearch, researchDocument } from './research-view.js?v=0.10.1';
+import { renderResearch, researchDocument } from './research-view.js?v=0.10.2';
 import { researchNote } from './research-note.js?v=0.10.0';
 import { createResearchReview, researchReviewAction, researchReviewPacket, researchReviewView, restoreResearchReview } from './research-review.js?v=0.10.0';
 import { researchFollowUpDocument } from './research-review-view.js?v=0.10.0';
@@ -119,7 +119,7 @@ function render(){
  root.innerHTML=`<div class="shell">
  <header class="topbar"><a class="brand" href="#"><span class="brand-icon"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18v-7m7 7V5m7 13V9" stroke="currentColor" stroke-width="3"/></svg></span><span class="brand-name">signal desk<small>RESEARCH WITH A REASON</small></span></a><nav class="topnav" aria-label="${t('Основна навігація','Main navigation')}"><a href="#workspace">${t('Робочий стіл','Workspace')}</a><a href="#system">${t('Архітектура','Architecture')}</a><a href="#pilot">${t('Перший пілот','First pilot')}</a><div class="language" aria-label="Language"><button data-lang="uk" aria-pressed="${lang==='uk'}">УКР</button><button data-lang="en" aria-pressed="${lang==='en'}">EN</button></div></nav></header>
  <section class="hero" data-story-beat="arrival"><div><p class="eyebrow"><span class="dot"></span>${t('НЕЗАЛЕЖНИЙ ПРОТОТИП ДЛЯ РОЗМОВИ З A-PLAYERS','AN INDEPENDENT PROTOTYPE FOR A-PLAYERS')}</p><h1>${t('Спочатку докази.<br><em>Потім рішення.</em>','Evidence first.<br><em>Then a decision.</em>')}</h1></div><div class="hero-copy"><p>${t('Знайти публічні сліди у відкритому коді. Побачити джерела й прогалини. Передати рекрутеру зрозумілий результат для наступної перевірки.','Discover public signals in open-source code. Inspect sources and gaps. Give a recruiter a readable result for the next research step.')}</p><div class="hero-actions"><button class="button primary" id="go-to-research">${t('Відкрити реальний пошуковий прохід','Open the public-source research pass')} ${arrow}</button><button class="button quiet" id="open-walkthrough">${t('Подивитися показ із поясненнями','Watch the guided example')} ${arrow}</button></div></div></section>
- <div class="ribbon"><span><strong>${t('Демонстраційний режим.','Demonstration mode.')}</strong> ${imported?t('Власний або відновлений приклад: вигаданість змісту не перевірено.','User-supplied or restored sample: fictionality is unverified.'):t('Показ і ручний приклад нижче — вигадані. Окремий пошуковий прохід читає реальні відкриті дані GitHub.','The walkthrough and manual example below are fictional. The separate research pass reads real public GitHub data.')}</span><span class="mono version">v0.10.1 / ${t('GitHub — лише за кнопкою','GitHub — only on request')}</span></div>
+ <div class="ribbon"><span><strong>${t('Демонстраційний режим.','Demonstration mode.')}</strong> ${imported?t('Власний або відновлений приклад: вигаданість змісту не перевірено.','User-supplied or restored sample: fictionality is unverified.'):t('Показ і ручний приклад нижче — вигадані. Окремий пошуковий прохід читає реальні відкриті дані GitHub.','The walkthrough and manual example below are fictional. The separate research pass reads real public GitHub data.')}</span><span class="mono version">v0.10.2 / ${t('GitHub — лише за кнопкою','GitHub — only on request')}</span></div>
  <main><div id="research-root">${renderResearch(researchReport,lang,{loading:researchLoading,imported:researchImported,showcase:researchShowcase,pendingLiveReport,error:researchError,reviewSession:researchReview,inspections,pilotFeedback})}</div><div id="walkthrough-root">${showWalkthrough?renderWalkthrough(walkthroughStep,lang):''}</div><section id="workspace" data-story-beat="work"><div class="workspace-heading"><div><p class="eyebrow">01 / ${imported?t('РУЧНА ПЕРЕВІРКА ІМПОРТОВАНИХ ДАНИХ','MANUAL REVIEW OF IMPORTED DATA'):t('РУЧНА ПЕРЕВІРКА НА ВИГАДАНОМУ ПРИКЛАДІ','MANUAL REVIEW OF A FICTIONAL EXAMPLE')}</p><h2>${e(l(v.project.title))}</h2></div><div class="tools"><label class="sr-only" for="scenario">${t('Сценарій','Scenario')}</label><select class="select" id="scenario">${imported?`<option value="imported" selected disabled>${t('Власний приклад','Imported sample')}</option>`:''}<option value="standard" ${scenario==='standard'&&!imported?'selected':''}>${t('Базовий пошук','Standard search')}</option><option value="conflict" ${scenario==='conflict'?'selected':''}>${t('Перевірка: конфлікт особи','Test: identity collision')}</option><option value="future-date">${t('Перевірка: дата з майбутнього','Test: future observation')}</option></select><button class="button quiet" id="start-tour">${t('Новий ручний приклад','New manual example')}</button><button class="button quiet" id="reset">${t('Скинути','Reset')}</button><button class="button" id="export-button" ${!v.exportPacket?'disabled':''}>${download} ${t('Пакет','Handoff')} (${v.metrics.approved})</button></div></div>
  <div class="session-recovery"><div><strong>${t('Продовжити після перерви','Continue after a break')}</strong><p id="save-status" role="status">${e(storageMessage())}</p></div><div class="session-actions"><button class="button" id="download-session">${t('Зберегти сесію у файл','Save session file')}</button><button class="button quiet" id="restore-session">${t('Відновити з файлу','Restore session file')}</button><input class="file-input" type="file" id="session-file" accept=".json,application/json"></div><p class="session-note">${t('Файл сесії містить усі дані й повний журнал для вашого продовження. Для рекрутера використовуйте окремий «Пакет». Збереження локальне, без входу в обліковий запис.','A session file includes all data and the full trail for your own continuation. Use the separate Handoff for a recruiter. Storage is local, without an account.')}</p></div>
  ${touring?`<div class="tour"><div><strong>${t('Три хвилини: пройдіть шлях одного рішення','Three minutes: follow one decision')}</strong><p>${t('Відкрийте три докази Олени → запишіть висновок і прийміть кожен → підтвердьте особу → схваліть передачу → відкрийте пакет. Потім змініть дату внизу: схвалення скинеться.','Open Olena’s three evidence items → write your reason and accept each → confirm identity → approve the handoff → open the packet. Then change the cutoff below: approvals are cleared.')}</p></div><button class="button" id="end-tour">${t('Закрити','Dismiss')}</button></div>`:''}
@@ -171,14 +171,23 @@ function inspectionError(error){
  if(error?.message==='invalid commit detail'||error?.message==='invalid source detail')return t('Деталь зміни не збіглася зі збереженим джерелом або має помилкову форму.','The change detail did not match the saved source or has invalid form.');
  return t('Не вдалося прочитати деталь зміни. Посилання на GitHub залишається доступним.','Could not read the change detail. The GitHub link remains available.');
 }
+function confirmResearchReplacement(){
+ if(!researchReview?.actions.length&&!pilotFeedback)return true;
+ return window.confirm(t('Ця дія замінить записану роботу в цій вкладці. Збережіть файли перевірки й оцінки, якщо хочете їх лишити. Продовжити?','This action will replace recorded work in this tab. Save the review and feedback files first if needed. Continue?'));
+}
 function bindResearch(){
  document.querySelector('#go-to-research').onclick=()=>{document.querySelector('#research-heading').focus({preventScroll:true});document.querySelector('#research-root').scrollIntoView({block:'start'});};
  document.querySelector('#open-showcase').onclick=async()=>{
-  if(researchLoading)return;
+  if(researchLoading||researchShowcase)return;
+  if(!confirmResearchReplacement())return;
+  const priorReport=researchReport,priorReview=researchReview,priorFeedback=pilotFeedback;
   researchLoading=true;researchError='';refreshResearch();
   let replaced=false;
-  try{const loaded=await loadShowcase();researchReport=loaded.report;researchReview=createResearchReview(loaded.report);
-   researchImported=true;researchShowcase=true;pendingLiveReport=null;resetInspections();inspections.details=loaded.details;replaced=true;}
+  try{const loaded=await loadShowcase();
+   if(researchReport!==priorReport||researchReview!==priorReview||pilotFeedback!==priorFeedback){
+    researchError=t('Під час відкриття архіву стан перевірки змінився. Поточну роботу не замінено.','The review changed while the archive loaded. The current work was preserved.');return;}
+   researchReport=loaded.report;researchReview=createResearchReview(loaded.report);
+   researchImported=true;researchShowcase=true;pendingLiveReport=null;pilotFeedback=null;resetInspections();inspections.details=loaded.details;replaced=true;}
   catch{researchError=t('Знімок релізу не пройшов перевірку. Попередній звіт збережено.','The release snapshot failed verification. The previous report remains.');}
   finally{researchLoading=false;refreshResearch(!replaced);document.querySelector('#open-showcase').focus({preventScroll:true});
    if(replaced)(new URL(location.href).searchParams.get('showcase')==='1'
@@ -186,32 +195,35 @@ function bindResearch(){
  };
  document.querySelector('#collect-role-search').onclick=async()=>{
   if(researchLoading)return;
-  researchLoading=true;researchError='';if(researchShowcase)pendingLiveReport=null;refreshResearch();
+  researchLoading=true;researchError='';pendingLiveReport=null;refreshResearch();
   let replaced=false;
   try{const report=validateResearchReport(await collectRoleSearchV3());
-   if(researchShowcase)pendingLiveReport=report;
-   else{researchReport=report;researchReview=createResearchReview(report);researchImported=false;researchShowcase=false;pendingLiveReport=null;resetInspections();replaced=true;}}
+   if(researchReport||pilotFeedback)pendingLiveReport=report;
+   else{researchReport=report;researchReview=createResearchReview(report);researchImported=false;researchShowcase=false;pendingLiveReport=null;pilotFeedback=null;resetInspections();replaced=true;}}
   catch{researchError=t('Пошук злитих PR не завершився. Перевірте доступ до GitHub; попередній звіт збережено.','Merged-PR search did not finish. Check GitHub access; the previous report remains.');}
   finally{researchLoading=false;refreshResearch(!replaced);document.querySelector('#collect-role-search').focus({preventScroll:true});}
  };
  document.querySelector('#collect-research').onclick=async()=>{
   if(researchLoading)return;
-  researchLoading=true;researchError='';if(researchShowcase)pendingLiveReport=null;refreshResearch();
+  researchLoading=true;researchError='';pendingLiveReport=null;refreshResearch();
   let replaced=false;
   try{const report=validateResearchReport(await collectResearch());
-   if(researchShowcase)pendingLiveReport=report;
-   else{researchReport=report;researchReview=createResearchReview(report);researchImported=false;researchShowcase=false;pendingLiveReport=null;resetInspections();replaced=true;}}
+   if(researchReport||pilotFeedback)pendingLiveReport=report;
+   else{researchReport=report;researchReview=createResearchReview(report);researchImported=false;researchShowcase=false;pendingLiveReport=null;pilotFeedback=null;resetInspections();replaced=true;}}
   catch{researchError=t('Збір не завершився. Перевірте доступ до GitHub і повторіть. Попередній звіт, якщо він був, лишився нижче.','Collection did not finish. Check GitHub access and retry. Any previous report is still shown below.');}
   finally{researchLoading=false;refreshResearch(!replaced);document.querySelector('#collect-research').focus({preventScroll:true});}
  };
  document.querySelector('#import-research').onclick=()=>document.querySelector('#research-file').click();
  document.querySelector('#research-file').onchange=async event=>{
   const file=event.target.files?.[0];if(!file)return;
+  const priorReport=researchReport,priorReview=researchReview,priorFeedback=pilotFeedback;
   let replaced=false;
   try{if(file.size>2*1024*1024)throw Error('research file too large');const input=JSON.parse(await file.text());
-   if(input?.schema==='signal-desk-research-review.v1'){const review=restoreResearchReview(input);researchReport=review.report;researchReview=review;}
-   else{const report=validateResearchReport(input);researchReport=report;researchReview=createResearchReview(report);}
-   researchImported=true;researchShowcase=false;pendingLiveReport=null;researchError='';resetInspections();replaced=true;}
+   const review=input?.schema==='signal-desk-research-review.v1' ? restoreResearchReview(input) : createResearchReview(validateResearchReport(input));
+   if(researchReport!==priorReport||researchReview!==priorReview||pilotFeedback!==priorFeedback){
+    researchError=t('Під час читання файла стан перевірки змінився. Поточну роботу не замінено.','The review changed while the file loaded. The current work was preserved.');return;}
+   if(!confirmResearchReplacement())return;
+   researchReport=review.report;researchReview=review;researchImported=true;researchShowcase=false;pendingLiveReport=null;pilotFeedback=null;researchError='';resetInspections();replaced=true;}
   catch{researchError=t('Файл дослідження відхилено. Попередній звіт збережено.','Research file rejected. The previous report is preserved.');}
   finally{event.target.value='';refreshResearch(!replaced);}
  };
@@ -219,8 +231,9 @@ function bindResearch(){
  document.querySelector('#download-live-attempt')?.addEventListener('click',()=>saveJSON(pendingLiveReport,'signal-desk-new-live-run.json'));
  document.querySelector('#adopt-live-run')?.addEventListener('click',()=>{
   if(!pendingLiveReport?.leads.length)return;
+  if(!confirmResearchReplacement())return;
   researchReport=pendingLiveReport;researchReview=createResearchReview(researchReport);researchImported=false;researchShowcase=false;
-  pendingLiveReport=null;resetInspections();refreshResearch(false);document.querySelector('#research-root').scrollIntoView({block:'start'});
+  pendingLiveReport=null;pilotFeedback=null;resetInspections();refreshResearch(false);document.querySelector('#research-root').scrollIntoView({block:'start'});
  });
  document.querySelector('#download-research-json')?.addEventListener('click',()=>saveJSON(researchReport,'signal-desk-research.json'));
  document.querySelector('#download-research-note')?.addEventListener('click',()=>saveFile(researchNote(researchReport,lang,researchImported),'text/markdown;charset=utf-8',`signal-desk-next-colleague-${lang}.md`));
