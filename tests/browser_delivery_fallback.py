@@ -3,6 +3,7 @@
 from functools import partial
 from http.server import ThreadingHTTPServer
 from threading import Thread
+import os
 import sys
 
 from playwright.sync_api import expect, sync_playwright
@@ -12,7 +13,7 @@ from browser_smoke import ROOT, QuietHandler
 def run():
     server = ThreadingHTTPServer(("127.0.0.1", 0), partial(QuietHandler, directory=str(ROOT)))
     Thread(target=server.serve_forever, daemon=True).start()
-    base = f"http://127.0.0.1:{server.server_port}"
+    base = os.environ.get("SIGNAL_DESK_BASE_URL", f"http://127.0.0.1:{server.server_port}").rstrip("/")
     try:
         with sync_playwright() as playwright:
             webkit = "--webkit" in sys.argv
