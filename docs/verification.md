@@ -1,8 +1,14 @@
 # Verification record — 28 September 2026
 
-## v0.9.1 role-priority repair (release pending)
+## Published v0.9.1 role-priority repair
 
-The public v0.9 browser runs below exposed a presentation failure: the video-timeline lane, closest to Poolday's product, was fifth and often never received a usable response under GitHub's anonymous limit. v0.9.1 queries that lane first. The collector still stops on HTTP 403/429; a saved v0.9 v3 report with the earlier lane order remains importable. The new 1440/390 px fixture shows video work first and retains the same two-PR account grouping and source-conflict revocation. This changes which evidence is most likely to arrive before a rate stop; it does not fix GitHub API availability or establish candidate quality.
+Code revision `9c6e50dd9b8835b8881626d76fe7ed20e319a76b` passed [offline contracts](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36455808119) and [Pages deployment](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36455805656). All **23 public application and v0.9.1 screenshot files** matched the local release bytes. The private SHA-256 receipt remains outside this repository.
+
+The public v0.9 browser runs below exposed a presentation failure: the video-timeline lane, closest to Poolday's product, was fifth and often never received a usable response under GitHub's anonymous limit. v0.9.1 queries that lane first. The collector still stops on HTTP 403/429; a saved v0.9 v3 report with the earlier lane order remains importable. **61/61** JavaScript tests, **14/14** Python tests, **200** local stress cycles and eight Chromium scripts at **1440/390 px** passed. The saved actual v0.9 report opened in the v0.9.1 phone UI with **8 IDs / 14 PRs**, without GitHub requests or JavaScript exceptions. The new 1440/390 px screenshots use synthetic fixtures and show video work first.
+
+On the published v0.9.1 page at **390 px**, a fixture-backed browser pass observed zero pre-click GitHub calls; the first of five intercepted searches queried `remotion-dev/remotion` for timeline PRs. The resulting v3 report put the video lane first, with no JavaScript exception or horizontal overflow. The fixture proves deployed request order and UI behavior, not public API availability. Prioritization changes which evidence is most likely to arrive before a rate stop; it does not fix GitHub API availability or establish candidate quality.
+
+A separate **actual public-page click** after the API reset observed zero pre-click GitHub calls, then **five HTTP 200 search responses**, with `remotion-dev/remotion` first. The v3 report was **complete: 8 distinct GitHub IDs, 14 retained PR associations, 5/5 responsive lanes, 2,784 ms**. Eight review cards appeared at 390 px without JavaScript page exceptions or horizontal overflow. This is one live collection observation, not eight qualified candidates, proof of personal authorship, or a recruiter outcome. The private dossier holds the exact browser receipt and screenshot.
 
 ## Published v0.9 five-axis search release
 
