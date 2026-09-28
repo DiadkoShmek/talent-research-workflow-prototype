@@ -1,0 +1,13 @@
+{
+  "name": "signal-desk",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Inspectable research, human review, evidence-bound handoff. Offline demonstration.",
+  "scripts": {
+    "start": "python3 -m http.server 8873 --bind 127.0.0.1",
+    "test": "node --test tests/*.test.mjs",
+    "stress": "node scripts/stress.mjs"
+  },
+  "engines": {"node": ">=20"}
+}
