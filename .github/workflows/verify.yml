@@ -21,9 +21,13 @@ jobs:
           node-version: '22'
       - name: JavaScript contracts
         run: npm test
-      - name: Public research parser contracts (no live requests)
-        run: python3 -m unittest discover -s tests -p test_research_pass_v1.py
-      - name: Application syntax and whitespace
+      - name: All offline Python contracts
+        run: python3 -m unittest discover -s tests -p 'test_*.py'
+      - name: Artifact regeneration, syntax and commit whitespace
         run: |
           node --check src/app.js
-          git diff --check
+          node --check src/research-view.js
+          node --check scripts/build_meeting_brief.mjs
+          node scripts/build_meeting_brief.mjs
+          git diff --exit-code -- docs/meeting-brief.uk.html docs/meeting-brief.en.html
+          git show --format= --check HEAD

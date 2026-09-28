@@ -10,6 +10,10 @@ The browser holds distinct `researchReport`, `researchReview`, `researchShowcase
 
 A new v3 live report may include each lane’s optional `screenedOut` list. It holds only canonical public `User` PR rows skipped by the merge-date or title rule, bounded to the 20 already scanned rows. Each entry binds exact PR ID/URL, title, merge date and reason; the validator checks that list against the lane’s skipped count and current rules. Older v3 files omit the field and still import. Screened-out rows never enter `leads`, source review, pilot feedback or handoff. Thus the trace exposes a filter loss without silently weakening the qualification gate or spending more API calls.
 
+## Script-free offline reading copy (v0.10.1)
+
+`scripts/build_meeting_brief.mjs` reads the exact pinned public JSON, checks its SHA-256 before generation, validates the showcase envelope and emits deterministic Ukrainian and English standalone HTML files under `docs/meeting-brief.*.html`. Each file embeds only CSS and escaped public source metadata: role, five lane counts, two exact Remotion PR links, bounded changed-file names, unanswered questions and explicit provenance limits. Its CSP refuses scripts, network connections, images and forms; source links navigate only when a person clicks while online. The meeting page offers a download link to the correct language. The offline copy is a reading fallback, not a state backup: human reviews, live search and source freshness remain outside it. No service worker or persistent background cache is installed.
+
 ## Decision boundary
 
 Several observations about one apparent person may come from different research hypotheses. A name match is not identity proof; a source quotation is not verified evidence; accepting one claim does not validate every claim from a source. The design keeps five decisions separate:

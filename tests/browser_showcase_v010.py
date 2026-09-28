@@ -67,6 +67,8 @@ def run():
                 expect(page.locator(".research-snapshot")).to_be_visible()
                 expect(page.locator(".research-review-card")).to_have_count(8)
                 expect(page.locator(".source-inspection-result")).to_have_count(2)
+                expect(page.locator(".research-snapshot a[download]")).to_have_attribute(
+                    "href", "docs/meeting-brief.uk.html")
                 assert not api_calls
                 assert "test-file path" not in page.locator('[data-review-evidence="github-pr:remotion-dev/remotion:11703"]').inner_text()
                 assert "шлях тестового файла" in page.locator('[data-review-evidence="github-pr:remotion-dev/remotion:11703"]').inner_text()
