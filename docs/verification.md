@@ -1,8 +1,10 @@
 # Verification record — 28 September 2026
 
-## Local v0.10.2 recorded-work guard
+## Published v0.10.2 recorded-work guard
 
 A Chromium counterexample against v0.10.1 recorded one source decision, then reopened the already active release archive and observed its action count fall from **1 to 0**. v0.10.2 disables that control while the archive is open and also makes its handler idempotent. The **1440 and 390 px** browser regression checks that the saved review content stays equal after a forced repeat event; it dismisses and accepts confirmation when replacing a different reviewed run. The same two widths exercise cancellation before adopting a staged live run and before importing another reviewed report. A fresh search from any reviewed run now stages its result, including a fixture HTTP 403 failure, without replacing current decisions. A delayed archive fetch with a new decision recorded during loading refused to replace that newer review. Cancellation preserves the current review; confirmed replacement starts an empty review and clears feedback tied to the prior report. Local `npm test`: **67/67**; Python unit tests: **14/14**. These checks do not provide automatic backup of the public review: it still needs an explicit file download before the tab is closed.
+
+Code revision `0fa64b986d6ea78cb4009e80498b42f3cab76813` passed [offline contracts](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36464994917) and [Pages deployment](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36464993414). **29/29 public application, archive, brief and screenshot files** matched local bytes. On the published 390 px page, one recorded source decision remained after a forced repeat-open event and after a fixture HTTP 403 live attempt; eight archive cards remained available, with no JavaScript page error or horizontal overflow. A separate published mobile-profile Linux WebKit run loaded the archive and downloaded the exact offline brief. The private dossier holds the SHA-256 and browser receipts. This is deployed behavior under an intercepted rate failure, not proof of current GitHub availability or iPhone Safari's Files workflow.
 
 ## Published v0.10.1 WebKit engine proof
 
