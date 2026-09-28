@@ -70,6 +70,7 @@ def run():
                 expect(page.locator("#open-showcase")).to_be_disabled()
                 expect(page.locator(".research-snapshot a[download]")).to_have_attribute(
                     "href", "docs/meeting-brief.uk.html")
+                expect(page.locator('.research-snapshot a[href="docs/meeting-brief.uk.pdf"]')).to_be_visible()
                 assert not api_calls
                 assert "test-file path" not in page.locator('[data-review-evidence="github-pr:remotion-dev/remotion:11703"]').inner_text()
                 assert "шлях тестового файла" in page.locator('[data-review-evidence="github-pr:remotion-dev/remotion:11703"]').inner_text()

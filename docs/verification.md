@@ -1,5 +1,9 @@
 # Verification record — 28 September 2026
 
+## Short PDF fallback, local build
+
+`scripts/build_meeting_pdf.py` verifies the exact SHA-256 of the bundled public archive and vendored DejaVu font before generating `docs/meeting-brief.uk.pdf` with ReportLab 4.4.4. Two repeated builds in the local Python 3.13 environment produced the same bytes, SHA-256 `ad10fc31686b89e9c8039aa3ca70831e7a755e0b6fa678dc4ceed70ab12ddc46`. `tests/check_meeting_pdf.py` with pypdf 6.10.2 checked three pages, all five repository names, both exact PRs and their 16 displayed filenames, HTTPS-only link actions, and absence of form/open actions or embedded names. The PDF was rendered to three PNG pages at 130 dpi and visually inspected for legibility and clipping. It is an archival reading copy with no decisions or diff text. It has not yet been downloaded from the published site or opened in iOS Files. The separate public HTML/WebKit proof below remains specific to HTML.
+
 ## v0.10.2 delivered-file transfer under total network loss
 
 The public page was opened in Linux WebKit with the Playwright iPhone 13 mobile profile. A **touch tap** on the download link produced the Ukrainian brief; that actual browser download was copied out of the stopped container. A second container mounted the same file read-only, had `--network none`, and opened it as `file://` with page JavaScript disabled. It showed **two source sections and five search lanes** with no external request, page error or horizontal overflow. The saved file was **9,763 bytes**, SHA-256 `3aebc0aa2692501e790f29a43764998fc710e6237c81c27dbf4b9ec51837a729`, equal to the checked-in brief. A one-byte-changed copy was refused before browser rendering. The 390 px WebKit viewport screenshot was inspected: the archive note, download link and result summary were legible without overlap; the summary labels wrap over several lines. The exact two-container receipt and screenshot are kept outside the public repository.
