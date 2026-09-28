@@ -104,7 +104,7 @@ One pure engine owns the rules in both browser and tests. The UI displays derive
 - Review changes and effective plan or cutoff resets invalidate previous approval.
 - Inactive channels have no current review workload; archived identity conflicts still block a person.
 - Input/view mutations and prototype-shaped IDs do not forge approval.
-- Earlier versions had desktop/phone browser checks. The v0.5 walkthrough and persistence have unit-level proof; their new browser pass is pending because the browser tool was unavailable.
+- v0.5 passed four Chromium browser scenarios at 1440/390 px, including guided playback and session recovery. The public page also completed an actual GitHub pass at phone width; see the verification record for scope and limits.
 - Public research collection has deterministic tests for source failures and report boundaries; collecting from GitHub in a browser still needs a browser pass.
 - The repeat check is local deterministic evidence, not a production load test or a measured improvement in recruiting.
 

@@ -1,5 +1,9 @@
 # Verification record — 28 September 2026
 
+## Published code release v0.5
+
+Code revision `7b41504c9b19a58e89c57cc848ede0c2ac871036` passed [GitHub offline contracts](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36441791486) and [Pages deployment](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36441788089). All fourteen public application files matched local bytes. A subsequent public-page Chromium check at **390 px** observed no pre-click API requests, then three real GETs: **complete, six account IDs, ten observations, 533 ms**. JSON and continuation-note downloads, styled guided handoff and zero page overflow/JavaScript/CSP errors were confirmed. The later documentation update records this code-release proof without changing application bytes.
+
 ## Current local v0.5 additions
 
 - `npm test`: **44/44 passed**. Includes engine contracts and 200 synthetic cycles; guided replay and both languages; script attribution; full session replay; capped-state restoration; quota/observed-tab conflict; collection/parsing; inconsistent status/count/identity rejection; source-URL substitution and HTML injection tests; Markdown continuation export; exact handoff CSS hash against the site CSP.
