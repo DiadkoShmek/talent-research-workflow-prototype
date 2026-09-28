@@ -8,7 +8,7 @@ The v0.10.0 meeting link opens one release-bundled capture from an actual public
 
 ## Offline meeting fallback
 
-The v0.10.1 standalone brief is generated deterministically from the pinned archival JSON. It can be saved and opened as a local file without a network or page JavaScript. It contains public account/PR metadata and archived changed-file summaries, so inspect it before sharing. It has no interactive search, review decisions, current GitHub verification or TeamTailor connection. External source links require a network when clicked. It protects against a lost Pages/GitHub connection **after the file has already been saved**; it cannot repair a phone that never downloaded the file. Local Chromium tests exercised this path; iPhone Safari/WebKit compatibility has not yet been demonstrated on this host.
+The v0.10.1 standalone brief is generated deterministically from the pinned archival JSON. It can be saved and opened as a local file without a network or page JavaScript. It contains public account/PR metadata and archived changed-file summaries, so inspect it before sharing. It has no interactive search, review decisions, current GitHub verification or TeamTailor connection. External source links require a network when clicked. It protects against a lost Pages/GitHub connection **after the file has already been saved**; it cannot repair a phone that never downloaded the file. Local and published Chromium tests exercised this path. Actual iPhone Safari remains unverified; Playwright WebKit could not launch on the Ubuntu 25.10 host because its fallback build requires older linked libraries.
 
 ## What a live demonstration can establish
 
