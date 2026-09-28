@@ -1,8 +1,8 @@
 # Verification record — 28 September 2026
 
-## Local v0.6.1 visibility correction
+## Published v0.6.1 visibility correction
 
-The review section now appears directly after the three source-lane results, before the complete raw account list. This removes a long mobile scroll before the main decision path. Versioned module URLs were advanced to `0.6.1` to avoid stale browser modules; the documented screenshot fixtures were refreshed. `npm test` passed **47/47** and the v0.5 and v0.6 browser scenarios passed at **1440/390 px**. The v0.6 browser test now asserts review-before-raw order. This is local proof; public deployment is recorded separately after release.
+The review section now appears directly after the three source-lane results, before the complete raw account list. This removes a long mobile scroll before the main decision path. Versioned module URLs were advanced to `0.6.1` to avoid stale browser modules; the documented screenshot fixtures were refreshed. `npm test` passed **47/47** and the v0.5 and v0.6 browser scenarios passed at **1440/390 px**. The v0.6 browser test now asserts review-before-raw order. Code revision `80863d02141b539be0c0b84e93df1a38f02470e8` passed [offline contracts](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36445079104) and [Pages deployment](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36445077955). Fifteen public application assets matched local bytes. On the published page at 1440/390 px, the review appeared before the raw list with three fixture-backed API reads only after a click, no JavaScript/CSP errors or horizontal overflow. A separate live public-page click at 390 px made three actual GitHub GETs, showed six research cards and no JavaScript errors. The later document-only commit changes no application bytes.
 
 ## Published code release v0.6
 
