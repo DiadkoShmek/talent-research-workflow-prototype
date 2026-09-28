@@ -1,5 +1,11 @@
 # Verification record — 28 September 2026
 
+## Published v0.8 role-search release
+
+Code revision `9e177d77ea855ea5e716fea5457a6d2234fc48cf` passed [offline contracts](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36452452136) and [Pages deployment](https://github.com/DiadkoShmek/talent-research-workflow-prototype/actions/runs/36452450885). **23 public application and v0.8 screenshot files** matched the local release bytes; the private byte receipt remains outside this repository. The screenshots use synthetic API fixtures.
+
+On the **published page at 390 px**, a fixture-backed pass observed no pre-click GitHub reads; four role-search requests after the click; two explicit PR detail/file requests; four cards; no JavaScript/CSP errors or horizontal overflow. A separate actual public-page click made four live GitHub search GETs, returned **7 GitHub IDs across 4/4 responsive lanes in 2.38 seconds**, and observed no page errors or overflow. These are public integration and availability observations for one run, not seven qualified candidates, a measured recruiter benefit or a repeatability guarantee.
+
 ## Local v0.8 role-search proof
 
 The primary browser path now searches four role-derived public GitHub merged-PR lanes in selected repositories; the earlier recent-commit pass remains as a comparison. It records exact query URLs and skip/reject/incomplete counts, then lets a reviewer inspect the exact PR and its files, make a source-bound decision, export selected follow-up and record local feedback. This is a bounded technical-work discovery demonstration, not a whole-market OSINT system or a candidate-quality claim.
@@ -8,7 +14,7 @@ The primary browser path now searches four role-derived public GitHub merged-PR 
 - Seven Chromium scripts passed at **1440 and 390 px**: manual smoke, handoff, session cap, v0.5 collection, v0.6 review, v0.7 source inspection/feedback and v0.8 role search. The v0.8 fixture asserts no pre-click API calls, four exact search requests, two explicit PR detail/file requests, a source-ID conflict withdrawing follow-up, selected-only packet, saved v2 review restoration, feedback export, no JavaScript errors and no horizontal overflow.
 - A **live Node public-API run** after final title screening and accounting returned four responsive lanes and seven distinct GitHub IDs in **2,054 ms**. The four lanes scanned 7/20/20/20 API rows and retained 2/2/2/1 account IDs; every scanned row is counted as retained, skipped, malformed, duplicate or beyond the per-lane cap. This is one collection observation, not a recruiter-reviewed result or an availability benchmark. The private JSON is outside the public repository.
 - An earlier actual local Chromium click after title screening returned seven cards across four lanes and read an exact PR detail plus files with no JavaScript error or phone-width overflow. The screenshot and public-account details remain in the private dossier.
-- Publication, public-file byte parity and published-page behavior for v0.8 must be checked after release; local tests do not establish them.
+- The browser screenshots use only synthetic fixtures. Real account reports and the actual-page screenshot remain in the private dossier.
 
 ## Local v0.7 source and feedback proof
 
