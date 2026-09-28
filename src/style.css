@@ -50,3 +50,5 @@
 .research-review-lead-action{padding:13px;background:var(--green-soft);border-radius:6px}
 .research-review button:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:760px){.research-review-list{grid-template-columns:1fr}.research-review-card{padding:14px}.research-review-card .review-actions .button{flex:1}.research-review h3{font-size:21px}}
+
+.research-raw-title{font-size:18px;margin:30px 0 12px}

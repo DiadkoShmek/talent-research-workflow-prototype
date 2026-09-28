@@ -2,9 +2,9 @@
 
 **[Відкрити опубліковану версію →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=uk)** · [Архітектура](docs/architecture.md) · [План пілоту](docs/pilot-plan.uk.md)
 
-![Signal Desk v0.6: оцінка публічних слідів на синтетичних тестових даних](docs/screenshots/research-v06-desktop-viewport.png)
+![Signal Desk v0.6.1: оцінка публічних слідів на синтетичних тестових даних](docs/screenshots/research-v06-desktop-viewport.png)
 
-*Знімок v0.6 із синтетичними відповідями API. Справжній публічний прохід і перевірки описані у [журналі](docs/verification.md).*
+*Знімок v0.6.1 із синтетичними відповідями API. Справжній публічний прохід і перевірки описані у [журналі](docs/verification.md).*
 
 Це інтерактивний прототип із двома різними шляхами. Перший збирає й дає людині оцінити публічні сліди змін у коді для [ролі Senior Agentic Software Engineer у Poolday](https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday). Другий дає вручну перевірити вигадані докази та сформувати схвалений пакет. Він побудований для розмови про [роль Talent Engineer у A-Players](https://aplayers.na.teamtailor.com/jobs/617015-talent-engineer-ai-automation-a-players). Компанія його не замовляла й не схвалювала.
 

@@ -6,9 +6,9 @@ An interactive prototype with two distinct paths: a bounded public GitHub resear
 
 **[Open the published version →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=en)** · **[Українською →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=uk)** · [Architecture](docs/architecture.md) · [Limits](docs/limits.md)
 
-![Signal Desk v0.6: public-source review shown with synthetic test fixtures](docs/screenshots/research-v06-desktop-viewport.png)
+![Signal Desk v0.6.1: public-source review shown with synthetic test fixtures](docs/screenshots/research-v06-desktop-viewport.png)
 
-*v0.6 browser screenshot with synthetic API fixtures. An actual public API pass and the test boundaries are in the [verification record](docs/verification.md).*
+*v0.6.1 browser screenshot with synthetic API fixtures. An actual public API pass and the test boundaries are in the [verification record](docs/verification.md).*
 
 ## A bounded public research pass
 

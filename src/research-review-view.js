@@ -1,4 +1,4 @@
-import { researchReviewPacket, researchReviewView } from './research-review.js?v=0.6.0';
+import { researchReviewPacket, researchReviewView } from './research-review.js?v=0.6.1';
 
 const e = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const words = {

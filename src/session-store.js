@@ -1,4 +1,4 @@
-import { MAX_SESSION_BYTES, restoreSession, serializeSession } from './session-file.js?v=0.6.0';
+import { MAX_SESSION_BYTES, restoreSession, serializeSession } from './session-file.js?v=0.6.1';
 
 export const SESSION_STORAGE_KEY = 'signal-desk.session.v1';
 

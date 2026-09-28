@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { collectResearch } from '../src/research.js?v=0.6.0';
+import { collectResearch } from '../src/research.js?v=0.6.1';
 import { researchNote } from '../src/research-note.js';
 
 function row(id, login, repo, sha, title) {

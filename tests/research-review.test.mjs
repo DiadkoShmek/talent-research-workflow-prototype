@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { collectResearch } from '../src/research.js?v=0.6.0';
-import { createResearchReview, researchReviewAction, researchReviewPacket, researchReviewView, restoreResearchReview } from '../src/research-review.js?v=0.6.0';
-import { researchFollowUpDocument } from '../src/research-review-view.js?v=0.6.0';
+import { collectResearch } from '../src/research.js?v=0.6.1';
+import { createResearchReview, researchReviewAction, researchReviewPacket, researchReviewView, restoreResearchReview } from '../src/research-review.js?v=0.6.1';
+import { researchFollowUpDocument } from '../src/research-review-view.js?v=0.6.1';
 
 async function report() {
   const rows = {
