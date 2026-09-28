@@ -45,7 +45,8 @@ test('approval requires every criterion and confirmed identity', () => {
   assert.equal(viewSession(state).candidates.find(c => c.personKey === 'person-olena').status, 'ready');
   state = transition(state, { type: 'approve', personKey: 'person-olena', reviewer });
   const packet = exportHandoff(state);
-  assert.equal(packet.schema, 'signal-desk-handoff.v1');
+  assert.equal(packet.schema, 'signal-desk-handoff.v2');
+  assert.equal(packet.eventsScope, 'latest-supporting-decisions-only');
   assert.equal(packet.mode, 'synthetic-local-demo');
   assert.equal(packet.integrity, 'self-attested, unauthenticated');
   assert.equal(packet.criteria.length, 3);
@@ -165,7 +166,10 @@ test('plan change records reason, clears every gate and binds export to new poli
   assert.throws(() => exportHandoff(changed), /no approved/);
   const reapproved = approvePerson(changed, 'person-taras');
   const packet = exportHandoff(reapproved);
-  assert.deepEqual(packet.plan, viewSession(reapproved).plan);
+  assert.deepEqual(packet.plan, { objective: viewSession(reapproved).plan.objective,
+    requiredCriterionIds: viewSession(reapproved).plan.requiredCriterionIds,
+    activeHypothesisIds: viewSession(reapproved).plan.activeHypothesisIds });
+  assert.ok(!JSON.stringify(packet).includes('Synthetic search brief changed'));
   assert.deepEqual(packet.candidates[0].evidence.map(e => e.criterionId), ['operations', 'collaboration']);
 });
 
@@ -264,6 +268,45 @@ test('event cap makes current session read-only while earlier revision remains e
   const fresh = createSession(v.project);
   assert.equal(viewSession(fresh).session.eventCount, 0);
   assert.equal(viewSession(fresh).metrics.approved, 0);
+});
+
+test('recipient packet carries only latest supporting decisions for exported candidates', () => {
+  let state = approvePerson(createSession(demoProject()), 'person-olena');
+  state = transition(state, { type: 'review', evidenceId: 'obs-03::0', decision: 'reject', reviewer, reason: 'PETRO_PRIVATE_CANARY' });
+  state = transition(state, { type: 'review', evidenceId: 'obs-01::0', decision: 'accept', reviewer, reason: 'OLD_OLENA_CANARY' });
+  state = transition(state, { type: 'review', evidenceId: 'obs-01::0', decision: 'accept', reviewer, reason: 'LATEST_OLENA_REASON' });
+  state = transition(state, { type: 'identity', personKey: 'person-olena', confirmed: true, reviewer });
+  state = transition(state, { type: 'approve', personKey: 'person-olena', reviewer });
+  const full = viewSession(state), packet = exportHandoff(state);
+  assert.equal(full.events.length, 10);
+  assert.equal(packet.candidates.length, 1);
+  assert.equal(packet.candidates[0].personKey, 'person-olena');
+  assert.deepEqual(packet.events.map(e => e.revision), [2, 3, 8, 9, 10]);
+  assert.deepEqual(packet.events.map(e => e.type), ['review', 'review', 'review', 'identity', 'approve']);
+  assert.equal(packet.candidates[0].identity.revision, 9);
+  assert.equal(packet.candidates[0].approval.revision, 10);
+  assert.equal(packet.candidates[0].evidence.find(e => e.id === 'obs-01::0').reason, 'LATEST_OLENA_REASON');
+  assert.ok(full.events.some(e => e.reason === 'PETRO_PRIVATE_CANARY'));
+  assert.ok(full.events.some(e => e.reason === 'OLD_OLENA_CANARY'));
+  assert.ok(!JSON.stringify(packet).includes('PETRO_PRIVATE_CANARY'));
+  assert.ok(!JSON.stringify(packet).includes('OLD_OLENA_CANARY'));
+  assert.ok(packet.events.every(e => e.personKey === 'person-olena'));
+});
+
+test('plan reset removes earlier decision receipts and internal plan reason from recipient packet', () => {
+  let state = approvePerson(createSession(demoProject()), 'person-olena');
+  state = transition(state, { type: 'review', evidenceId: 'obs-01::0', decision: 'accept', reviewer, reason: 'OLD_PLAN_CANARY' });
+  state = setPlan(state, { requiredCriterionIds: ['operations'], activeHypothesisIds: ['founder-ops'], reason: 'PRIVATE_PLAN_CANARY' });
+  const resetRevision = viewSession(state).revision;
+  state = approvePerson(state, 'person-olena');
+  const packet = exportHandoff(state);
+  assert.ok(packet.events.every(e => e.revision > resetRevision));
+  assert.deepEqual(packet.criteria.map(c => c.id), ['operations']);
+  assert.deepEqual(packet.hypotheses.map(h => h.id), ['founder-ops']);
+  assert.deepEqual(packet.candidates[0].evidence.map(e => e.criterionId), ['operations']);
+  assert.ok(!JSON.stringify(packet).includes('OLD_PLAN_CANARY'));
+  assert.ok(!JSON.stringify(packet).includes('PRIVATE_PLAN_CANARY'));
+  assert.ok(viewSession(state).events.some(e => e.reason === 'PRIVATE_PLAN_CANARY'));
 });
 
 test('synthetic deterministic stress: 200 runs, no network or state leak', () => {

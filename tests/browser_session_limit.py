@@ -41,7 +41,7 @@ def run():
                 page=browser.new_page(viewport={'width':width,'height':844},reduced_motion='reduce')
                 errors=[]
                 page.on('pageerror',lambda error:errors.append(str(error)))
-                page.route('**/src/app.js',lambda route:route.fulfill(status=200,content_type='text/javascript',body=seeded))
+                page.route('**/src/app.js*',lambda route:route.fulfill(status=200,content_type='text/javascript',body=seeded))
                 page.goto(base+'/?lang=uk')
                 assert page.locator('#session-limit').is_visible()
                 assert 'історія' in page.locator('#session-limit').inner_text()

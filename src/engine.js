@@ -152,12 +152,36 @@ function view(d) {
     candidates, hypotheses, coverage, metrics, events: d.events, exportPacket: approved && !exhausted ? packet(d, candidates) : null });
 }
 function packet(d, candidates) {
-  return freeze({ schema: 'signal-desk-handoff.v1', mode: 'synthetic-local-demo', integrity: 'self-attested, unauthenticated',
-    projectId: d.project.id, projectTitle: d.project.title, criteria: d.project.criteria, hypotheses: d.project.hypotheses,
-    asOf: d.project.asOf, cutoff: d.project.cutoff, revision: d.revision, plan: d.plan,
-    candidates: candidates.filter(c => c.status === 'approved').map(c => ({ personKey: c.personKey, name: c.name, identityRefs: c.identityRefs, hypothesisIds: c.hypothesisIds,
-      evidence: c.evidence.filter(e => e.fresh && e.review?.decision === 'accept' && d.plan.requiredCriterionIds.includes(e.criterionId)).map(e => ({ id: e.id, criterionId: e.criterionId, quote: e.quote, source: e.source, hypothesisId: e.hypothesisId, reviewer: e.review.reviewer, reason: e.review.reason })) })),
-    events: d.events });
+  const lastReset = [...d.events].reverse().find(e => e.type === 'setPlan' || e.type === 'setCutoff')?.revision ?? 0;
+  const latest = predicate => {
+    const event = [...d.events].reverse().find(e => e.revision > lastReset && predicate(e));
+    if (!event) fail('current supporting decision receipt missing');
+    return event;
+  };
+  const receiptEvents = new Map();
+  const approved = candidates.filter(c => c.status === 'approved').map(c => {
+    const identityEvent = latest(e => e.type === 'identity' && e.personKey === c.personKey && e.confirmed === true);
+    const approvalEvent = latest(e => e.type === 'approve' && e.personKey === c.personKey);
+    receiptEvents.set(identityEvent.revision, identityEvent);
+    receiptEvents.set(approvalEvent.revision, approvalEvent);
+    const evidence = c.evidence.filter(e => e.fresh && e.review?.decision === 'accept' && d.plan.requiredCriterionIds.includes(e.criterionId)).map(e => {
+      const reviewEvent = latest(event => event.type === 'review' && event.evidenceId === e.id && event.decision === 'accept');
+      if (reviewEvent.reviewer !== e.review.reviewer || reviewEvent.reason !== e.review.reason) fail('review receipt does not match current decision');
+      receiptEvents.set(reviewEvent.revision, reviewEvent);
+      return { id: e.id, criterionId: e.criterionId, quote: e.quote, source: e.source, hypothesisId: e.hypothesisId,
+        reviewer: e.review.reviewer, reason: e.review.reason };
+    });
+    return { personKey: c.personKey, name: c.name, identityRefs: c.identityRefs, hypothesisIds: c.hypothesisIds,
+      identity: { confirmed: true, reviewer: identityEvent.reviewer, revision: identityEvent.revision },
+      approval: { reviewer: approvalEvent.reviewer, revision: approvalEvent.revision }, evidence };
+  });
+  return freeze({ schema: 'signal-desk-handoff.v2', mode: 'synthetic-local-demo', integrity: 'self-attested, unauthenticated',
+    eventsScope: 'latest-supporting-decisions-only', projectId: d.project.id, projectTitle: d.project.title,
+    criteria: d.project.criteria.filter(c => d.plan.requiredCriterionIds.includes(c.id)),
+    hypotheses: d.project.hypotheses.filter(h => d.plan.activeHypothesisIds.includes(h.id)),
+    asOf: d.project.asOf, cutoff: d.project.cutoff, revision: d.revision,
+    plan: { objective: d.plan.objective, requiredCriterionIds: d.plan.requiredCriterionIds, activeHypothesisIds: d.plan.activeHypothesisIds },
+    candidates: approved, events: [...receiptEvents.values()].sort((a, b) => a.revision - b.revision) });
 }
 
 export function createSession(project) {

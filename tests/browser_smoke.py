@@ -66,7 +66,7 @@ def run():
                 assert len(packet['candidates']) == 1
                 assert len(packet['candidates'][0]['evidence']) == 3
                 assert len(packet['events']) == 5
-                assert packet['schema'] == 'signal-desk-handoff.v1'
+                assert packet['schema'] == 'signal-desk-handoff.v2'
                 assert len(packet['criteria']) == 3
                 page.locator('#scenario').select_option('future-date')
                 assert page.locator('#scenario').input_value() == 'standard'

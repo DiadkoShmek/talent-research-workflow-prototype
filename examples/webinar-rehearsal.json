@@ -1,0 +1,147 @@
+{
+  "id": "signal-desk-evidence-rehearsal",
+  "title": {
+    "uk": "Репетиція: навчання чи впроваджена автоматизація?",
+    "en": "Rehearsal: training or implemented automation?"
+  },
+  "objective": {
+    "uk": "Перевірити досвід власноручного впровадження автоматизації робочого процесу. Участь у навчанні сама по собі цього не підтверджує.",
+    "en": "Check hands-on implementation of workflow automation. Attending training alone does not establish it."
+  },
+  "asOf": "2026-09-28",
+  "cutoff": "2026-08-01",
+  "criteria": [
+    {
+      "id": "operations",
+      "label": {
+        "uk": "Операційна робота",
+        "en": "Operations work"
+      }
+    },
+    {
+      "id": "automation",
+      "label": {
+        "uk": "Власноруч упроваджена автоматизація",
+        "en": "Hands-on implemented automation"
+      }
+    },
+    {
+      "id": "collaboration",
+      "label": {
+        "uk": "Співпраця з командою",
+        "en": "Team collaboration"
+      }
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "founder-ops",
+      "label": {
+        "uk": "Оператори при засновниках",
+        "en": "Founder operators"
+      },
+      "rationale": {
+        "uk": "Шукати практичний досвід поряд із засновником.",
+        "en": "Look for hands-on founder-side operations."
+      }
+    },
+    {
+      "id": "automation-builders",
+      "label": {
+        "uk": "Практики автоматизації",
+        "en": "Automation practitioners"
+      },
+      "rationale": {
+        "uk": "Шукати людей, що покращували реальний процес.",
+        "en": "Look for people who improved real workflows."
+      }
+    },
+    {
+      "id": "community-ops",
+      "label": {
+        "uk": "Оператори спільнот",
+        "en": "Community operators"
+      },
+      "rationale": {
+        "uk": "Перевірити переносимість координації спільнот.",
+        "en": "Test transferability of community coordination."
+      }
+    },
+    {
+      "id": "customer-ops",
+      "label": {
+        "uk": "Клієнтські операції",
+        "en": "Customer operations"
+      },
+      "rationale": {
+        "uk": "Перевірити досвід роботи зі зверненнями клієнтів.",
+        "en": "Test customer operations experience."
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "obs-01",
+      "personKey": "person-olena",
+      "name": "Олена Коваль",
+      "identityRef": "synthetic://identity/olena",
+      "hypothesisId": "founder-ops",
+      "source": {
+        "ref": "synthetic://source/obs-01",
+        "title": {
+          "uk": "Синтетичне джерело obs-01",
+          "en": "Synthetic source obs-01"
+        },
+        "text": {
+          "uk": "Координувала щотижневі операції команди. Узгоджувала пріоритети із засновницею.",
+          "en": "Coordinated weekly team operations. Aligned priorities with the founder."
+        },
+        "observedAt": "2026-09-10"
+      },
+      "claims": [
+        {
+          "criterionId": "operations",
+          "quote": {
+            "uk": "Координувала щотижневі операції команди",
+            "en": "Coordinated weekly team operations"
+          }
+        },
+        {
+          "criterionId": "collaboration",
+          "quote": {
+            "uk": "Узгоджувала пріоритети із засновницею",
+            "en": "Aligned priorities with the founder"
+          }
+        }
+      ]
+    },
+    {
+      "id": "obs-02",
+      "personKey": "person-olena",
+      "name": "Олена Коваль",
+      "identityRef": "synthetic://identity/olena",
+      "hypothesisId": "automation-builders",
+      "source": {
+        "ref": "synthetic://source/obs-02",
+        "title": {
+          "uk": "Вигадана нотатка про навчання",
+          "en": "Fictional training note"
+        },
+        "text": {
+          "uk": "Олена: «Пройшла навчальний вебінар з автоматизації передачі заявок». У межах цього навчального прикладу відомо лише про відвідування вебінару. Самостійне впровадження робочого процесу та його результат у цьому документі не описані.",
+          "en": "Olena: \"Attended a training webinar on automating request handoff\". This fictional sample records only attendance. This document does not describe hands-on implementation of an operational workflow or its outcome."
+        },
+        "observedAt": "2026-09-14"
+      },
+      "claims": [
+        {
+          "criterionId": "automation",
+          "quote": {
+            "uk": "Пройшла навчальний вебінар з автоматизації передачі заявок",
+            "en": "Attended a training webinar on automating request handoff"
+          }
+        }
+      ]
+    }
+  ]
+}
