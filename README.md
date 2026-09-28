@@ -1,5 +1,7 @@
 # Talent Research Handoff — interview prototype
 
+[Читати українською](README.uk.md)
+
 A small, runnable sketch for a recruiting team's **research → human review → approved handoff**. It is tailored to the public [A-Players Talent Engineer brief](https://aplayers.na.teamtailor.com/jobs/617015-talent-engineer-ai-automation-a-players), but is independent, unaffiliated, and uses only synthetic data.
 
 The design question is narrow: **How can research from several sourcing hypotheses arrive as one traceable review queue, without silently turning an AI suggestion into a candidate decision or an ATS write?**
