@@ -1,18 +1,19 @@
-import { demoProject, createSession, transition, viewSession, exportHandoff } from './engine.js?v=0.9.1';
-import { renderSearchPlan, renderHypothesisResults, renderCoverage } from './search-plan.js?v=0.9.1';
-import { renderHandoff, handoffDocument } from './handoff.js?v=0.9.1';
-import { renderWalkthrough, walkthroughDocument } from './walkthrough.js?v=0.9.1';
-import { WALKTHROUGH_STEPS } from './walkthrough-state.js?v=0.9.1';
-import { MAX_SESSION_BYTES, restoreSession, serializeSession } from './session-file.js?v=0.9.1';
-import { sessionStore } from './session-store.js?v=0.9.1';
-import { collectResearch, validateResearchReport } from './research.js?v=0.9.1';
-import { collectRoleSearchV3 } from './role-search.js?v=0.9.1';
-import { renderResearch, researchDocument } from './research-view.js?v=0.9.1';
-import { researchNote } from './research-note.js?v=0.9.1';
-import { createResearchReview, researchReviewAction, researchReviewPacket, researchReviewView, restoreResearchReview } from './research-review.js?v=0.9.1';
-import { researchFollowUpDocument } from './research-review-view.js?v=0.9.1';
-import { inspectResearchSource } from './source-inspection.js?v=0.9.1';
-import { createPilotFeedback, recordPilotFeedback, restorePilotFeedback } from './pilot-feedback.js?v=0.9.1';
+import { demoProject, createSession, transition, viewSession, exportHandoff } from './engine.js?v=0.10.0';
+import { renderSearchPlan, renderHypothesisResults, renderCoverage } from './search-plan.js?v=0.10.0';
+import { renderHandoff, handoffDocument } from './handoff.js?v=0.10.0';
+import { renderWalkthrough, walkthroughDocument } from './walkthrough.js?v=0.10.0';
+import { WALKTHROUGH_STEPS } from './walkthrough-state.js?v=0.10.0';
+import { MAX_SESSION_BYTES, restoreSession, serializeSession } from './session-file.js?v=0.10.0';
+import { sessionStore } from './session-store.js?v=0.10.0';
+import { collectResearch, validateResearchReport } from './research.js?v=0.10.0';
+import { collectRoleSearchV3 } from './role-search.js?v=0.10.0';
+import { loadShowcase } from './showcase.js?v=0.10.0';
+import { renderResearch, researchDocument } from './research-view.js?v=0.10.0';
+import { researchNote } from './research-note.js?v=0.10.0';
+import { createResearchReview, researchReviewAction, researchReviewPacket, researchReviewView, restoreResearchReview } from './research-review.js?v=0.10.0';
+import { researchFollowUpDocument } from './research-review-view.js?v=0.10.0';
+import { inspectResearchSource } from './source-inspection.js?v=0.10.0';
+import { createPilotFeedback, recordPilotFeedback, restorePilotFeedback } from './pilot-feedback.js?v=0.10.0';
 
 const root = document.querySelector('#app');
 let state = createSession(demoProject());
@@ -23,7 +24,8 @@ let imported = false;
 let showWalkthrough = new URL(location.href).searchParams.get('demo') === '1';
 let walkthroughStep = 0;
 let sessionOrigin = demoProject(), persistence = null, saveStatus = 'ready';
-let researchReport = null, researchReview = null, researchLoading = false, researchImported = true, researchError = '';
+let researchReport = null, researchReview = null, researchLoading = false, researchImported = true, researchShowcase = false, researchError = '';
+let pendingLiveReport = null;
 let pilotFeedback = null;
 let researchRevision = 0;
 let inspections = { details: new Map(), loading: new Set(), errors: new Map(), attempts: new Map() };
@@ -117,8 +119,8 @@ function render(){
  root.innerHTML=`<div class="shell">
  <header class="topbar"><a class="brand" href="#"><span class="brand-icon"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18v-7m7 7V5m7 13V9" stroke="currentColor" stroke-width="3"/></svg></span><span class="brand-name">signal desk<small>RESEARCH WITH A REASON</small></span></a><nav class="topnav" aria-label="${t('Основна навігація','Main navigation')}"><a href="#workspace">${t('Робочий стіл','Workspace')}</a><a href="#system">${t('Архітектура','Architecture')}</a><a href="#pilot">${t('Перший пілот','First pilot')}</a><div class="language" aria-label="Language"><button data-lang="uk" aria-pressed="${lang==='uk'}">УКР</button><button data-lang="en" aria-pressed="${lang==='en'}">EN</button></div></nav></header>
  <section class="hero" data-story-beat="arrival"><div><p class="eyebrow"><span class="dot"></span>${t('НЕЗАЛЕЖНИЙ ПРОТОТИП ДЛЯ РОЗМОВИ З A-PLAYERS','AN INDEPENDENT PROTOTYPE FOR A-PLAYERS')}</p><h1>${t('Спочатку докази.<br><em>Потім рішення.</em>','Evidence first.<br><em>Then a decision.</em>')}</h1></div><div class="hero-copy"><p>${t('Знайти публічні сліди у відкритому коді. Побачити джерела й прогалини. Передати рекрутеру зрозумілий результат для наступної перевірки.','Discover public signals in open-source code. Inspect sources and gaps. Give a recruiter a readable result for the next research step.')}</p><div class="hero-actions"><button class="button primary" id="go-to-research">${t('Відкрити реальний пошуковий прохід','Open the public-source research pass')} ${arrow}</button><button class="button quiet" id="open-walkthrough">${t('Подивитися показ із поясненнями','Watch the guided example')} ${arrow}</button></div></div></section>
- <div class="ribbon"><span><strong>${t('Демонстраційний режим.','Demonstration mode.')}</strong> ${imported?t('Власний або відновлений приклад: вигаданість змісту не перевірено.','User-supplied or restored sample: fictionality is unverified.'):t('Показ і ручний приклад нижче — вигадані. Окремий пошуковий прохід читає реальні відкриті дані GitHub.','The walkthrough and manual example below are fictional. The separate research pass reads real public GitHub data.')}</span><span class="mono version">v0.9.1 / ${t('GitHub — лише за кнопкою','GitHub — only on request')}</span></div>
- <main><div id="research-root">${renderResearch(researchReport,lang,{loading:researchLoading,imported:researchImported,error:researchError,reviewSession:researchReview,inspections,pilotFeedback})}</div><div id="walkthrough-root">${showWalkthrough?renderWalkthrough(walkthroughStep,lang):''}</div><section id="workspace" data-story-beat="work"><div class="workspace-heading"><div><p class="eyebrow">01 / ${imported?t('РУЧНА ПЕРЕВІРКА ІМПОРТОВАНИХ ДАНИХ','MANUAL REVIEW OF IMPORTED DATA'):t('РУЧНА ПЕРЕВІРКА НА ВИГАДАНОМУ ПРИКЛАДІ','MANUAL REVIEW OF A FICTIONAL EXAMPLE')}</p><h2>${e(l(v.project.title))}</h2></div><div class="tools"><label class="sr-only" for="scenario">${t('Сценарій','Scenario')}</label><select class="select" id="scenario">${imported?`<option value="imported" selected disabled>${t('Власний приклад','Imported sample')}</option>`:''}<option value="standard" ${scenario==='standard'&&!imported?'selected':''}>${t('Базовий пошук','Standard search')}</option><option value="conflict" ${scenario==='conflict'?'selected':''}>${t('Перевірка: конфлікт особи','Test: identity collision')}</option><option value="future-date">${t('Перевірка: дата з майбутнього','Test: future observation')}</option></select><button class="button quiet" id="start-tour">${t('Новий ручний приклад','New manual example')}</button><button class="button quiet" id="reset">${t('Скинути','Reset')}</button><button class="button" id="export-button" ${!v.exportPacket?'disabled':''}>${download} ${t('Пакет','Handoff')} (${v.metrics.approved})</button></div></div>
+ <div class="ribbon"><span><strong>${t('Демонстраційний режим.','Demonstration mode.')}</strong> ${imported?t('Власний або відновлений приклад: вигаданість змісту не перевірено.','User-supplied or restored sample: fictionality is unverified.'):t('Показ і ручний приклад нижче — вигадані. Окремий пошуковий прохід читає реальні відкриті дані GitHub.','The walkthrough and manual example below are fictional. The separate research pass reads real public GitHub data.')}</span><span class="mono version">v0.10.0 / ${t('GitHub — лише за кнопкою','GitHub — only on request')}</span></div>
+ <main><div id="research-root">${renderResearch(researchReport,lang,{loading:researchLoading,imported:researchImported,showcase:researchShowcase,pendingLiveReport,error:researchError,reviewSession:researchReview,inspections,pilotFeedback})}</div><div id="walkthrough-root">${showWalkthrough?renderWalkthrough(walkthroughStep,lang):''}</div><section id="workspace" data-story-beat="work"><div class="workspace-heading"><div><p class="eyebrow">01 / ${imported?t('РУЧНА ПЕРЕВІРКА ІМПОРТОВАНИХ ДАНИХ','MANUAL REVIEW OF IMPORTED DATA'):t('РУЧНА ПЕРЕВІРКА НА ВИГАДАНОМУ ПРИКЛАДІ','MANUAL REVIEW OF A FICTIONAL EXAMPLE')}</p><h2>${e(l(v.project.title))}</h2></div><div class="tools"><label class="sr-only" for="scenario">${t('Сценарій','Scenario')}</label><select class="select" id="scenario">${imported?`<option value="imported" selected disabled>${t('Власний приклад','Imported sample')}</option>`:''}<option value="standard" ${scenario==='standard'&&!imported?'selected':''}>${t('Базовий пошук','Standard search')}</option><option value="conflict" ${scenario==='conflict'?'selected':''}>${t('Перевірка: конфлікт особи','Test: identity collision')}</option><option value="future-date">${t('Перевірка: дата з майбутнього','Test: future observation')}</option></select><button class="button quiet" id="start-tour">${t('Новий ручний приклад','New manual example')}</button><button class="button quiet" id="reset">${t('Скинути','Reset')}</button><button class="button" id="export-button" ${!v.exportPacket?'disabled':''}>${download} ${t('Пакет','Handoff')} (${v.metrics.approved})</button></div></div>
  <div class="session-recovery"><div><strong>${t('Продовжити після перерви','Continue after a break')}</strong><p id="save-status" role="status">${e(storageMessage())}</p></div><div class="session-actions"><button class="button" id="download-session">${t('Зберегти сесію у файл','Save session file')}</button><button class="button quiet" id="restore-session">${t('Відновити з файлу','Restore session file')}</button><input class="file-input" type="file" id="session-file" accept=".json,application/json"></div><p class="session-note">${t('Файл сесії містить усі дані й повний журнал для вашого продовження. Для рекрутера використовуйте окремий «Пакет». Збереження локальне, без входу в обліковий запис.','A session file includes all data and the full trail for your own continuation. Use the separate Handoff for a recruiter. Storage is local, without an account.')}</p></div>
  ${touring?`<div class="tour"><div><strong>${t('Три хвилини: пройдіть шлях одного рішення','Three minutes: follow one decision')}</strong><p>${t('Відкрийте три докази Олени → запишіть висновок і прийміть кожен → підтвердьте особу → схваліть передачу → відкрийте пакет. Потім змініть дату внизу: схвалення скинеться.','Open Olena’s three evidence items → write your reason and accept each → confirm identity → approve the handoff → open the packet. Then change the cutoff below: approvals are cleared.')}</p></div><button class="button" id="end-tour">${t('Закрити','Dismiss')}</button></div>`:''}
  ${v.session.exhausted?`<div class="blocked-note" id="session-limit" role="alert"><strong>${t('Сесію завершено: журнал заповнений.','Session closed: the journal is full.')}</strong> ${t('Передача й нові рішення заблоковані. Нижче залишилась історія попередніх рішень. Натисніть «Скинути», щоб почати нову перевірку; старі схвалення не перенесуться.','Handoff and new decisions are blocked. Previous decisions remain visible as history. Choose Reset to start a fresh review; prior approvals will not carry over.')}</div>`:''}
@@ -154,7 +156,7 @@ function refreshResearch(preserveDrafts=true){
   document.querySelectorAll('[data-review-lead]').forEach(card=>drafts.set(`l:${card.dataset.reviewLead}`,card.querySelector('[name="lead-reason"]')?.value||''));
   document.querySelectorAll('[data-pilot-lead]').forEach(card=>drafts.set(`p:${card.dataset.pilotLead}`,Object.fromEntries([...card.querySelectorAll('input,select')].map(input=>[input.name,input.value]))));
  }
- document.querySelector('#research-root').innerHTML=renderResearch(researchReport,lang,{loading:researchLoading,imported:researchImported,error:researchError,reviewSession:researchReview,inspections,pilotFeedback});
+ document.querySelector('#research-root').innerHTML=renderResearch(researchReport,lang,{loading:researchLoading,imported:researchImported,showcase:researchShowcase,pendingLiveReport,error:researchError,reviewSession:researchReview,inspections,pilotFeedback});
  if(preserveDrafts){
   document.querySelectorAll('[data-review-evidence]').forEach(card=>{const value=drafts.get(`e:${card.dataset.reviewEvidence}`);if(value!==undefined)card.querySelector('[name="research-reason"]').value=value;});
   document.querySelectorAll('[data-review-lead]').forEach(card=>{const value=drafts.get(`l:${card.dataset.reviewLead}`);if(value!==undefined)card.querySelector('[name="lead-reason"]').value=value;});
@@ -171,19 +173,34 @@ function inspectionError(error){
 }
 function bindResearch(){
  document.querySelector('#go-to-research').onclick=()=>{document.querySelector('#research-heading').focus({preventScroll:true});document.querySelector('#research-root').scrollIntoView({block:'start'});};
- document.querySelector('#collect-role-search').onclick=async()=>{
+ document.querySelector('#open-showcase').onclick=async()=>{
   if(researchLoading)return;
   researchLoading=true;researchError='';refreshResearch();
   let replaced=false;
-  try{const report=validateResearchReport(await collectRoleSearchV3());researchReport=report;researchReview=createResearchReview(report);researchImported=false;resetInspections();replaced=true;}
+  try{const loaded=await loadShowcase();researchReport=loaded.report;researchReview=createResearchReview(loaded.report);
+   researchImported=true;researchShowcase=true;pendingLiveReport=null;resetInspections();inspections.details=loaded.details;replaced=true;}
+  catch{researchError=t('Знімок релізу не пройшов перевірку. Попередній звіт збережено.','The release snapshot failed verification. The previous report remains.');}
+  finally{researchLoading=false;refreshResearch(!replaced);document.querySelector('#open-showcase').focus({preventScroll:true});
+   if(replaced)(new URL(location.href).searchParams.get('showcase')==='1'
+    ? document.querySelector('.research-snapshot') : document.querySelector('#research-root')).scrollIntoView({block:'start'});}
+ };
+ document.querySelector('#collect-role-search').onclick=async()=>{
+  if(researchLoading)return;
+  researchLoading=true;researchError='';if(researchShowcase)pendingLiveReport=null;refreshResearch();
+  let replaced=false;
+  try{const report=validateResearchReport(await collectRoleSearchV3());
+   if(researchShowcase)pendingLiveReport=report;
+   else{researchReport=report;researchReview=createResearchReview(report);researchImported=false;researchShowcase=false;pendingLiveReport=null;resetInspections();replaced=true;}}
   catch{researchError=t('Пошук злитих PR не завершився. Перевірте доступ до GitHub; попередній звіт збережено.','Merged-PR search did not finish. Check GitHub access; the previous report remains.');}
   finally{researchLoading=false;refreshResearch(!replaced);document.querySelector('#collect-role-search').focus({preventScroll:true});}
  };
  document.querySelector('#collect-research').onclick=async()=>{
   if(researchLoading)return;
-  researchLoading=true;researchError='';refreshResearch();
+  researchLoading=true;researchError='';if(researchShowcase)pendingLiveReport=null;refreshResearch();
   let replaced=false;
-  try{const report=validateResearchReport(await collectResearch());researchReport=report;researchReview=createResearchReview(report);researchImported=false;resetInspections();replaced=true;}
+  try{const report=validateResearchReport(await collectResearch());
+   if(researchShowcase)pendingLiveReport=report;
+   else{researchReport=report;researchReview=createResearchReview(report);researchImported=false;researchShowcase=false;pendingLiveReport=null;resetInspections();replaced=true;}}
   catch{researchError=t('Збір не завершився. Перевірте доступ до GitHub і повторіть. Попередній звіт, якщо він був, лишився нижче.','Collection did not finish. Check GitHub access and retry. Any previous report is still shown below.');}
   finally{researchLoading=false;refreshResearch(!replaced);document.querySelector('#collect-research').focus({preventScroll:true});}
  };
@@ -194,11 +211,17 @@ function bindResearch(){
   try{if(file.size>2*1024*1024)throw Error('research file too large');const input=JSON.parse(await file.text());
    if(input?.schema==='signal-desk-research-review.v1'){const review=restoreResearchReview(input);researchReport=review.report;researchReview=review;}
    else{const report=validateResearchReport(input);researchReport=report;researchReview=createResearchReview(report);}
-   researchImported=true;researchError='';resetInspections();replaced=true;}
+   researchImported=true;researchShowcase=false;pendingLiveReport=null;researchError='';resetInspections();replaced=true;}
   catch{researchError=t('Файл дослідження відхилено. Попередній звіт збережено.','Research file rejected. The previous report is preserved.');}
   finally{event.target.value='';refreshResearch(!replaced);}
  };
- document.querySelector('#download-research')?.addEventListener('click',()=>saveFile(researchDocument(researchReport,lang,researchImported),'text/html;charset=utf-8',`signal-desk-research-${lang}.html`));
+ document.querySelector('#download-research')?.addEventListener('click',()=>saveFile(researchDocument(researchReport,lang,researchImported,researchShowcase),'text/html;charset=utf-8',`signal-desk-research-${lang}.html`));
+ document.querySelector('#download-live-attempt')?.addEventListener('click',()=>saveJSON(pendingLiveReport,'signal-desk-new-live-run.json'));
+ document.querySelector('#adopt-live-run')?.addEventListener('click',()=>{
+  if(!pendingLiveReport?.leads.length)return;
+  researchReport=pendingLiveReport;researchReview=createResearchReview(researchReport);researchImported=false;researchShowcase=false;
+  pendingLiveReport=null;resetInspections();refreshResearch(false);document.querySelector('#research-root').scrollIntoView({block:'start'});
+ });
  document.querySelector('#download-research-json')?.addEventListener('click',()=>saveJSON(researchReport,'signal-desk-research.json'));
  document.querySelector('#download-research-note')?.addEventListener('click',()=>saveFile(researchNote(researchReport,lang,researchImported),'text/markdown;charset=utf-8',`signal-desk-next-colleague-${lang}.md`));
  document.querySelector('#download-review-session')?.addEventListener('click',()=>saveJSON(researchReview,'signal-desk-full-research-review.json'));
@@ -299,3 +322,4 @@ try{
  if(restored){state=restored.state;sessionOrigin=restored.originProject;imported=true;selected='';saveStatus='restored';}
 }catch{persistence=null;saveStatus='unavailable';}
 render();
+if(new URL(location.href).searchParams.get('showcase')==='1')document.querySelector('#open-showcase').click();

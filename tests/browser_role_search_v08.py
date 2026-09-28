@@ -87,7 +87,7 @@ def run():
                 page.goto(base + "/?lang=uk")
                 assert not query_calls and not detail_calls and not file_calls
                 legacy_report = page.evaluate("""async () => {
-                    const { collectRoleSearch } = await import('./src/role-search.js?v=0.9.1');
+                    const { collectRoleSearch } = await import('./src/role-search.js?v=0.10.0');
                     return collectRoleSearch(fetch);
                 }""")
                 page.locator("#research-file").set_input_files({

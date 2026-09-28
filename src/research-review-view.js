@@ -1,5 +1,5 @@
-import { researchReviewPacket, researchReviewView } from './research-review.js?v=0.9.1';
-import { renderSourceInspection } from './source-inspection-view.js?v=0.9.1';
+import { researchReviewPacket, researchReviewView } from './research-review.js?v=0.10.0';
+import { renderSourceInspection } from './source-inspection-view.js?v=0.10.0';
 
 const e = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const words = {

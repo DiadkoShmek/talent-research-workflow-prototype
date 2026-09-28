@@ -1,4 +1,4 @@
-import { readPublicGitHubJson } from './github-public-read.js?v=0.9.1';
+import { readPublicGitHubJson } from './github-public-read.js?v=0.10.0';
 
 const ROLE = Object.freeze({ title: 'Senior Agentic Software Engineer — Poolday',
   url: 'https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday' });
@@ -41,6 +41,27 @@ function titleOf(value, lane) {
       !title.toLowerCase().includes(lane.term) || !ALIGNMENT[lane.id].test(title) ||
       !technicalPrefix.test(title)) return null;
   return title;
+}
+// Preserve safe, canonical rows rejected by title screening for human inspection.
+// They remain outside the lead/review/handoff authority path.
+function screenedOutRow(row, lane, since, observedAt) {
+  if (!record(row) || !record(row.user) || row.user.type !== 'User' ||
+      !Number.isSafeInteger(row.user.id) || row.user.id <= 0 ||
+      typeof row.user.login !== 'string' || !LOGIN.test(row.user.login) ||
+      !Number.isSafeInteger(row.number) || row.number <= 0 ||
+      row.repository_url !== `https://api.github.com/repos/${lane.repo}` ||
+      row.html_url !== `https://github.com/${lane.repo}/pull/${row.number}` ||
+      !record(row.pull_request) || !date(row.pull_request.merged_at) ||
+      (own(row.user, 'html_url') && row.user.html_url !== `https://github.com/${row.user.login}`)) return null;
+  const title = typeof row.title === 'string' ? row.title.split(/\r?\n/)[0].trim() : '';
+  if (!title || title.length > 160 || /[\x00-\x1f\x7f]/.test(title)) return null;
+  const mergedAt = row.pull_request.merged_at;
+  const outsideWindow = mergedAt.slice(0, 10) < since || Date.parse(mergedAt) > Date.parse(observedAt);
+  if (!outsideWindow && titleOf(title, lane)) return null;
+  const reason = outsideWindow ? 'outside-merge-window' :
+    title.toLowerCase().includes(lane.term) && ALIGNMENT[lane.id].test(title)
+      ? 'technical-prefix-required' : 'title-context-rule';
+  return { id: `github-pr:${lane.repo}:${row.number}`, url: row.html_url, title, mergedAt, reason };
 }
 function disposition(row, lane, since, observedAt) {
   if (!record(row)) return { kind: 'rejected' };
@@ -203,7 +224,7 @@ export async function collectRoleSearchV3(fetcher = globalThis.fetch) {
   for (const definition of ROLE_SEARCH_LANES_V3) {
     const lane = { ...definition, queryUrl: queryUrl(definition, searchSince), status: 'empty',
       scanned: 0, skipped: 0, rejected: 0, duplicates: 0, capped: 0,
-      observations: 0, leadIds: [], totalCount: 0, incomplete: false };
+      observations: 0, leadIds: [], totalCount: 0, incomplete: false, screenedOut: [] };
     if (stop) { lane.status = 'error'; lane.error = STOPPED; lanes.push(lane); continue; }
     let result;
     try {
@@ -225,7 +246,12 @@ export async function collectRoleSearchV3(fetcher = globalThis.fetch) {
     for (const row of result.items) {
       lane.scanned++;
       const candidate = disposition(row, definition, searchSince, observedAt);
-      if (candidate.kind === 'skipped') { lane.skipped++; continue; }
+      if (candidate.kind === 'skipped') {
+        lane.skipped++;
+        const trace = screenedOutRow(row, definition, searchSince, observedAt);
+        if (trace && !lane.screenedOut.some(item => item.id === trace.id)) lane.screenedOut.push(trace);
+        continue;
+      }
       if (candidate.kind === 'rejected') { lane.rejected++; continue; }
       const id = `github:${candidate.userId}`;
       const priorOwner = sourceOwners.get(candidate.evidence.id);
@@ -315,7 +341,8 @@ export function validateRoleSearchReportV3(input, expectedRole = ROLE) {
   for (let index = 0; index < definitions.length; index++) {
     const lane = input.lanes[index], definition = definitions[index];
     const fields = ['id', 'label', 'repo', 'term', 'queryUrl', 'status', 'scanned', 'skipped', 'rejected', 'duplicates', 'capped', 'observations', 'leadIds', 'totalCount', 'incomplete'];
-    if (!exact(lane, ['error', 'partial'].includes(lane?.status) ? [...fields, 'error'] : fields) ||
+    const hasTrace = own(lane, 'screenedOut');
+    if (!exact(lane, ['error', 'partial'].includes(lane?.status) ? [...fields, ...(hasTrace ? ['screenedOut'] : []), 'error'] : [...fields, ...(hasTrace ? ['screenedOut'] : [])]) ||
         lane.id !== definition.id || lane.label !== definition.label || lane.repo !== definition.repo || lane.term !== definition.term ||
         lane.queryUrl !== queryUrl(definition, input.run.searchSince) ||
         !['ok', 'empty', 'partial', 'error'].includes(lane.status) || !natural(lane.scanned) || lane.scanned > 20 ||
@@ -330,6 +357,23 @@ export function validateRoleSearchReportV3(input, expectedRole = ROLE) {
         (lane.status === 'empty' && (lane.observations || lane.incomplete || lane.rejected)) ||
         (lane.status === 'partial' && (!lane.observations || (!lane.incomplete && !lane.rejected))) ||
         (lane.status === 'error' && lane.observations)) fail();
+    if (hasTrace) {
+      if (!Array.isArray(lane.screenedOut) || lane.screenedOut.length > lane.skipped ||
+          new Set(lane.screenedOut.map(item => item?.id)).size !== lane.screenedOut.length) fail();
+      for (const item of lane.screenedOut) {
+        if (!exact(item, ['id', 'url', 'title', 'mergedAt', 'reason']) ||
+            !/^github-pr:[^:]+:[1-9]\d*$/.test(item.id) ||
+            item.id !== `github-pr:${lane.repo}:${Number(item.id.split(':').at(-1))}` ||
+            item.url !== `https://github.com/${lane.repo}/pull/${item.id.split(':').at(-1)}` ||
+            typeof item.title !== 'string' || !item.title || item.title.length > 160 ||
+            /[\x00-\x1f\x7f]/.test(item.title) || !date(item.mergedAt) ||
+            !['outside-merge-window', 'technical-prefix-required', 'title-context-rule'].includes(item.reason) ||
+            item.reason !== (item.mergedAt.slice(0, 10) < input.run.searchSince || Date.parse(item.mergedAt) > Date.parse(input.run.observedAt)
+              ? 'outside-merge-window' : item.title.toLowerCase().includes(lane.term) && ALIGNMENT[lane.id].test(item.title)
+                ? 'technical-prefix-required' : 'title-context-rule') ||
+            (item.reason !== 'outside-merge-window' && titleOf(item.title, lane)) || evidenceIds.has(item.id)) fail();
+      }
+    }
     const actualIds = [...leadMap.values()].filter(lead => lead.evidence.some(item => item.repository === lane.repo)).map(lead => lead.id);
     const actualSources = [...leadMap.values()].reduce((sum, lead) =>
       sum + lead.evidence.filter(item => item.repository === lane.repo).length, 0);

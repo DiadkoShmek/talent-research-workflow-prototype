@@ -1,4 +1,4 @@
-import { viewPilotFeedback } from './pilot-feedback.js?v=0.9.1';
+import { viewPilotFeedback } from './pilot-feedback.js?v=0.10.0';
 
 const e = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const names = {

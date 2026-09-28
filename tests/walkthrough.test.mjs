@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createSession, demoProject, viewSession } from '../src/engine.js?v=0.9.1';
+import { createSession, demoProject, viewSession } from '../src/engine.js?v=0.10.0';
 import { WALKTHROUGH_STEPS, walkthroughAt } from '../src/walkthrough-state.js';
 
 const reviewer = {

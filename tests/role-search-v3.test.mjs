@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { collectRoleSearchV3, validateRoleSearchReportV3, ROLE_SEARCH_LANES_V3 } from '../src/role-search.js?v=0.9.1';
-import { validateResearchReport } from '../src/research.js?v=0.9.1';
-import { createResearchReview, researchReviewAction, researchReviewPacket } from '../src/research-review.js?v=0.9.1';
-import { createPilotFeedback, viewPilotFeedback } from '../src/pilot-feedback.js?v=0.9.1';
+import { collectRoleSearchV3, validateRoleSearchReportV3, ROLE_SEARCH_LANES_V3 } from '../src/role-search.js?v=0.10.0';
+import { validateResearchReport } from '../src/research.js?v=0.10.0';
+import { createResearchReview, researchReviewAction, researchReviewPacket } from '../src/research-review.js?v=0.10.0';
+import { createPilotFeedback, viewPilotFeedback } from '../src/pilot-feedback.js?v=0.10.0';
+import { renderResearch } from '../src/research-view.js?v=0.10.0';
 
 const dayAgo = () => new Date(Date.now() - 86400000).toISOString().replace(/\.\d{3}Z$/, 'Z');
 function row(lane, number, userId, title) {
@@ -76,6 +77,36 @@ test('HTTP 403 stops later searches and records actual request count', async () 
   assert.equal(report.lanes[3].error, 'not requested after HTTP 403/429');
   assert.equal(report.lanes[4].scanned, 0);
   assert.equal(validateRoleSearchReportV3(structuredClone(report)).run.requests, 3);
+});
+
+test('a valid timeline PR screened out by the title prefix remains inspectable but outside leads', async () => {
+  const report = await collectRoleSearchV3(async url => {
+    const q = new URL(url).searchParams.get('q');
+    const items = q.includes('repo:remotion-dev/remotion')
+      ? [row(ROLE_SEARCH_LANES_V3[0], 9090, 120, 'fix: timeline frame alignment during trim')] : [];
+    return new Response(JSON.stringify({ total_count: items.length, incomplete_results: false, items }));
+  });
+  assert.equal(report.run.requests, 5);
+  assert.equal(report.lanes[0].scanned, 1);
+  assert.equal(report.lanes[0].skipped, 1);
+  assert.equal(report.leads.length, 0);
+  assert.deepEqual(report.lanes[0].screenedOut.map(item => [item.url, item.reason]), [
+    ['https://github.com/remotion-dev/remotion/pull/9090', 'technical-prefix-required']
+  ]);
+  const html = renderResearch(report, 'uk');
+  assert.match(html, /Відсіяні з точним посиланням 1\/1/);
+  assert.match(html, /github\.com\/remotion-dev\/remotion\/pull\/9090/);
+  const forged = structuredClone(report);
+  forged.lanes[0].screenedOut[0].reason = 'outside-merge-window';
+  assert.throws(() => validateResearchReport(forged), /invalid role search report/);
+  const wrongUrl = structuredClone(report);
+  wrongUrl.lanes[0].screenedOut[0].url = 'https://elsewhere.example/9090';
+  assert.throws(() => validateResearchReport(wrongUrl), /invalid role search report/);
+  const unsafeTitle = structuredClone(report);
+  unsafeTitle.lanes[0].screenedOut[0].title = 'fix: timeline <img src=x onerror=alert(1)>';
+  const safeHtml = renderResearch(unsafeTitle, 'uk');
+  assert.doesNotMatch(safeHtml, /<img/);
+  assert.match(safeHtml, /&lt;img/);
 });
 
 test('v3 refuses forged source grouping, accounting and rate-stop history', async () => {

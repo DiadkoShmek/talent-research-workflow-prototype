@@ -11,7 +11,7 @@ test('site CSP allows the exact existing handoff CSS in both entry paths without
   const policy = index.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/)[1];
   assert.doesNotMatch(policy, /unsafe-inline|unsafe-eval|\*/);
   assert.match(policy, /script-src 'self';/);
-  assert.match(policy, /connect-src https:\/\/api.github.com;/);
+  assert.match(policy, /connect-src 'self' https:\/\/api.github.com;/);
   for (const lang of ['uk', 'en']) {
     for (const markup of [renderHandoff(walkthroughAt(3, lang).view.exportPacket, lang), renderWalkthrough(3, lang)]) {
       const blocks = [...markup.matchAll(/<style>([\s\S]*?)<\/style>/g)];

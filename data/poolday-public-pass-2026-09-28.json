@@ -1,0 +1,533 @@
+{
+  "schema": "signal-desk-showcase.v1",
+  "source": "public-github-api-snapshot",
+  "report": {
+    "schema": "signal-desk-research.v3",
+    "role": {
+      "title": "Senior Agentic Software Engineer — Poolday",
+      "url": "https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday"
+    },
+    "run": {
+      "observedAt": "2026-09-28T17:18:08Z",
+      "elapsedMs": 2674,
+      "requests": 5,
+      "plannedRequests": 5,
+      "mode": "public-github-role-evidence-search",
+      "selectionNote": "Five role-derived merged-PR title searches in seeded public repositories; at most two sources per account and lane; no person ranking.",
+      "searchSince": "2026-04-01",
+      "status": "complete"
+    },
+    "lanes": [
+      {
+        "id": "video-timeline",
+        "label": "Video timeline and editor",
+        "repo": "remotion-dev/remotion",
+        "term": "timeline",
+        "queryUrl": "https://api.github.com/search/issues?q=is%3Apr%20is%3Amerged%20repo%3Aremotion-dev%2Fremotion%20timeline%20in%3Atitle%20updated%3A%3E%3D2026-04-01&sort=updated&order=desc&per_page=20",
+        "status": "ok",
+        "scanned": 20,
+        "skipped": 13,
+        "rejected": 0,
+        "duplicates": 0,
+        "capped": 5,
+        "observations": 2,
+        "leadIds": [
+          "github:1629785"
+        ],
+        "totalCount": 177,
+        "incomplete": false
+      },
+      {
+        "id": "agent-orchestration",
+        "label": "Agent orchestration",
+        "repo": "langchain-ai/langgraphjs",
+        "term": "agent",
+        "queryUrl": "https://api.github.com/search/issues?q=is%3Apr%20is%3Amerged%20repo%3Alangchain-ai%2Flanggraphjs%20agent%20in%3Atitle%20updated%3A%3E%3D2026-04-01&sort=updated&order=desc&per_page=20",
+        "status": "ok",
+        "scanned": 7,
+        "skipped": 1,
+        "rejected": 0,
+        "duplicates": 0,
+        "capped": 2,
+        "observations": 4,
+        "leadIds": [
+          "github:283806641",
+          "github:731337"
+        ],
+        "totalCount": 7,
+        "incomplete": false
+      },
+      {
+        "id": "ts-agent-tooling",
+        "label": "TypeScript tool execution",
+        "repo": "vercel/ai",
+        "term": "tool",
+        "queryUrl": "https://api.github.com/search/issues?q=is%3Apr%20is%3Amerged%20repo%3Avercel%2Fai%20tool%20in%3Atitle%20updated%3A%3E%3D2026-04-01&sort=updated&order=desc&per_page=20",
+        "status": "ok",
+        "scanned": 20,
+        "skipped": 14,
+        "rejected": 0,
+        "duplicates": 0,
+        "capped": 3,
+        "observations": 3,
+        "leadIds": [
+          "github:64795732",
+          "github:3531426"
+        ],
+        "totalCount": 929,
+        "incomplete": false
+      },
+      {
+        "id": "programmable-editor",
+        "label": "Programmable editor",
+        "repo": "tldraw/tldraw",
+        "term": "editor",
+        "queryUrl": "https://api.github.com/search/issues?q=is%3Apr%20is%3Amerged%20repo%3Atldraw%2Ftldraw%20editor%20in%3Atitle%20updated%3A%3E%3D2026-04-01&sort=updated&order=desc&per_page=20",
+        "status": "ok",
+        "scanned": 20,
+        "skipped": 1,
+        "rejected": 0,
+        "duplicates": 0,
+        "capped": 16,
+        "observations": 3,
+        "leadIds": [
+          "github:23072548",
+          "github:73378227"
+        ],
+        "totalCount": 187,
+        "incomplete": false
+      },
+      {
+        "id": "agent-recovery",
+        "label": "Agent reliability and recovery",
+        "repo": "triggerdotdev/trigger.dev",
+        "term": "agent",
+        "queryUrl": "https://api.github.com/search/issues?q=is%3Apr%20is%3Amerged%20repo%3Atriggerdotdev%2Ftrigger.dev%20agent%20in%3Atitle%20updated%3A%3E%3D2026-04-01&sort=updated&order=desc&per_page=20",
+        "status": "ok",
+        "scanned": 20,
+        "skipped": 17,
+        "rejected": 0,
+        "duplicates": 0,
+        "capped": 1,
+        "observations": 2,
+        "leadIds": [
+          "github:534"
+        ],
+        "totalCount": 69,
+        "incomplete": false
+      }
+    ],
+    "leads": [
+      {
+        "id": "github:1629785",
+        "handle": "JonnyBurger",
+        "profileUrl": "https://github.com/JonnyBurger",
+        "hypothesisIds": [
+          "video-timeline"
+        ],
+        "evidence": [
+          {
+            "id": "github-pr:remotion-dev/remotion:11763",
+            "kind": "github-pr",
+            "url": "https://github.com/remotion-dev/remotion/pull/11763",
+            "repository": "remotion-dev/remotion",
+            "title": "`@remotion/studio`: Fix timeline media flicker while trimming",
+            "mergedAt": "2026-09-28T15:57:39Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 11763
+          },
+          {
+            "id": "github-pr:remotion-dev/remotion:11703",
+            "kind": "github-pr",
+            "url": "https://github.com/remotion-dev/remotion/pull/11703",
+            "repository": "remotion-dev/remotion",
+            "title": "`@remotion/studio`: Add ripple and source-only timeline trims",
+            "mergedAt": "2026-09-26T21:05:10Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 11703
+          }
+        ],
+        "unknowns": [
+          "5+ professional years",
+          "Europe eligibility",
+          "availability and interest",
+          "full role fit"
+        ]
+      },
+      {
+        "id": "github:283806641",
+        "handle": "syachamaneni-lc",
+        "profileUrl": "https://github.com/syachamaneni-lc",
+        "hypothesisIds": [
+          "agent-orchestration"
+        ],
+        "evidence": [
+          {
+            "id": "github-pr:langchain-ai/langgraphjs:2886",
+            "kind": "github-pr",
+            "url": "https://github.com/langchain-ai/langgraphjs/pull/2886",
+            "repository": "langchain-ai/langgraphjs",
+            "title": "feat(cli): support agent environment deployments",
+            "mergedAt": "2026-09-25T05:03:03Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 2886
+          },
+          {
+            "id": "github-pr:langchain-ai/langgraphjs:2885",
+            "kind": "github-pr",
+            "url": "https://github.com/langchain-ai/langgraphjs/pull/2885",
+            "repository": "langchain-ai/langgraphjs",
+            "title": "feat(cli): support agent environment deployments",
+            "mergedAt": "2026-09-25T00:20:03Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 2885
+          }
+        ],
+        "unknowns": [
+          "5+ professional years",
+          "Europe eligibility",
+          "availability and interest",
+          "full role fit"
+        ]
+      },
+      {
+        "id": "github:731337",
+        "handle": "christian-bromann",
+        "profileUrl": "https://github.com/christian-bromann",
+        "hypothesisIds": [
+          "agent-orchestration"
+        ],
+        "evidence": [
+          {
+            "id": "github-pr:langchain-ai/langgraphjs:2552",
+            "kind": "github-pr",
+            "url": "https://github.com/langchain-ai/langgraphjs/pull/2552",
+            "repository": "langchain-ai/langgraphjs",
+            "title": "fix(langgraph): isolate concurrent singleton-agent invocations by thread",
+            "mergedAt": "2026-06-17T23:35:38Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 2552
+          },
+          {
+            "id": "github-pr:langchain-ai/langgraphjs:2533",
+            "kind": "github-pr",
+            "url": "https://github.com/langchain-ai/langgraphjs/pull/2533",
+            "repository": "langchain-ai/langgraphjs",
+            "title": "feat(langgraph): forward task metadata and name subagents via lc_agent_name",
+            "mergedAt": "2026-06-17T19:37:43Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 2533
+          }
+        ],
+        "unknowns": [
+          "5+ professional years",
+          "Europe eligibility",
+          "availability and interest",
+          "full role fit"
+        ]
+      },
+      {
+        "id": "github:64795732",
+        "handle": "slegarraga",
+        "profileUrl": "https://github.com/slegarraga",
+        "hypothesisIds": [
+          "ts-agent-tooling"
+        ],
+        "evidence": [
+          {
+            "id": "github-pr:vercel/ai:15889",
+            "kind": "github-pr",
+            "url": "https://github.com/vercel/ai/pull/15889",
+            "repository": "vercel/ai",
+            "title": "fix(openai): default Responses tool strict mode to false",
+            "mergedAt": "2026-09-25T19:57:42Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 15889
+          }
+        ],
+        "unknowns": [
+          "5+ professional years",
+          "Europe eligibility",
+          "availability and interest",
+          "full role fit"
+        ]
+      },
+      {
+        "id": "github:3531426",
+        "handle": "felixarntz",
+        "profileUrl": "https://github.com/felixarntz",
+        "hypothesisIds": [
+          "ts-agent-tooling"
+        ],
+        "evidence": [
+          {
+            "id": "github-pr:vercel/ai:21221",
+            "kind": "github-pr",
+            "url": "https://github.com/vercel/ai/pull/21221",
+            "repository": "vercel/ai",
+            "title": "feat(harness-acp): update to latest ACP SDK and use new `tool.name` field when present to determine tool identity",
+            "mergedAt": "2026-09-25T20:16:04Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 21221
+          },
+          {
+            "id": "github-pr:vercel/ai:21434",
+            "kind": "github-pr",
+            "url": "https://github.com/vercel/ai/pull/21434",
+            "repository": "vercel/ai",
+            "title": "feat(harness-codex): migrate adapter to use Codex app server, unlocking more granular tool call emissions, built-in tool filtering, and mid-turn steering",
+            "mergedAt": "2026-09-24T19:59:40Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 21434
+          }
+        ],
+        "unknowns": [
+          "5+ professional years",
+          "Europe eligibility",
+          "availability and interest",
+          "full role fit"
+        ]
+      },
+      {
+        "id": "github:23072548",
+        "handle": "steveruizok",
+        "profileUrl": "https://github.com/steveruizok",
+        "hypothesisIds": [
+          "programmable-editor"
+        ],
+        "evidence": [
+          {
+            "id": "github-pr:tldraw/tldraw:10350",
+            "kind": "github-pr",
+            "url": "https://github.com/tldraw/tldraw/pull/10350",
+            "repository": "tldraw/tldraw",
+            "title": "fix(editor): support the rotate/resize cursor types and encode the cursor colour",
+            "mergedAt": "2026-09-27T19:32:12Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 10350
+          },
+          {
+            "id": "github-pr:tldraw/tldraw:10465",
+            "kind": "github-pr",
+            "url": "https://github.com/tldraw/tldraw/pull/10465",
+            "repository": "tldraw/tldraw",
+            "title": "fix(editor): keep shape positions and source camera when duplicating a page",
+            "mergedAt": "2026-09-27T19:30:38Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 10465
+          }
+        ],
+        "unknowns": [
+          "5+ professional years",
+          "Europe eligibility",
+          "availability and interest",
+          "full role fit"
+        ]
+      },
+      {
+        "id": "github:73378227",
+        "handle": "kostyafarber",
+        "profileUrl": "https://github.com/kostyafarber",
+        "hypothesisIds": [
+          "programmable-editor"
+        ],
+        "evidence": [
+          {
+            "id": "github-pr:tldraw/tldraw:10944",
+            "kind": "github-pr",
+            "url": "https://github.com/tldraw/tldraw/pull/10944",
+            "repository": "tldraw/tldraw",
+            "title": "feat(dotcom): let MCP tokens set the user's editor preferences",
+            "mergedAt": "2026-09-25T16:52:26Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 10944
+          }
+        ],
+        "unknowns": [
+          "5+ professional years",
+          "Europe eligibility",
+          "availability and interest",
+          "full role fit"
+        ]
+      },
+      {
+        "id": "github:534",
+        "handle": "ericallam",
+        "profileUrl": "https://github.com/ericallam",
+        "hypothesisIds": [
+          "agent-recovery"
+        ],
+        "evidence": [
+          {
+            "id": "github-pr:triggerdotdev/trigger.dev:4907",
+            "kind": "github-pr",
+            "url": "https://github.com/triggerdotdev/trigger.dev/pull/4907",
+            "repository": "triggerdotdev/trigger.dev",
+            "title": "fix(core,sdk): stop chat.agent losing messages during recovery",
+            "mergedAt": "2026-09-09T15:54:18Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 4907
+          },
+          {
+            "id": "github-pr:triggerdotdev/trigger.dev:4910",
+            "kind": "github-pr",
+            "url": "https://github.com/triggerdotdev/trigger.dev/pull/4910",
+            "repository": "triggerdotdev/trigger.dev",
+            "title": "fix(sdk): chat.agent transcript follow-ups",
+            "mergedAt": "2026-09-09T12:09:41Z",
+            "observedAt": "2026-09-28T17:18:08Z",
+            "number": 4910
+          }
+        ],
+        "unknowns": [
+          "5+ professional years",
+          "Europe eligibility",
+          "availability and interest",
+          "full role fit"
+        ]
+      }
+    ]
+  },
+  "inspections": [
+    {
+      "kind": "github-pr",
+      "evidenceId": "github-pr:remotion-dev/remotion:11763",
+      "sourceUrl": "https://github.com/remotion-dev/remotion/pull/11763",
+      "inspectedAt": "2026-09-28T17:18:11.447Z",
+      "association": "same-github-id",
+      "fileCount": 10,
+      "shownCount": 8,
+      "possiblyIncomplete": false,
+      "additions": 186,
+      "deletions": 38,
+      "files": [
+        {
+          "filename": "packages/convert/app/components/player/filmstrip.tsx",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0,
+          "testPath": false
+        },
+        {
+          "filename": "packages/studio/src/components/AudioWaveform.tsx",
+          "status": "modified",
+          "additions": 19,
+          "deletions": 14,
+          "testPath": false
+        },
+        {
+          "filename": "packages/studio/src/components/Timeline/TimelineVideoInfo.tsx",
+          "status": "modified",
+          "additions": 39,
+          "deletions": 11,
+          "testPath": false
+        },
+        {
+          "filename": "packages/studio/src/helpers/align-canvas-to-device-pixels.ts",
+          "status": "added",
+          "additions": 39,
+          "deletions": 0,
+          "testPath": false
+        },
+        {
+          "filename": "packages/timeline-utils/src/audio-waveform/draw-peaks.ts",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 4,
+          "testPath": false
+        },
+        {
+          "filename": "packages/timeline-utils/src/device-pixel-alignment.ts",
+          "status": "added",
+          "additions": 33,
+          "deletions": 0,
+          "testPath": false
+        },
+        {
+          "filename": "packages/timeline-utils/src/index.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0,
+          "testPath": false
+        },
+        {
+          "filename": "packages/timeline-utils/src/render-frame-strip-to-canvas.ts",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 7,
+          "testPath": false
+        }
+      ]
+    },
+    {
+      "kind": "github-pr",
+      "evidenceId": "github-pr:remotion-dev/remotion:11703",
+      "sourceUrl": "https://github.com/remotion-dev/remotion/pull/11703",
+      "inspectedAt": "2026-09-28T17:18:12.032Z",
+      "association": "same-github-id",
+      "fileCount": 10,
+      "shownCount": 8,
+      "possiblyIncomplete": false,
+      "additions": 561,
+      "deletions": 142,
+      "files": [
+        {
+          "filename": "packages/media/src/media-player.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 12,
+          "testPath": false
+        },
+        {
+          "filename": "packages/media/src/test/trim-change-seek.test.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 7,
+          "testPath": true
+        },
+        {
+          "filename": "packages/media/src/use-common-effects.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 11,
+          "testPath": false
+        },
+        {
+          "filename": "packages/studio/src/components/Timeline/Timeline.tsx",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 3,
+          "testPath": false
+        },
+        {
+          "filename": "packages/studio/src/components/Timeline/TimelineSequence.tsx",
+          "status": "modified",
+          "additions": 192,
+          "deletions": 17,
+          "testPath": false
+        },
+        {
+          "filename": "packages/studio/src/components/Timeline/TimelineSequenceRightEdgeDragHandle.tsx",
+          "status": "modified",
+          "additions": 335,
+          "deletions": 79,
+          "testPath": false
+        },
+        {
+          "filename": "packages/studio/src/components/Timeline/timeline-left-edge-cursor.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "testPath": false
+        },
+        {
+          "filename": "packages/studio/src/components/Timeline/timeline-right-edge-cursor.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "testPath": false
+        }
+      ]
+    }
+  ]
+}

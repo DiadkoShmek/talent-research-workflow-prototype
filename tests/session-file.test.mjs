@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createSession, demoProject, exportHandoff, transition, viewSession } from '../src/engine.js?v=0.9.1';
+import { createSession, demoProject, exportHandoff, transition, viewSession } from '../src/engine.js?v=0.10.0';
 import { MAX_SESSION_BYTES, restoreSession, serializeSession } from '../src/session-file.js';
 
 const reviewer = 'Synthetic session reviewer';

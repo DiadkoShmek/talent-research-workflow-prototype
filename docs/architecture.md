@@ -2,6 +2,14 @@
 
 Signal Desk demonstrates a bounded read-only public GitHub pass with a separate human source-review and further-research handoff, plus a fictional criterion-by-criterion approval engine. These paths have different authorities. The [public Talent Engineer posting](https://aplayers.na.teamtailor.com/jobs/617015-talent-engineer-ai-automation-a-players) motivates the workflow; the research pass uses the [public Poolday Senior Agentic Software Engineer posting](https://aplayers.na.teamtailor.com/jobs/536324-senior-agentic-software-engineer-poolday) as its concrete brief. The manual fixture contains fictional people. This independent artifact is not an A-Players system.
 
+## Release-bundled public pass (v0.10.0)
+
+`data/poolday-public-pass-2026-09-28.json` is an archival capture of an actual five-lane public GitHub API run, not a fixture or live query. `src/showcase.js` reads only that fixed same-origin URL with credentials omitted, a 10-second abort and 128 KiB cap. It rejects redirects, checks a pinned SHA-256 over the exact bytes, parses fatal UTF-8, then validates the complete v3 report and two exact Remotion PR file summaries. The digest binds the released asset to code; it cannot establish independent truth of the external API. Diff text and human review actions are absent from the asset.
+
+The browser holds distinct `researchReport`, `researchReview`, `researchShowcase` and `pendingLiveReport` state. Opening the archive creates an empty review and exposes its pre-captured source-file facts. Starting live search while the archive is open stages the new report separately, including HTTP 403/429 failure details; existing review choices remain. Only an explicit replacement creates a fresh review from a usable new report. Imports also start a new review or replay a supplied unverified review file. None of these paths writes to the fictional manual approval engine or an external ATS. This separation makes the meeting path deterministic while keeping a fresh run honestly labelled.
+
+A new v3 live report may include each lane’s optional `screenedOut` list. It holds only canonical public `User` PR rows skipped by the merge-date or title rule, bounded to the 20 already scanned rows. Each entry binds exact PR ID/URL, title, merge date and reason; the validator checks that list against the lane’s skipped count and current rules. Older v3 files omit the field and still import. Screened-out rows never enter `leads`, source review, pilot feedback or handoff. Thus the trace exposes a filter loss without silently weakening the qualification gate or spending more API calls.
+
 ## Decision boundary
 
 Several observations about one apparent person may come from different research hypotheses. A name match is not identity proof; a source quotation is not verified evidence; accepting one claim does not validate every claim from a source. The design keeps five decisions separate:

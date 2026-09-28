@@ -1,4 +1,4 @@
-import { validateResearchReport } from './research.js?v=0.9.1';
+import { validateResearchReport } from './research.js?v=0.10.0';
 
 const RATIONALE = {
   uk: {
