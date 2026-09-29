@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { collectResearch } from '../src/research.js?v=0.10.0';
 import { createResearchReview, researchReviewAction } from '../src/research-review.js?v=0.10.0';
 import { createPilotFeedback, recordPilotFeedback, restorePilotFeedback, viewPilotFeedback } from '../src/pilot-feedback.js?v=0.10.0';
+import { fixtureInspection } from './inspection-fixture.mjs';
 
 async function selectedReview() {
   const sha = 'a'.repeat(40);
@@ -11,7 +12,8 @@ async function selectedReview() {
   const report = await collectResearch(async url => new Response(JSON.stringify(url.includes('langgraphjs') ? [row] : [])));
   const start = createResearchReview(report);
   const checked = researchReviewAction(start, { type: 'evidence', evidenceId: `github-commit:langchain-ai/langgraphjs:${sha}`,
-    decision: 'relevant', reason: 'The diff shows a relevant recovery change.' });
+    decision: 'relevant', reason: 'The diff shows a relevant recovery change.',
+    inspection: fixtureInspection(report, `github-commit:langchain-ai/langgraphjs:${sha}`) });
   return researchReviewAction(checked, { type: 'lead', leadId: 'github:101', decision: 'follow-up',
     reason: 'Check personal authorship and role requirements.' });
 }

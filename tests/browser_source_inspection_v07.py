@@ -92,14 +92,16 @@ def run():
                 assert "[email hidden]" in result.inner_text()
                 assert "test@example.com" not in result.inner_text()
                 assert source.locator("img").count() == 0
+                source.locator('[data-confirm-inspection]').click()
                 if args.screenshots:
                     source.scroll_into_view_if_needed()
                     page.screenshot(path=str(ROOT / f"docs/screenshots/research-v07-{width}-inspection.png"))
 
                 # A newly discovered ID conflict withdraws a previously selected handoff.
                 second = page.locator('[data-review-lead="github:101"] [data-review-evidence]').nth(1)
-                second.locator('[name="research-reason"]').fill("The public diff seemed worth a follow-up.")
-                second.locator('[data-evidence-decision="relevant"]').click()
+                expect(second.locator('[data-evidence-decision="relevant"]')).to_be_disabled()
+                source = page.locator('[data-review-lead="github:101"] [data-review-evidence]').first
+                source.locator('[data-evidence-decision="relevant"]').click()
                 card = page.locator('[data-review-lead="github:101"]')
                 card.locator('[name="lead-reason"]').fill("Check actual authorship and role fit.")
                 card.locator('[data-lead-decision="follow-up"]').click()
@@ -119,7 +121,7 @@ def run():
                 expect(blocked.locator("[data-inspect-source]")).to_be_disabled()
                 assert "github.com" in blocked.locator("a").first.get_attribute("href")
 
-                # Human decision remains distinct from ephemeral diff preview.
+                # The inspected first source can support a new decision after the conflict withdrawal.
                 source = page.locator('[data-review-lead="github:101"] [data-review-evidence]').first
                 source.locator('[data-evidence-decision="relevant"]').click()
                 card = page.locator('[data-review-lead="github:101"]')

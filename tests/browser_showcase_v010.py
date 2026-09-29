@@ -84,6 +84,8 @@ def run():
                     "el => el.closest('[data-review-lead]').getAttribute('data-review-lead')")
                 for index, evidence_id in enumerate(ids):
                     source = page.locator(f'[data-review-evidence="{evidence_id}"]')
+                    expect(source.locator('[data-evidence-decision="relevant"]')).to_be_disabled()
+                    source.locator('[data-confirm-inspection]').click()
                     source.locator('[name="research-reason"]').fill("Timeline files merit a closer human review.")
                     source.locator('[data-evidence-decision="relevant"]').click()
                     if index == 0:
@@ -97,6 +99,7 @@ def run():
                 lead.locator('[data-lead-decision="follow-up"]').click()
                 packet = json.loads(downloaded_text(page, "#download-follow-up-json"))
                 assert len(packet["leads"]) == 1 and len(packet["leads"][0]["evidence"]) == 2
+                assert all(item["inspection"]["files"] for item in packet["leads"][0]["evidence"])
                 assert packet["sourceOrigin"] == "imported-file-unverified"
                 assert not api_calls
 
@@ -133,7 +136,7 @@ def run():
                 expect(page.locator("#download-follow-up-json")).to_be_disabled()
                 source = page.locator("[data-review-evidence]").first
                 source.locator('[name="research-reason"]').fill("Keep this source for an explicit review decision.")
-                source.locator('[data-evidence-decision="relevant"]').click()
+                source.locator('[data-evidence-decision="uncertain"]').click()
                 before = json.loads(downloaded_text(page, "#download-review-session"))
                 page.once("dialog", lambda dialog: dialog.dismiss())
                 page.locator("#open-showcase").click()
@@ -152,7 +155,7 @@ def run():
                 page.wait_for_function("typeof window.__releaseShowcase === 'function'")
                 source = page.locator("[data-review-evidence]").first
                 source.locator('[name="research-reason"]').fill("A newer human decision arrived during archive loading.")
-                source.locator('[data-evidence-decision="relevant"]').click()
+                source.locator('[data-evidence-decision="uncertain"]').click()
                 during_load = json.loads(downloaded_text(page, "#download-review-session"))
                 assert len(during_load["actions"]) == 2
                 page.evaluate("() => window.__releaseShowcase()")

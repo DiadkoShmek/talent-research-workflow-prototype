@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { collectRoleSearch, validateRoleSearchReport, ROLE_SEARCH_LANES } from '../src/role-search.js?v=0.10.0';
 import { validateResearchReport } from '../src/research.js?v=0.10.0';
 import { createResearchReview, researchReviewAction, researchReviewPacket } from '../src/research-review.js?v=0.10.0';
+import { fixtureInspection } from './inspection-fixture.mjs';
 import { createPilotFeedback, recordPilotFeedback, viewPilotFeedback } from '../src/pilot-feedback.js?v=0.10.0';
 import { inspectResearchSource } from '../src/source-inspection.js?v=0.10.0';
 
@@ -43,7 +44,8 @@ test('role search reads four exact merged-PR queries and retains source-bound hu
   assert.equal(validateResearchReport(structuredClone(report)).leads.length, 4);
   const evidence = report.leads[0].evidence[0];
   const checked = researchReviewAction(createResearchReview(report), { type: 'evidence', evidenceId: evidence.id,
-    decision: 'relevant', reason: 'The merged PR merits closer code inspection.' });
+    decision: 'relevant', reason: 'The merged PR merits closer code inspection.',
+    inspection: fixtureInspection(report, evidence.id) });
   const selected = researchReviewAction(checked, { type: 'lead', leadId: report.leads[0].id,
     decision: 'follow-up', reason: 'Check individual ownership and role requirements.' });
   const packet = researchReviewPacket(selected, false);

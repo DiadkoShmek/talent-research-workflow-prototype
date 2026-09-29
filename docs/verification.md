@@ -1,4 +1,10 @@
-# Verification record — 28 September 2026
+# Verification record — through 29 September 2026
+
+## Local v0.10.6 exact-inspection gate — 29 September 2026, not published
+
+The former research reducer accepted a `relevant` action and produced a follow-up packet without any exact PR/commit detail read. The new action requires an explicit detail-review confirmation and a bounded inspection record tied to the current report timestamp, source ID, canonical URL, matching numeric GitHub association and shown file paths. Incomplete or unlinked details cannot support a positive action. The reducer and packet builder enforce the gate independently of the UI; old v1 review files still reopen with their reasons, but title-only positive decisions cannot create a new packet until the source is re-inspected and reassessed. The card includes paths, not diff text. Imported records remain self-attested, not authenticated proof of GitHub or a reviewer.
+
+Local proof: `npm test` **71/71**; Python unit tests **14/14**; `npm run stress` **200/200** fictional manual-engine cycles. Chromium scenarios for showcase/review/rate-stop, older commit-source review, exact-source conflict, v2 and v3 role searches, and the 503/forged-archive/app-module fallback passed at **1440 and 390 px**. The browser tests exercise an explicit confirmation before a positive source decision, selected-card export, old-session restore and no horizontal overflow. Adversarial unit tests reject mismatched source/run/ID, incomplete detail and unsafe file paths; a legacy title-only review remains readable but cannot hand off. One browser counterexample found that confirmation initially erased a typed reason; preserving draft fields on that re-render repaired it and the exact-source scenario passed again. `git diff --check` passed. This is local evidence only: the public GitHub Pages site still serves v0.10.5, and physical iPhone Safari, recruiter usefulness and imported-file authenticity remain unproved.
 
 ## v0.10.5 readable startup fallback, local proof
 

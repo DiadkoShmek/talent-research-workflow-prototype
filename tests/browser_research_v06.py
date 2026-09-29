@@ -47,6 +47,15 @@ def run():
                             if url == f"{API_PREFIX}{repo}/commits?per_page=20":
                                 route.fulfill(status=200, content_type="application/json", body=json.dumps(FIXTURES[repo]))
                                 return
+                        first_sha = "a" * 40
+                        if url == f"{API_PREFIX}langchain-ai/langgraphjs/commits/{first_sha}":
+                            route.fulfill(status=200, content_type="application/json", body=json.dumps({
+                                "sha": first_sha,
+                                "html_url": f"https://github.com/langchain-ai/langgraphjs/commit/{first_sha}",
+                                "author": {"id": 101}, "stats": {"additions": 2, "deletions": 1},
+                                "files": [{"filename": "src/recovery.ts", "status": "modified",
+                                           "additions": 2, "deletions": 1, "patch": "+recovery"}]}))
+                            return
                         unexpected.append(url)
                         route.abort()
                     else:
@@ -62,6 +71,9 @@ def run():
                 expect(page.locator("#download-follow-up")).to_be_disabled()
                 first = page.locator('[data-review-lead="github:101"]')
                 signal = first.locator("[data-review-evidence]").first
+                expect(signal.locator('[data-evidence-decision="relevant"]')).to_be_disabled()
+                signal.locator('[data-inspect-source]').click()
+                signal.locator('[data-confirm-inspection]').click()
                 signal.locator('[name="research-reason"]').fill("Inspected the public graph recovery diff.")
                 signal.locator('[data-evidence-decision="relevant"]').click()
                 expect(page.locator("#download-follow-up")).to_be_disabled()
@@ -114,7 +126,7 @@ def run():
                 page.locator("#collect-research").click()
                 expect(page.locator(".research-attempt")).to_be_visible()
                 assert json.loads(downloaded_text(page, "#download-review-session")) == saved
-                assert len(api_calls) == 9
+                assert len(api_calls) == 10
                 page.once("dialog", lambda dialog: dialog.dismiss())
                 page.locator("#adopt-live-run").click()
                 assert json.loads(downloaded_text(page, "#download-review-session")) == saved
@@ -123,7 +135,7 @@ def run():
                 expect(page.locator(".research-review-card")).to_have_count(2)
                 expect(page.locator("#download-follow-up")).to_be_disabled()
                 assert "Дій у журналі: 0/100" in page.locator(".research-review-stats").inner_text()
-                assert len(api_calls) == 9 and not unexpected
+                assert len(api_calls) == 10 and not unexpected
                 assert not errors and not csp_errors, (errors, csp_errors)
                 assert page.locator("body").evaluate("el => el.scrollWidth <= window.innerWidth + 1"), "horizontal overflow"
                 page.close()

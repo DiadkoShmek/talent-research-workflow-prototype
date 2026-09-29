@@ -1,7 +1,7 @@
 import { validateResearchReport } from './research.js?v=0.10.0';
-import { renderResearchReview } from './research-review-view.js?v=0.10.0';
-import { researchReviewPacket } from './research-review.js?v=0.10.0';
-import { renderPilotFeedback } from './pilot-feedback-view.js?v=0.10.0';
+import { renderResearchReview } from './research-review-view.js?v=0.10.6';
+import { researchReviewPacket } from './research-review.js?v=0.10.6';
+import { renderPilotFeedback } from './pilot-feedback-view.js?v=0.10.6';
 
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const laneNames = {

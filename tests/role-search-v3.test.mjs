@@ -5,6 +5,7 @@ import { validateResearchReport } from '../src/research.js?v=0.10.0';
 import { createResearchReview, researchReviewAction, researchReviewPacket } from '../src/research-review.js?v=0.10.0';
 import { createPilotFeedback, viewPilotFeedback } from '../src/pilot-feedback.js?v=0.10.0';
 import { renderResearch } from '../src/research-view.js?v=0.10.0';
+import { fixtureInspection } from './inspection-fixture.mjs';
 
 const dayAgo = () => new Date(Date.now() - 86400000).toISOString().replace(/\.\d{3}Z$/, 'Z');
 function row(lane, number, userId, title) {
@@ -55,7 +56,8 @@ test('five role lanes retain repeated PR evidence with one account identity and 
   assert.equal(remotion.evidence.every(item => item.repository === 'remotion-dev/remotion'), true);
   let review = createResearchReview(report);
   for (const source of remotion.evidence) review = researchReviewAction(review, { type: 'evidence',
-    evidenceId: source.id, decision: 'relevant', reason: 'Inspect the exact timeline code and test changes.' });
+    evidenceId: source.id, decision: 'relevant', reason: 'Inspect the exact timeline code and test changes.',
+    inspection: fixtureInspection(report, source.id) });
   review = researchReviewAction(review, { type: 'lead', leadId: remotion.id,
     decision: 'follow-up', reason: 'Check the individual contribution and editing background.' });
   const packet = researchReviewPacket(review, false);

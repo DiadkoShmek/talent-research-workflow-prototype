@@ -8,12 +8,12 @@ import { sessionStore } from './session-store.js?v=0.10.0';
 import { collectResearch, validateResearchReport } from './research.js?v=0.10.0';
 import { collectRoleSearchV3 } from './role-search.js?v=0.10.0';
 import { loadShowcase } from './showcase.js?v=0.10.0';
-import { renderResearch, researchDocument } from './research-view.js?v=0.10.4';
+import { renderResearch, researchDocument } from './research-view.js?v=0.10.6';
 import { researchNote } from './research-note.js?v=0.10.0';
-import { createResearchReview, researchReviewAction, researchReviewPacket, researchReviewView, restoreResearchReview } from './research-review.js?v=0.10.0';
-import { researchFollowUpDocument } from './research-review-view.js?v=0.10.0';
+import { createInspectionReceipt, createResearchReview, researchReviewAction, researchReviewPacket, researchReviewView, restoreResearchReview } from './research-review.js?v=0.10.6';
+import { researchFollowUpDocument } from './research-review-view.js?v=0.10.6';
 import { inspectResearchSource } from './source-inspection.js?v=0.10.0';
-import { createPilotFeedback, recordPilotFeedback, restorePilotFeedback } from './pilot-feedback.js?v=0.10.0';
+import { createPilotFeedback, recordPilotFeedback, restorePilotFeedback } from './pilot-feedback.js?v=0.10.6';
 
 const root = document.querySelector('#app');
 let state = createSession(demoProject());
@@ -28,7 +28,7 @@ let researchReport = null, researchReview = null, researchLoading = false, resea
 let pendingLiveReport = null;
 let pilotFeedback = null;
 let researchRevision = 0;
-let inspections = { details: new Map(), loading: new Set(), errors: new Map(), attempts: new Map() };
+let inspections = { details: new Map(), confirmed: new Map(), loading: new Set(), errors: new Map(), attempts: new Map() };
 const e = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const t = (uk, en) => lang === 'uk' ? uk : en;
 const l = value => typeof value === 'string' ? value : (value?.[lang] || value?.uk || '');
@@ -148,7 +148,7 @@ function render(){
 }
 function saveFile(content,type,name){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);}
 function saveJSON(value,name){saveFile(JSON.stringify(value,null,2),'application/json',name);}
-function resetInspections(){researchRevision++;inspections={details:new Map(),loading:new Set(),errors:new Map(),attempts:new Map()};}
+function resetInspections(){researchRevision++;inspections={details:new Map(),confirmed:new Map(),loading:new Set(),errors:new Map(),attempts:new Map()};}
 function refreshResearch(preserveDrafts=true){
  const drafts=new Map();
  if(preserveDrafts){
@@ -280,9 +280,15 @@ function bindResearch(){
   catch(error){if(revision===researchRevision)inspections.errors.set(id,inspectionError(error));}
   finally{if(revision===researchRevision){inspections.loading.delete(id);refreshResearch();researchCard('data-source-inspection',id)?.focus({preventScroll:true});}}
  });
+ document.querySelectorAll('[data-confirm-inspection]').forEach(button=>button.onclick=()=>{
+  const id=button.dataset.confirmInspection;
+  try{inspections.confirmed.set(id,createInspectionReceipt(researchReport,id,inspections.details.get(id)));
+   refreshResearch();researchCard('data-review-evidence',id)?.querySelector('[data-evidence-decision="relevant"]')?.focus({preventScroll:true});}
+  catch{notify(t('Деталь не підтверджує цей слід повністю. Позитивну оцінку зупинено.','The detail does not fully support this signal. Positive assessment is blocked.'));}
+ });
  document.querySelectorAll('[data-evidence-decision]').forEach(button=>button.onclick=()=>{
   const card=button.closest('[data-review-evidence]');
-  try{const id=card.dataset.reviewEvidence,decision=button.dataset.evidenceDecision;researchReview=researchReviewAction(researchReview,{type:'evidence',evidenceId:id,decision,reason:card.querySelector('[name="research-reason"]').value.trim()});refreshResearch();researchCard('data-review-evidence',id)?.querySelector(`[data-evidence-decision="${decision}"]`)?.focus({preventScroll:true});}
+  try{const id=card.dataset.reviewEvidence,decision=button.dataset.evidenceDecision;researchReview=researchReviewAction(researchReview,{type:'evidence',evidenceId:id,decision,reason:card.querySelector('[name="research-reason"]').value.trim(),...(decision==='relevant'?{inspection:inspections.confirmed.get(id)}:{})});refreshResearch();researchCard('data-review-evidence',id)?.querySelector(`[data-evidence-decision="${decision}"]`)?.focus({preventScroll:true});}
   catch{notify(t('Оцінку зупинено. Запишіть конкретну причину від 8 до 400 символів.','Assessment stopped. Write a specific reason of 8 to 400 characters.'));}
  });
  document.querySelectorAll('[data-lead-decision]').forEach(button=>button.onclick=()=>{

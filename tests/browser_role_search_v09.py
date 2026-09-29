@@ -99,6 +99,7 @@ def run():
                 for evidence in video.locator('[data-review-evidence]').all():
                     evidence.locator('[data-inspect-source]').click()
                     expect(evidence.locator('.source-inspection-result')).to_be_visible()
+                    evidence.locator('[data-confirm-inspection]').click()
                     evidence.locator('[name="research-reason"]').fill("Timeline code and tests merit a closer human review.")
                     evidence.locator('[data-evidence-decision="relevant"]').click()
                     video = page.locator('[data-review-lead="github:105"]')
@@ -111,10 +112,7 @@ def run():
 
                 other = page.locator('[data-review-lead="github:102"] [data-review-evidence]')
                 other.locator('[name="research-reason"]').fill("The tool stream may be relevant after source inspection.")
-                other.locator('[data-evidence-decision="relevant"]').click()
-                card = page.locator('[data-review-lead="github:102"]')
-                card.locator('[name="lead-reason"]').fill("Confirm tool design ownership in the public PR.")
-                card.locator('[data-lead-decision="follow-up"]').click()
+                expect(other.locator('[data-evidence-decision="relevant"]')).to_be_disabled()
                 other.locator('[data-inspect-source]').click()
                 expect(other.locator('.source-inspection-result')).to_be_visible()
                 after_conflict = json.loads(downloaded_text(page, "#download-follow-up-json"))

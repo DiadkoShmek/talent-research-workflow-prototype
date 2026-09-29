@@ -101,12 +101,10 @@ def run():
                 expect(first.locator(".source-inspection-result")).to_be_visible()
                 assert "tests/agent.test.ts" in first.inner_text()
                 assert len(detail_calls) == 1 and len(file_calls) == 1
+                first.locator('[data-confirm-inspection]').click()
                 second = page.locator('[data-review-lead="github:102"] [data-review-evidence]').first
                 second.locator('[name="research-reason"]').fill("Looks technically relevant for another pass.")
-                second.locator('[data-evidence-decision="relevant"]').click()
-                second_card = page.locator('[data-review-lead="github:102"]')
-                second_card.locator('[name="lead-reason"]').fill("Verify individual authorship and scope.")
-                second_card.locator('[data-lead-decision="follow-up"]').click()
+                expect(second.locator('[data-evidence-decision="relevant"]')).to_be_disabled()
                 second = page.locator('[data-review-lead="github:102"] [data-review-evidence]').first
                 second.locator("[data-inspect-source]").click()
                 expect(second.locator(".source-inspection-result")).to_be_visible()

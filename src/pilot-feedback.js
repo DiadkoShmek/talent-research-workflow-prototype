@@ -1,4 +1,4 @@
-import { researchReviewPacket } from './research-review.js?v=0.10.0';
+import { researchReviewPacket, validateInspectionReceipt } from './research-review.js?v=0.10.6';
 import { RESEARCH_ROLE, RESEARCH_LANES } from './research.js?v=0.10.0';
 import { ROLE_SEARCH_LANES_V3 } from './role-search.js?v=0.10.0';
 
@@ -40,8 +40,9 @@ function validateSource(source) {
     for (const item of lead.evidence) {
       const commit = item?.kind === 'github-commit';
       const lane = [...RESEARCH_LANES, ...ROLE_SEARCH_LANES_V3].find(candidate => candidate.repo === item?.repository);
-      if (!exact(item, commit ? ['id', 'kind', 'url', 'repository', 'title', 'committedAt', 'observedAt', 'reviewReason'] :
-        ['id', 'kind', 'url', 'repository', 'title', 'mergedAt', 'observedAt', 'number', 'reviewReason']) ||
+      const keys = commit ? ['id', 'kind', 'url', 'repository', 'title', 'committedAt', 'observedAt', 'reviewReason'] :
+        ['id', 'kind', 'url', 'repository', 'title', 'mergedAt', 'observedAt', 'number', 'reviewReason'];
+      if (!(exact(item, keys) || exact(item, [...keys, 'inspection'])) ||
           typeof item.id !== 'string' || evidenceIds.has(item.id) || !lane || !lead.hypothesisIds.includes(lane.id) ||
           (commit ? (!/^github-commit:[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+:[0-9a-f]{40}(?:[0-9a-f]{24})?$/.test(item.id) ||
             item.url !== `https://github.com/${item.id.slice('github-commit:'.length).replace(/:([0-9a-f]+)$/, '/commit/$1')}`) :
@@ -52,6 +53,9 @@ function validateSource(source) {
           !Number.isFinite(Date.parse(commit ? item.committedAt : item.mergedAt)) ||
           Date.parse(commit ? item.committedAt : item.mergedAt) > Date.parse(source.observedAt) ||
           !reason(item.reviewReason)) fail();
+      if (Object.hasOwn(item, 'inspection')) {
+        try { validateInspectionReceipt(item, source.observedAt, item.inspection); } catch { fail(); }
+      }
       evidenceIds.add(item.id);
     }
   }
