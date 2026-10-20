@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync, existsSync} from 'node:fs';
 import {resolve, dirname, sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const readme = readFileSync(resolve(root, 'README.md'), 'utf8');
@@ -18,6 +19,13 @@ test('public application copy is evergreen while origin and affiliation remain e
   assert.ok(app.includes(`v${version} /`));
   assert.ok(!app.includes('How I would approach the first month'));
   assert.ok(!app.includes('In our conversation, I want to understand'));
+});
+
+test('HTML binds the changed application entry to its content identity', () => {
+  const app = readFileSync(resolve(root, 'src/app.js'));
+  const digest = createHash('sha256').update(app).digest('hex').slice(0, 16);
+  const index = readFileSync(resolve(root, 'index.html'), 'utf8');
+  assert.ok(index.includes(`src="src/app.js?v=${digest}"`));
 });
 
 test('public overview is short, inspectable and clear about historical data', () => {
