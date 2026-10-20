@@ -8,6 +8,18 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const readme = readFileSync(resolve(root, 'README.md'), 'utf8');
 const reference = readFileSync(resolve(root, 'REFERENCE.md'), 'utf8');
 
+test('public application copy is evergreen while origin and affiliation remain explicit', () => {
+  const app = readFileSync(resolve(root, 'src/app.js'), 'utf8');
+  assert.ok(app.includes('PUBLIC-SOURCE RESEARCH · INTERACTIVE PROTOTYPE'));
+  assert.ok(app.includes('How to test practical value'));
+  assert.ok(app.includes('Original context: public role brief'));
+  assert.ok(app.includes('Not an A-Players product.'));
+  const {version} = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
+  assert.ok(app.includes(`v${version} /`));
+  assert.ok(!app.includes('How I would approach the first month'));
+  assert.ok(!app.includes('In our conversation, I want to understand'));
+});
+
 test('public overview is short, inspectable and clear about historical data', () => {
   assert.ok(readme.split(/\s+/).length < 420);
   for (const text of ['28 September 2026', 'further research', 'npm test', 'npm run stress', 'not a deployed recruiting system', 'Artur supplied the brief']) {
