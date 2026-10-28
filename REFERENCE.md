@@ -134,7 +134,7 @@ Shadow the team's live searches first, agree on the biggest source of lost time,
 
 ## Authorship
 
-An independent proposal by **Artur**, developed with **Codex**. Artur supplied the practical brief and research direction; Codex produced the implementation and automated checks. Artur's background is construction. This artifact is a basis for assessing his reasoning and way of working with AI; it does not establish unaided programming proficiency. It is not affiliated with or endorsed by A-Players.
+An independent proposal by **DiadkoShmek**, developed with **Codex**. DiadkoShmek supplied the practical brief and research direction; Codex produced the implementation and automated checks. This artifact is a basis for assessing his reasoning and way of working with AI; it does not establish unaided programming proficiency. It is not affiliated with or endorsed by A-Players.
 
 <details>
 <summary>Earlier Python sketch</summary>

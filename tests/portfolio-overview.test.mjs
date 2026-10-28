@@ -30,7 +30,7 @@ test('HTML binds the changed application entry to its content identity', () => {
 
 test('public overview is short, inspectable and clear about historical data', () => {
   assert.ok(readme.split(/\s+/).length < 420);
-  for (const text of ['28 September 2026', 'further research', 'npm test', 'npm run stress', 'not a deployed recruiting system', 'Artur supplied the brief']) {
+  for (const text of ['28 September 2026', 'further research', 'npm test', 'npm run stress', 'not a deployed recruiting system', 'DiadkoShmek supplied the brief']) {
     assert.ok(readme.includes(text), text);
   }
   assert.ok(reference.includes('five seeded repositories on one platform'));
