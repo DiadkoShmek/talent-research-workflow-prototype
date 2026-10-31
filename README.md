@@ -1,5 +1,12 @@
 # Signal Desk
 
+<picture>
+  <source media="(prefers-color-scheme: dark) and (max-width: 600px)" srcset="https://raw.githubusercontent.com/DiadkoShmek/DiadkoShmek/main/assets/identity/signal-dark-mobile.svg">
+  <source media="(max-width: 600px)" srcset="https://raw.githubusercontent.com/DiadkoShmek/DiadkoShmek/main/assets/identity/signal-light-mobile.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/DiadkoShmek/DiadkoShmek/main/assets/identity/signal-dark.svg">
+  <img src="https://raw.githubusercontent.com/DiadkoShmek/DiadkoShmek/main/assets/identity/signal-light.svg" alt="Signal Desk — public sources, human review and handoff" width="1280">
+</picture>
+
 A browser-based research workbench: inspect public sources, record a human decision, and hand a readable research brief to the next person.
 
 **[Open the demo →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=en&showcase=1)** · **[Українською](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=uk&showcase=1)**

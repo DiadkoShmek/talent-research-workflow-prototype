@@ -1,5 +1,12 @@
 # Signal Desk
 
+<picture>
+  <source media="(prefers-color-scheme: dark) and (max-width: 600px)" srcset="https://raw.githubusercontent.com/DiadkoShmek/DiadkoShmek/main/assets/identity/signal-dark-mobile.svg">
+  <source media="(max-width: 600px)" srcset="https://raw.githubusercontent.com/DiadkoShmek/DiadkoShmek/main/assets/identity/signal-light-mobile.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/DiadkoShmek/DiadkoShmek/main/assets/identity/signal-dark.svg">
+  <img src="https://raw.githubusercontent.com/DiadkoShmek/DiadkoShmek/main/assets/identity/signal-light.svg" alt="Signal Desk — public sources, human review and handoff" width="1280">
+</picture>
+
 Дослідження публічних джерел, рішення людини та передача перевірного контексту.
 
 **[Відкрити демо →](https://diadkoshmek.github.io/talent-research-workflow-prototype/?lang=uk&showcase=1)** · [English](README.md) · [Посібник користування](docs/usage.uk.md)
