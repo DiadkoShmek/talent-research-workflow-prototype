@@ -38,8 +38,8 @@ npm run stress
 
 ## Read further
 
-[Technical reference](REFERENCE.md) · [Architecture](docs/architecture.md) · [Verification](docs/verification.md) · [Security](docs/security.md)
+[Ukrainian usage guide](docs/usage.uk.md) · [Technical reference](REFERENCE.md) · [Architecture](docs/architecture.md) · [Verification](docs/verification.md) · [Security](docs/security.md)
 
 For offline reading, save the [English HTML brief](docs/meeting-brief.en.html) or [Ukrainian PDF](docs/meeting-brief.uk.pdf) before losing the site connection.
 
-**Built by DiadkoShmek with Codex.** DiadkoShmek supplied the brief and direction; Codex produced the implementation and automated checks. Independent work, not affiliated with or endorsed by A-Players. [Profile and contact](https://github.com/DiadkoShmek).
+**Built by DiadkoShmek with Codex.** DiadkoShmek supplied the brief and direction; Codex produced the implementation and automated checks. Independent work, not affiliated with or endorsed by A-Players. [Project index](https://github.com/DiadkoShmek) · [External results](https://github.com/DiadkoShmek/DiadkoShmek/blob/main/RESULTS.en.md).
